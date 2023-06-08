@@ -133,7 +133,7 @@ const Login = () => {
                   <Grid container justifyContent="flex-end">
                     <Grid item xs={12} sx={{ paddingRight: { xs: '50px' } }}>
                       <Typography variant="body2">
-                        <Link href="#" variant="body2">
+                        <Link href="/signup" variant="body2">
                           Are You a New User ? SignUp
                         </Link>
                       </Typography>

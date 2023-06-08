@@ -14,6 +14,7 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+const cors = require('cors');
 
 
 
@@ -21,6 +22,7 @@ app.use(cookieParser());
 
 
 app.use(express.json())
+app.use(cors())
 
 
 app.use('/', user_router)
