@@ -14,6 +14,7 @@ import { SvgIcon, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
+// import { useNavigate } from 'react-router-dom';
 
 const GoogleIcon = (props) => (
   <SvgIcon {...props}>{/* Google Icon SVG Paths */}</SvgIcon>
@@ -40,12 +41,11 @@ const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [respons, setResponse] = useState("");
+  // const navigate = useNavigate();
 
   const handleCheckboxChange = (event) => {
     setIsCheckboxChecked(event.target.checked);
   };
-
- 
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -70,7 +70,7 @@ const Signup = () => {
       case "name":
         if (!value.trim()) {
           validationErrors.name = "Name is required";
-        }else if (value.trim().length < 3) {
+        } else if (value.trim().length < 3) {
           validationErrors.name = "Provide a valid name";
         }
         break;
@@ -126,7 +126,7 @@ const Signup = () => {
       try {
         let response = await axiosInstance.post("/signup", formData);
         console.log(response?.data?.message);
-        if(response.data?.success){
+        if (response.data?.success) {
           setIsModalOpen(true);
           setIsCheckboxChecked(false);
           //clear the form
@@ -135,10 +135,11 @@ const Signup = () => {
             email: "",
             password: "",
             confirmPassword: "",
-          })
+          });
+          // navigate('/login');
         }
-        if (response?.data?.message && !response?.data?.success ) {
-          setResponse(response?.data?.message)  
+        if (response?.data?.message && !response?.data?.success) {
+          setResponse(response?.data?.message);
         }
       } catch (error) {
         console.error("Error registering user:", error.response.data.message);
@@ -147,223 +148,240 @@ const Signup = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     navigate("/posts");
+  //   }
+  // }, []);
+
   return (
-     <ThemeProvider theme={theme}>
-      <Grid container component="main" sx={{ height: "100vh" }}>
-        <CssBaseline />
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box
+    <>
+      <ThemeProvider theme={theme}>
+        <Grid container component="main" sx={{ height: "100vh" }}>
+          <CssBaseline />
+          <Grid
+            item
+            xs={12}
+            md={6}
             sx={{
-              my: 8,
-              mx: 4,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Typography component="h1" variant="h5">
-              Sign up
-            </Typography>
             <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
+              sx={{
+                my: 8,
+                mx: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label="Name"
-                name="name"
-                autoComplete="name"
-                autoFocus
-                value={formData.name}
-                onChange={handleChange}
-                error={!!errors.name}
-                helperText={errors.name}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                value={formData.password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                id="confirmPassword"
-                autoComplete="new-password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    value="agree"
-                    color="primary"
-                    checked={isCheckboxChecked}
-                    onChange={handleCheckboxChange}
-                    disabled={
-                      !!errors.name ||
-                      !!errors.email ||
-                      !!errors.password ||
-                      !!errors.confirmPassword ||
-                      !formData.name.trim() ||
-                      !formData.email.trim() ||
-                      !formData.password.trim() ||
-                      !formData.confirmPassword.trim()
-                    }
-                  />
-                }
-                label="I agree to the terms and conditions"
-              />
-             {respons && !respons?.data?.success && (
-  <Typography sx={{ my: 1, textAlign: "center", color: "red" }}>
-    {respons}
-  </Typography>
-)}
-
-
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
-                disabled={!isCheckboxChecked}
+              <Typography component="h1" variant="h5">
+                Sign up
+              </Typography>
+              <Box
+                component="form"
+                noValidate
+                onSubmit={handleSubmit}
+                sx={{ mt: 1 }}
               >
-                Sign Up
-              </Button>
-              <Typography sx={{ my: 1, textAlign: "center" }}>OR</Typography>
-              
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
-              >
-                <GoogleIcon sx={{ marginRight: "0.5em", color: "blue" }} />
-                Sign Up with Google
-              </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Grid container justifyContent="flex-end">
-                    <Grid
-                      item
-                      xs={12}
-                      sx={{ textAlign: "center", paddingRight: { xs: "45px" } }}
-                    >
-                      <Typography variant="body2">
-                        <Link href="/login" variant="body2">
-                          Already have an account? Sign in
-                        </Link>
-                      </Typography>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Name"
+                  name="name"
+                  autoComplete="name"
+                  autoFocus
+                  value={formData.name}
+                  onChange={handleChange}
+                  error={!!errors.name}
+                  helperText={errors.name}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  type="password"
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="agree"
+                      color="primary"
+                      checked={isCheckboxChecked}
+                      onChange={handleCheckboxChange}
+                      disabled={
+                        !!errors.name ||
+                        !!errors.email ||
+                        !!errors.password ||
+                        !!errors.confirmPassword ||
+                        !formData.name.trim() ||
+                        !formData.email.trim() ||
+                        !formData.password.trim() ||
+                        !formData.confirmPassword.trim()
+                      }
+                    />
+                  }
+                  label="I agree to the terms and conditions"
+                />
+                {respons && !respons?.data?.success && (
+                  <Typography
+                    sx={{
+                      my: 1,
+                      textAlign: "center",
+                      color: "red",
+                      fontFamily: "Courier New, monospace",
+                    }}
+                  >
+                    {respons}
+                  </Typography>
+                )}
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
+                  disabled={!isCheckboxChecked}
+                >
+                  Sign Up
+                </Button>
+                <Typography sx={{ my: 1, textAlign: "center" }}>OR</Typography>
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
+                >
+                  <GoogleIcon sx={{ marginRight: "0.5em", color: "blue" }} />
+                  Sign Up with Google
+                </Button>
+                <Grid container justifyContent="flex-end">
+                  <Grid item>
+                    <Grid container justifyContent="flex-end">
+                      <Grid
+                        item
+                        xs={12}
+                        sx={{
+                          textAlign: "center",
+                          paddingRight: { xs: "45px" },
+                        }}
+                      >
+                        <Typography variant="body2">
+                          <Link href="/login" variant="body2">
+                            Already have an account? Sign in
+                          </Link>
+                        </Typography>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              </Box>
             </Box>
-          </Box>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box sx={{ m: 4 }}>
+              <img
+                src={process.env.PUBLIC_URL + "/loginmain1.jpeg"}
+                alt=""
+                style={{ maxWidth: "100%" }}
+              />
+            </Box>
+          </Grid>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={6}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box sx={{ m: 4 }}>
-            <img
-              src={process.env.PUBLIC_URL + "/loginmain1.jpeg"}
-              alt=""
-              style={{ maxWidth: "100%" }}
-            />
-          </Box>
-        </Grid>
-      </Grid>
 
-      <Modal open={isModalOpen} onClose={handleModalClose}>
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: isMobile ? "90%" : "auto",
-            maxWidth: 400,
-            bgcolor: "background.paper",
-            border: "none",
-            boxShadow: 24,
-            p: 4,
-            mx: isMobile ? "auto" : 0,
-          }}
-        >
-          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-            Sign Up Successful!
-          </Typography>
-          <Typography variant="body1">
-            Congratulations! You have successfully signed up.
-          </Typography>
-          <Typography variant="body1">
-            A verification link is sent to your email. Please verify to login.
-          </Typography>
-          <IconButton
+        <Modal open={isModalOpen} onClose={handleModalClose}>
+          <Box
             sx={{
               position: "absolute",
-              top: 8,
-              right: 8,
-              color: "text.secondary",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: isMobile ? "90%" : "auto",
+              maxWidth: 400,
+              bgcolor: "background.paper",
+              border: "none",
+              boxShadow: 24,
+              p: 4,
+              mx: isMobile ? "auto" : 0,
             }}
-            onClick={handleModalClose}
           >
-            <CloseIcon />
-          </IconButton>
+            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+              Sign Up Successful!
+            </Typography>
+            <Typography variant="body1">
+              Congratulations! You have successfully signed up.
+            </Typography>
+            <Typography variant="body1">
+              A verification link is sent to your email. Please verify to login.
+            </Typography>
+            <IconButton
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                color: "text.secondary",
+              }}
+              onClick={handleModalClose}
+            >
+              <CloseIcon />
+            </IconButton>
 
-          {/* Modal content */}
-        </Box>
-      </Modal>
-    </ThemeProvider>
-
+            {/* Modal content */}
+          </Box>
+        </Modal>
+      </ThemeProvider>
+    </>
   );
 };
 

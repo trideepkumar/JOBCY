@@ -1,18 +1,28 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import PublicRoutes from './utils/PublicRoutes';
+import ProtectedRoutes from './utils/ProtectedRoutes';
 import Signup from './components/signup';
 import Login from './components/login';
+import Posts from './components/Posts';
+
 
 function App() {
   return (
-    <Router>
+    
       <div className="App">
         <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
+          <Route  element={<PublicRoutes></PublicRoutes>}>
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </Route>
+          <Route  element={<ProtectedRoutes></ProtectedRoutes>}>
+          <Route path="/posts" element={<Posts />} />
+          </Route>
+          
+          </Routes>
+        
       </div>
-    </Router>
   );
 }
 

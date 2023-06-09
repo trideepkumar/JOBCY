@@ -11,7 +11,7 @@ const signup = async (req, res) => {
 
     // Check if user with the same email already exists
     const existingUser = await User.findOne({ email });
-   
+
     if (existingUser) {
       return res.json({
         message: "User with email already exists.",
@@ -54,7 +54,7 @@ const signup = async (req, res) => {
     console.error(error);
     res.json({ message: "An error occurred during signup.", success: false });
   }
-};
+}
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -63,23 +63,24 @@ const login = async (req, res) => {
   try {
     console.log("loginworks");
     existingUser = await User.findOne({ email: email });
-    console.log(existingUser);
+    // console.log(existingUser);
   } catch (err) {
     console.log(err);
   }
   if (!existingUser) {
     return res
       .status(400)
-      .json({ message: "user not registered! SignUp please!" });
+      .json({ message: "user not registered! SignUp please!" , success:false});
   }
   const isPasswordCorrect = bcrypt.compareSync(password, existingUser.password);
   if (!isPasswordCorrect) {
-    return res.status(400).json({ message: "Invalid password!!" });
+    return res.status(400).json({ message: "Invalid password!!" , success:false});
   }
   if (!existingUser.isVerified) {
-    return res.status(400).json({ message: "Verfication not completed" });
+    return res.status(400).json({ message: "Verify Your Existing account!" ,success:false});
   }
   if (existingUser && existingUser.isVerified) {
+    // console.log("jwt start")
     const token = jwt.sign(
       { id: existingUser._id },
       process.env.JWT_SECRET_KEY,
@@ -97,28 +98,31 @@ const login = async (req, res) => {
       user: existingUser,
       token: token,
     });
+  
   }
-};
-
+}
 const verifyToken = async (req, res, next) => {
-  // console.log('verification started');
-  const token = req.cookies.token;
-
+  console.log('verification started');
+  const token = req.headers.authorization;
+  console.log(token)
   if (!token) {
-    res.status(404).json({ message: "No cookie header found" });
+    return res.status(404).json({ message: "No authorization header found" });
   }
+  
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(400).json({ message: "Invalid token found!" });
     }
-    // console.log(user.id)
     req.id = user.id;
+    next();
   });
-  next();
+  
+  console.log("end");
 };
 
-const getUser = async (req, res, next) => {
-  // console.log('get user started!');
+
+const getUser = async (req, res) => {
+  console.log('get user started!');
   const userId = req.id;
   // console.log(userId)
   let user;
@@ -132,7 +136,7 @@ const getUser = async (req, res, next) => {
     return res.status(404).json({ message: "user not found!" });
   }
   return res.status(200).json({ user });
-};
+}
 
 // for email verification
 
@@ -142,7 +146,8 @@ const verifyEmail = async (req, res) => {
     console.log(token);
     await User.updateOne({ _id: token.userId }, { $set: { isVerified: true } });
     await Token.findByIdAndRemove(token._id);
-    res.send("email verification successfull");
+    res.redirect('http://localhost:3001/login');
+    // res.json({ message: "email verification successfull", success: true });
   } catch (err) {
     res.status(400).send("error Occured");
   }

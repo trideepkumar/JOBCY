@@ -1,90 +1,134 @@
-import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState  } from "react";
+import axiosInstance from "../api/axiosinstance";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import Link from "@mui/material/Link";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import {  useDispatch } from "react-redux";
+import { setAuth } from "../app/features/auth/authSlice";
+
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    email: "",
+    password: "",
   });
 
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [respons, setResponse] = useState("");
+  const dispatch = useDispatch()
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
+  const validateFormData = (formData) => {
     const validationErrors = {};
+
     if (!formData.email.trim()) {
-      validationErrors.email = 'Email is required';
+      validationErrors.email = "Email is required";
     } else {
       const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
       if (!emailRegex.test(formData.email)) {
-        validationErrors.email = 'Invalid email format';
+        validationErrors.email = "Invalid email format";
       }
     }
+
     if (!formData.password.trim()) {
-      validationErrors.password = 'Password is required';
+      validationErrors.password = "Password is required";
     } else if (formData.password.trim().length < 6) {
-      validationErrors.password = 'Password must be at least 6 characters';
+      validationErrors.password = "Password must be at least 6 characters";
     }
 
-    if (Object.keys(validationErrors).length === 0) {
-      console.log(formData);
-      setErrors({});
-    } else {
-      setErrors(validationErrors);
-    }
+    return validationErrors;
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    const validationErrors = validateFormData({ ...formData, [name]: value });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: validationErrors[name],
+    }));
+
+    const isFormValid = Object.keys(validationErrors).length === 0;
+    setIsFormValid(isFormValid);
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const validationErrors = validateFormData(formData);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const response = await axiosInstance.post("/login", formData);
+
+        if (response.data?.success) {
+          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          dispatch(setAuth())
+          navigate("/posts");
+        } else {
+          setResponse(response?.data?.message);
+          setErrors({ message: response?.data?.message });
+        }
+      } catch (error) {
+        console.error("Error logging in:", error.response.data.message);
+        setErrors({ message: "An error occurred during login" });
+        setResponse(error.response?.data?.message);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     navigate("/posts");
+  //   }
+  // },[]);
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#ff6e14',
+        main: "#ff6e14",
       },
     },
   });
 
   return (
     <ThemeProvider theme={theme}>
-      <Grid container component="main" sx={{ height: '100vh' }}>
+      <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
         <Grid
           item
           xs={12}
           md={6}
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <Box
             sx={{
               my: 8,
               mx: 6,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              border: '0.1px solid #ff6e14', 
-              borderRadius: '8px',
-              padding: '16px',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              border: "0.1px solid #ff6e14",
+              borderRadius: "8px",
+              padding: "16px",
             }}
           >
             <Typography component="h1" variant="h5">
-              Sign up
+              Login
             </Typography>
             <Box
               component="form"
@@ -113,32 +157,44 @@ const Login = () => {
                 label="Password"
                 type="password"
                 id="password"
-                autoComplete="new-password"
+                autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
                 error={!!errors.password}
                 helperText={errors.password}
               />
+              {respons && !respons?.data?.success && (
+                <Typography
+                  sx={{
+                    my: 1,
+                    textAlign: "center",
+                    color: "red",
+                    fontFamily: "Courier New, monospace", 
+                  }}
+                >
+                  {respons}
+                </Typography>
+              )}
 
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 1, bgcolor: '#ff6e14' }}
+                sx={{ mt: 3, mb: 2, bgcolor: "#ff6e14" }}
+                disabled={!isFormValid}
               >
-                Sign Up
+                Login
               </Button>
-              <Grid container justifyContent="flex-end">
+              <Grid container>
+                <Grid item xs>
+                  <Link href="/forgot-password" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
                 <Grid item>
-                  <Grid container justifyContent="flex-end">
-                    <Grid item xs={12} sx={{ paddingRight: { xs: '50px' } }}>
-                      <Typography variant="body2">
-                        <Link href="/signup" variant="body2">
-                          Are You a New User ? SignUp
-                        </Link>
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  <Link href="/signup" variant="body2">
+                    Don't have an account? Sign Up
+                  </Link>
                 </Grid>
               </Grid>
             </Box>
@@ -149,18 +205,41 @@ const Login = () => {
           xs={12}
           md={6}
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Box sx={{ m: 4 }}>
-            <img
-              src={process.env.PUBLIC_URL + '/loginmain1.jpeg'}
-              alt=""
-              style={{ maxWidth: '100%' }}
-            />
-          </Box>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              sx={{
+                m: 4,
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={process.env.PUBLIC_URL + "/signupmain.jpeg"}
+                alt=""
+                style={{
+                  width: "500%",
+                  height: "auto",
+                  maxWidth: "500%",
+                  margin: "4px",
+                }}
+              />
+            </Box>
+          </Grid>
         </Grid>
       </Grid>
     </ThemeProvider>
