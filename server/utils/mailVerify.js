@@ -18,7 +18,7 @@ const sendVerificationEmail = async (email, verificationUrl) => {
   });
 
   const mailOptions = {
-    from: `"JOBCY JOB WEB PORTAL : FIND YOUR PERFECT JOBS HERE" <${process.env.EMAIL}>`,
+    from: `"JOBCY JOB WEB PORTAL : FIND AND POST YOUR PERFECT JOBS HERE" <${process.env.EMAIL}>`,
     to: email,
     subject: ' Email Verification ✔️  Do not reply!',
 

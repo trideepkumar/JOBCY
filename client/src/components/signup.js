@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../src/api/axiosinstance";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,19 +14,31 @@ import { SvgIcon, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
-// import { useNavigate } from 'react-router-dom';
 
 const GoogleIcon = (props) => (
   <SvgIcon {...props}>{/* Google Icon SVG Paths */}</SvgIcon>
 );
 
-const Signup = () => {
+const Signup = ({ signupType }) => {
+
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [organizationFormData,setorganisationFormData] = useState({
+    orgName: "",
+    email: "",
+    category: "",
+    place: "",
+    numberOfEmployees: "",
+    registrationNumber: "",
+    password: "",
+    confirmPassword: "",
+  })
 
   const theme = createTheme({
     palette: {
@@ -41,7 +53,9 @@ const Signup = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [respons, setResponse] = useState("");
-  // const navigate = useNavigate();
+
+
+
 
   const handleCheckboxChange = (event) => {
     setIsCheckboxChecked(event.target.checked);
@@ -54,7 +68,7 @@ const Signup = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-
+    
     // Validate the field
     const validationErrors = validateField(name, value);
     setErrors((prevErrors) => ({
@@ -105,14 +119,16 @@ const Signup = () => {
 
   const validateFormData = (formData) => {
     const validationErrors = {};
-
-    for (const field in formData) {
+   
+     for (const field in formData) {
       const value = formData[field];
       const fieldErrors = validateField(field, value);
       if (Object.keys(fieldErrors).length > 0) {
         validationErrors[field] = fieldErrors[field];
       }
     }
+  
+   
 
     setErrors(validationErrors);
     return validationErrors;
@@ -120,269 +136,597 @@ const Signup = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    let validationErrors = {};
+  if (signupType === "organisation") {
+    validationErrors = validateFormData(formData);
+  } else if (signupType === "user") {
+    validationErrors = validateFormData(formData);
+  }
+  console.log('hello')
+  console.log(validationErrors)
 
-    const validationErrors = validateFormData(formData);
     if (Object.keys(validationErrors).length === 0) {
+       console.log('hello')
       try {
-        let response = await axiosInstance.post("/signup", formData);
-        console.log(response?.data?.message);
+        let endpoint = "";
+        let data
+
+        if (signupType === "organisation") {
+          console.log("hellos1")
+          endpoint = "/organisation/signup";
+          data = organizationFormData
+        
+        } else if (signupType === "user") {
+          endpoint = "/signup";
+          data = formData
+         
+        }
+        
+        const response = await axiosInstance.post(endpoint, data);
+          console.log(response)
         if (response.data?.success) {
           setIsModalOpen(true);
           setIsCheckboxChecked(false);
-          //clear the form
-          setFormData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-          // navigate('/login');
-        }
-        if (response?.data?.message && !response?.data?.success) {
+
+          // Clear the form based on signupType
+          if (signupType === "organisation") {
+            setorganisationFormData({
+              orgName: "",
+              email: "",
+              category: "",
+              place: "",
+              registrationNumber: "",
+              password: "",
+              confirmPassword: "",
+            });
+          } else if (signupType === "user") {
+            setFormData({
+              name: "",
+              email: "",
+              password: "",
+              confirmPassword: "",
+            });
+          }
+        } else {
           setResponse(response?.data?.message);
         }
       } catch (error) {
-        console.error("Error registering user:", error.response.data.message);
+        console.error("Error registering:", error.response.data.message);
         setErrors({ email: error.response.data.message });
       }
     }
   };
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     navigate("/posts");
-  //   }
-  // }, []);
+  useEffect(()=>{
+console.log(formData)
+},[handleSubmit])
+
 
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Grid container component="main" sx={{ height: "100vh" }}>
-          <CssBaseline />
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              sx={{
-                my: 8,
-                mx: 4,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <Typography component="h1" variant="h5">
-                Sign up
-              </Typography>
-              <Box
-                component="form"
-                noValidate
-                onSubmit={handleSubmit}
-                sx={{ mt: 1 }}
+        {signupType === "user" && (
+          <>
+            <Grid container component="main" sx={{ height: "100vh" }}>
+              <CssBaseline />
+              <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                  autoFocus
-                  value={formData.name}
-                  onChange={handleChange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword}
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      value="agree"
-                      color="primary"
-                      checked={isCheckboxChecked}
-                      onChange={handleCheckboxChange}
-                      disabled={
-                        !!errors.name ||
-                        !!errors.email ||
-                        !!errors.password ||
-                        !!errors.confirmPassword ||
-                        !formData.name.trim() ||
-                        !formData.email.trim() ||
-                        !formData.password.trim() ||
-                        !formData.confirmPassword.trim()
-                      }
-                    />
-                  }
-                  label="I agree to the terms and conditions"
-                />
-                {respons && !respons?.data?.success && (
-                  <Typography
-                    sx={{
-                      my: 1,
-                      textAlign: "center",
-                      color: "red",
-                      fontFamily: "Courier New, monospace",
-                    }}
-                  >
-                    {respons}
+                <Box
+                  sx={{
+                    my: 8,
+                    mx: 4,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography component="h1" variant="h5">
+                    Sign up
                   </Typography>
-                )}
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
-                  disabled={!isCheckboxChecked}
-                >
-                  Sign Up
-                </Button>
-                <Typography sx={{ my: 1, textAlign: "center" }}>OR</Typography>
-
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
-                >
-                  <GoogleIcon sx={{ marginRight: "0.5em", color: "blue" }} />
-                  Sign Up with Google
-                </Button>
-                <Grid container justifyContent="flex-end">
-                  <Grid item>
-                    <Grid container justifyContent="flex-end">
-                      <Grid
-                        item
-                        xs={12}
+                  <Box
+                    component="form"
+                    noValidate
+                    onSubmit={handleSubmit}
+                    sx={{ mt: 1 }}
+                  >
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="name"
+                      label="Name"
+                      name="name"
+                      autoComplete="name"
+                      autoFocus
+                      value={formData.name}
+                      onChange={handleChange}
+                      error={!!errors.name}
+                      helperText={errors.name}
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      error={!!errors.email}
+                      helperText={errors.email}
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      autoComplete="new-password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      error={!!errors.password}
+                      helperText={errors.password}
+                    />
+                    <TextField
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                      id="confirmPassword"
+                      autoComplete="new-password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      error={!!errors.confirmPassword}
+                      helperText={errors.confirmPassword}
+                    />
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          value="agree"
+                          color="primary"
+                          checked={isCheckboxChecked}
+                          onChange={handleCheckboxChange}
+                          disabled={
+                            !!errors.name ||
+                            !!errors.email ||
+                            !!errors.password ||
+                            !!errors.confirmPassword ||
+                            !formData.name.trim() ||
+                            !formData.email.trim() ||
+                            !formData.password.trim() ||
+                            !formData.confirmPassword.trim()
+                          }
+                        />
+                      }
+                      label="I agree to the terms and conditions"
+                    />
+                    {respons && !respons?.data?.success && (
+                      <Typography
                         sx={{
+                          my: 1,
                           textAlign: "center",
-                          paddingRight: { xs: "45px" },
+                          color: "red",
+                          fontFamily: "Courier New, monospace",
                         }}
                       >
-                        <Typography variant="body2">
-                          <Link href="/login" variant="body2">
-                            Already have an account? Sign in
-                          </Link>
-                        </Typography>
+                        {respons}
+                      </Typography>
+                    )}
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
+                      disabled={!isCheckboxChecked}
+                    >
+                      Sign Up
+                    </Button>
+                    <Typography sx={{ my: 1, textAlign: "center" }}>
+                      OR
+                    </Typography>
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
+                    >
+                      <GoogleIcon
+                        sx={{ marginRight: "0.5em", color: "blue" }}
+                      />
+                      Sign Up with Google
+                    </Button>
+                    <Grid container justifyContent="flex-end">
+                      <Grid item>
+                        <Grid container justifyContent="flex-end">
+                          <Grid
+                            item
+                            xs={12}
+                            sx={{
+                              textAlign: "center",
+                              paddingRight: { xs: "45px" },
+                            }}
+                          >
+                            <Typography variant="body2">
+                              <Link href="/login" variant="body2">
+                                Already have an account? Sign in
+                              </Link>
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Box sx={{ m: 4 }}>
+                  <img
+                    src={process.env.PUBLIC_URL + "/loginmain1.jpeg"}
+                    alt=""
+                    style={{ maxWidth: "100%" }}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+
+            <Modal open={isModalOpen} onClose={handleModalClose}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: isMobile ? "90%" : "auto",
+                  maxWidth: 400,
+                  bgcolor: "background.paper",
+                  border: "none",
+                  boxShadow: 24,
+                  p: 4,
+                  mx: isMobile ? "auto" : 0,
+                }}
+              >
+                <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                  Sign Up Successful!
+                </Typography>
+                <Typography variant="body1">
+                  Congratulations! You have successfully signed up.
+                </Typography>
+                <Typography variant="body1">
+                  A verification link is sent to your email. Please verify to
+                  login.
+                </Typography>
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    color: "text.secondary",
+                  }}
+                  onClick={handleModalClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+
+                {/* Modal content */}
               </Box>
-            </Box>
-          </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box sx={{ m: 4 }}>
-              <img
-                src={process.env.PUBLIC_URL + "/loginmain1.jpeg"}
-                alt=""
-                style={{ maxWidth: "100%" }}
-              />
-            </Box>
-          </Grid>
-        </Grid>
+            </Modal>
+          </>
+        )}
 
-        <Modal open={isModalOpen} onClose={handleModalClose}>
-          <Box
-            sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: isMobile ? "90%" : "auto",
-              maxWidth: 400,
-              bgcolor: "background.paper",
-              border: "none",
-              boxShadow: 24,
-              p: 4,
-              mx: isMobile ? "auto" : 0,
-            }}
-          >
-            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-              Sign Up Successful!
-            </Typography>
-            <Typography variant="body1">
-              Congratulations! You have successfully signed up.
-            </Typography>
-            <Typography variant="body1">
-              A verification link is sent to your email. Please verify to login.
-            </Typography>
-            <IconButton
+        {signupType === "organisation" && (
+          <>
+            <Grid
+              container
+              component="main"
               sx={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                color: "text.secondary",
+                height: "100vh",
+                backgroundImage: `url(${process.env.PUBLIC_URL}/)`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
-              onClick={handleModalClose}
             >
-              <CloseIcon />
-            </IconButton>
+              <CssBaseline />
+              <Grid
+                item
+                xs={false}
+                md={6}
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Box sx={{ m: 4 }}>
+                  <img
+                    src={process.env.PUBLIC_URL + "/organisationsignup.jpeg"}
+                    alt=""
+                    style={{ maxWidth: "100%" }}
+                  />
+                </Box>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    my: 8,
+                    mx: 4,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography component="h1" variant="h5">
+                    Sign up
+                  </Typography>
+                  <Box
+                    component="form"
+                    noValidate
+                    onSubmit={handleSubmit}
+                    sx={{ mt: 1 }}
+                  >
+                    {/* User Signup Fields */}
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="orgName"
+                          label="Organization Name"
+                          name="orgName"
+                          autoComplete="organization-name"
+                          value={formData.orgName}
+                          onChange={handleChange}
+                          error={!!errors.orgName}
+                          helperText={errors.orgName}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="email"
+                          label="Email Address"
+                          name="email"
+                          autoComplete="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          error={!!errors.email}
+                          helperText={errors.email}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="password"
+                          label="Password"
+                          type="password"
+                          id="password"
+                          autoComplete="new-password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          error={!!errors.password}
+                          helperText={errors.password}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          name="confirmPassword"
+                          label="Confirm Password"
+                          type="password"
+                          id="confirmPassword"
+                          autoComplete="new-password"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          error={!!errors.confirmPassword}
+                          helperText={errors.confirmPassword}
+                        />
+                      </Grid>
 
-            {/* Modal content */}
-          </Box>
-        </Modal>
+                      {/* Organization Signup Fields */}
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="category"
+                          label="Category"
+                          name="category"
+                          autoComplete="category"
+                          value={formData.category}
+                          onChange={handleChange}
+                          error={!!errors.category}
+                          helperText={errors.category}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="place"
+                          label="Place"
+                          name="place"
+                          autoComplete="place"
+                          value={formData.place}
+                          onChange={handleChange}
+                          error={!!errors.place}
+                          helperText={errors.place}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="registrationNumber"
+                          label="Registration Number"
+                          name="registrationNumber"
+                          autoComplete="registration-number"
+                          value={formData.registrationNumber}
+                          onChange={handleChange}
+                          error={!!errors.registrationNumber}
+                          helperText={errors.registrationNumber}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12} sm={6}>
+                        <TextField
+                          margin="normal"
+                          required
+                          fullWidth
+                          id="numberOfEmployees"
+                          label="Number of Employees"
+                          name="numberOfEmployees"
+                          autoComplete="number-of-employees"
+                          value={formData.numberOfEmployees}
+                          onChange={handleChange}
+                          error={!!errors.numberOfEmployees}
+                          helperText={errors.numberOfEmployees}
+                        />
+                      </Grid>
+                    </Grid>
+
+                    <FormControlLabel
+                      control={
+                          <Checkbox
+                            value="agree"
+                            color="primary"
+                            checked={isCheckboxChecked}
+                            onChange={handleCheckboxChange}
+                            
+                            // disabled={
+                            //   !!errors.name ||
+                            //   !!errors.email ||
+                            //   !!errors.password ||
+                            //   !!errors.confirmPassword ||
+                            //   !!errors.orgName ||
+                            //   !!errors.category ||
+                            //   !!errors.place ||
+                            //   !!errors.registrationNumber ||
+                            //   !!errors.numberOfEmployees ||
+                            //   !formData.name.trim() ||
+                            //   !formData.email.trim() ||
+                            //   !formData.password.trim() ||
+                            //   !formData.confirmPassword.trim() ||
+                            //   !formData.orgName.trim() ||
+                            //   !formData.category.trim() ||
+                            //   !formData.place.trim() ||
+                            //   !formData.registrationNumber.trim() ||
+                            //   !formData.numberOfEmployees.trim()
+                            // }
+                          />
+                      }
+                      label="I agree to the terms and conditions"
+                    />
+
+                    {respons && !respons?.data?.success && (
+                      <Typography
+                        sx={{
+                          my: 1,
+                          textAlign: "center",
+                          color: "red",
+                          fontFamily: "Courier New, monospace",
+                        }}
+                      >
+                        {respons}
+                      </Typography>
+                    )}
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
+                      disabled={!isCheckboxChecked}
+                      
+                    >
+                      Sign Up
+                    </Button>
+                    <Typography sx={{ my: 1, textAlign: "center" }}>
+                      OR
+                    </Typography>
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
+                    >
+                      <GoogleIcon
+                        sx={{ marginRight: "0.5em", color: "blue" }}
+                      />
+                      Sign Up with Google
+                    </Button>
+                    <Grid container justifyContent="flex-end">
+                      <Grid item>
+                        <Grid container justifyContent="flex-end">
+                          <Grid
+                            item
+                            xs={12}
+                            sx={{
+                              textAlign: "center",
+                              paddingRight: { xs: "45px" },
+                            }}
+                          >
+                            <Typography variant="body2">
+                              <Link href="/organisation/login" variant="body2">
+                                Already have an account? Sign in
+                              </Link>
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </>
+        )}
+        
       </ThemeProvider>
     </>
   );
 };
 
 export default Signup;
+
