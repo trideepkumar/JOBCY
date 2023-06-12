@@ -21,14 +21,7 @@ function Posts() {
     navigate("/login");
   }
 
-//   useEffect(() => {
-//     const token = localStorage.getItem("token");
-//     if (token) {
-//       navigate("/posts");
-//     }else{{
-//         navigate('/login')
-//     }}
-//   }, []);
+
 
   return (
     <div>

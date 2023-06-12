@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
 
-const { Schema, model } = require('mongoose');
-
-
 const organizationSchema = new mongoose.Schema({
     orgName: {
     type: String,

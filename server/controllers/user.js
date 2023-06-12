@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
+   console.log(req.body)
     // Check if user with the same email already exists
     const existingUser = await User.findOne({ email });
 

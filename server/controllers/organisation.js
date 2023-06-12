@@ -3,64 +3,72 @@ const crypto = require("crypto");
 const Organization = require("../model/organisation");
 const Token = require("../model/Token");
 const sendVerificationEmail = require("../utils/mailVerify");
+const jwt = require("jsonwebtoken");
+
 
 const signup = async (req, res) => {
-  console.log("organisation signup");
   try {
-    const {
-      orgName,
-      email,
-      category,
-      place,
-      registrationNumber,
-      password,
-      numberOfEmployees,
-    } = req.body;
+    const { orgName, email, category, place, registrationNumber, password, numberOfEmployees } = req.body;
+    
+    const existingOrganisation =  await Organization.findOne({email})
+    console.log(existingOrganisation)
 
-    console.log(password);
+    if(existingOrganisation){
+      return res.json({
+        message: "Organisation with email already exists.",
+        success: false,
+      });
+    }
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
+
+    // Create a new organization instance
     const newOrganization = new Organization({
+      orgName,
       email,
       category,
       place,
-      orgName,
-      password: hashedPassword,
       registrationNumber,
+      password: hashedPassword,
       numberOfEmployees,
       isVerified: false,
     });
 
     console.log(newOrganization);
+    console.log("here")
+ // Save the organization to the database
+ await newOrganization.save();
 
-    await newOrganization.save();
+ // Generate a token for email verification
+ const token = new Token({
+   organizationId: newOrganization._id,
+   userId: newOrganization._id,
+   token: crypto.randomBytes(16).toString('hex'),
+ });
 
-    // Generate a token for email verification
-    const token = new Token({
-      organizationId: newOrganization._id,
-      userId: newOrganization._id, // Include the userId field
-      token: crypto.randomBytes(16).toString("hex"),
-    });
+ // Save the token to the database
+ await token.save();
 
-    await token.save();
+ // Create the verification URL
+ const verificationUrl = `${req.protocol}://${req.get('host')}/verify/${token.token}`;
 
-    console.log(token);
+ // Send the verification email
+ await sendVerificationEmail(email, verificationUrl);
 
-    const verificationUrl = `${req.protocol}://${req.get("host")}/verify/${
-      token.token
-    }`;
-
-    await sendVerificationEmail(email, verificationUrl);
-
-    res.status(200).json({
-      message: "Signup Successful",
-      success: true,
-    });
-  } catch (error) {
-    console.error(error);
-    res.json({ message: "An error occurred during signup.", success: false });
-  }
+ // Return the success response
+ res.status(200).json({
+   message: 'Signup successful',
+   success: true,
+ });
+} catch (error) {
+ console.error('Error during signup:', error);
+ res.status(500).json({
+   message: 'An error occurred during signup.',
+   success: false,
+ });
+}
 };
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -69,7 +77,7 @@ const login = async (req, res) => {
   try {
     console.log("loginworks");
     existingUser = await Organization.findOne({ email: email });
-    // console.log(existingUser);
+    console.log(existingUser);
   } catch (err) {
     console.log(err);
   }

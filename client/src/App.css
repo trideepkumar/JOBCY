@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.custom-google-login .abcRioButton.abcRioButtonLight.abcRioButtonLightBlue {
+  width: 12rem;
+}

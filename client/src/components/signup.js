@@ -14,14 +14,23 @@ import { SvgIcon, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
+import { GoogleLogin } from "react-google-login";
+import { gapi } from "gapi-script";
 
 const GoogleIcon = (props) => (
   <SvgIcon {...props}>{/* Google Icon SVG Paths */}</SvgIcon>
 );
 
-const Signup = ({ signupType }) => {
+  const Signup = ({ signupType }) => {
+    const clientId =
+      "525754537141-kgphi4blqb4c6b8t10m6if5hg3ggm3ri.apps.googleusercontent.com";
+    const onSuccess = (res) => {
+      console.log("Login success! res:", res);
+    };
+    const onFailure = (res) => {
+      console.log("Loginfailed! res:", res);
+    };
 
-  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,7 +38,7 @@ const Signup = ({ signupType }) => {
     confirmPassword: "",
   });
 
-  const [organizationFormData,setorganisationFormData] = useState({
+  const [organizationFormData, setorganisationFormData] = useState({
     orgName: "",
     email: "",
     category: "",
@@ -38,7 +47,7 @@ const Signup = ({ signupType }) => {
     registrationNumber: "",
     password: "",
     confirmPassword: "",
-  })
+  });
 
   const theme = createTheme({
     palette: {
@@ -54,9 +63,6 @@ const Signup = ({ signupType }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [respons, setResponse] = useState("");
 
-
-
-
   const handleCheckboxChange = (event) => {
     setIsCheckboxChecked(event.target.checked);
   };
@@ -68,7 +74,7 @@ const Signup = ({ signupType }) => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    
+
     // Validate the field
     const validationErrors = validateField(name, value);
     setErrors((prevErrors) => ({
@@ -83,9 +89,16 @@ const Signup = ({ signupType }) => {
     switch (name) {
       case "name":
         if (!value.trim()) {
-          validationErrors.name = "Name is required";
+          validationErrors.name = " name is required";
         } else if (value.trim().length < 3) {
-          validationErrors.name = "Provide a valid name";
+          validationErrors.name = "enter a valid name";
+        }
+        break;
+      case "orgName":
+        if (!value.trim()) {
+          validationErrors.orgName = "organisation name is required";
+        } else if (value.trim().length < 4) {
+          validationErrors.orgName = "enter a valid organisation name";
         }
         break;
       case "email":
@@ -96,6 +109,35 @@ const Signup = ({ signupType }) => {
           if (!emailRegex.test(value)) {
             validationErrors.email = "Invalid email format";
           }
+        }
+        break;
+      case "category":
+        if (!value.trim()) {
+          validationErrors.category = "category is required";
+        } else if (value.trim().length < 4) {
+          validationErrors.category = "enter a valid category";
+        }
+        break;
+      case "place":
+        if (!value.trim()) {
+          validationErrors.place = "place is required";
+        } else if (value.trim().length < 3) {
+          validationErrors.place = "enter a valid place";
+        }
+        break;
+      case "numberOfEmployees":
+        if (!value.trim()) {
+          validationErrors.numberOfEmployees =
+            "numberofEmployees number is required";
+        }
+        break;
+      case "registrationNumber":
+        if (!value.trim()) {
+          validationErrors.registrationNumber =
+            "registration number is required";
+        } else if (value.trim().length < 4) {
+          validationErrors.registrationNumber =
+            "enter a valid registration number";
         }
         break;
       case "password":
@@ -119,16 +161,14 @@ const Signup = ({ signupType }) => {
 
   const validateFormData = (formData) => {
     const validationErrors = {};
-   
-     for (const field in formData) {
+
+    for (const field in formData) {
       const value = formData[field];
       const fieldErrors = validateField(field, value);
       if (Object.keys(fieldErrors).length > 0) {
         validationErrors[field] = fieldErrors[field];
       }
     }
-  
-   
 
     setErrors(validationErrors);
     return validationErrors;
@@ -137,40 +177,39 @@ const Signup = ({ signupType }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     let validationErrors = {};
-  if (signupType === "organisation") {
-    validationErrors = validateFormData(formData);
-  } else if (signupType === "user") {
-    validationErrors = validateFormData(formData);
-  }
-  console.log('hello')
-  console.log(validationErrors)
+    if (signupType === "organisation") {
+      validationErrors = validateFormData(formData);
+    } else if (signupType === "user") {
+      validationErrors = validateFormData(formData);
+    }
+    console.log("hello");
+    console.log(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-       console.log('hello')
+      console.log("hello");
       try {
         let endpoint = "";
-        let data
+        let data;
 
         if (signupType === "organisation") {
-          console.log("hellos1")
           endpoint = "/organisation/signup";
-          data = organizationFormData
-        
+          data = formData;
+          console.log("hellos1");
+          console.log(formData);
         } else if (signupType === "user") {
           endpoint = "/signup";
-          data = formData
-         
+          data = formData;
         }
-        
+
         const response = await axiosInstance.post(endpoint, data);
-          console.log(response)
+        console.log(response);
         if (response.data?.success) {
           setIsModalOpen(true);
           setIsCheckboxChecked(false);
 
           // Clear the form based on signupType
           if (signupType === "organisation") {
-            setorganisationFormData({
+            setFormData({
               orgName: "",
               email: "",
               category: "",
@@ -178,6 +217,7 @@ const Signup = ({ signupType }) => {
               registrationNumber: "",
               password: "",
               confirmPassword: "",
+              numberOfEmployees: "",
             });
           } else if (signupType === "user") {
             setFormData({
@@ -197,10 +237,15 @@ const Signup = ({ signupType }) => {
     }
   };
 
-  useEffect(()=>{
-console.log(formData)
-},[handleSubmit])
-
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        clientId: clientId,
+        scope: "",
+      });
+    }
+    gapi.load("client:auth2", start);
+  });
 
   return (
     <>
@@ -339,17 +384,19 @@ console.log(formData)
                       OR
                     </Typography>
 
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
-                    >
-                      <GoogleIcon
-                        sx={{ marginRight: "0.5em", color: "blue" }}
+                    {/* <div id="signInButton"  > */}
+                      <GoogleLogin
+                        clientId={clientId}
+                        buttonText="SignUp with Google"
+                        onSuccess={onSuccess}
+                        onFailure={onFailure}
+                        cookiePolicy={"single_host_origin"}
+                        isSignedIn={true}
+                        style={{width: '100%'}}
+                        sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
+                        className="custom-google-login"
                       />
-                      Sign Up with Google
-                    </Button>
+                    {/* </div> */}
                     <Grid container justifyContent="flex-end">
                       <Grid item>
                         <Grid container justifyContent="flex-end">
@@ -362,7 +409,7 @@ console.log(formData)
                             }}
                           >
                             <Typography variant="body2">
-                              <Link href="/login" variant="body2">
+                              <Link href="/login" >
                                 Already have an account? Sign in
                               </Link>
                             </Typography>
@@ -627,33 +674,30 @@ console.log(formData)
 
                     <FormControlLabel
                       control={
-                          <Checkbox
-                            value="agree"
-                            color="primary"
-                            checked={isCheckboxChecked}
-                            onChange={handleCheckboxChange}
-                            
-                            // disabled={
-                            //   !!errors.name ||
-                            //   !!errors.email ||
-                            //   !!errors.password ||
-                            //   !!errors.confirmPassword ||
-                            //   !!errors.orgName ||
-                            //   !!errors.category ||
-                            //   !!errors.place ||
-                            //   !!errors.registrationNumber ||
-                            //   !!errors.numberOfEmployees ||
-                            //   !formData.name.trim() ||
-                            //   !formData.email.trim() ||
-                            //   !formData.password.trim() ||
-                            //   !formData.confirmPassword.trim() ||
-                            //   !formData.orgName.trim() ||
-                            //   !formData.category.trim() ||
-                            //   !formData.place.trim() ||
-                            //   !formData.registrationNumber.trim() ||
-                            //   !formData.numberOfEmployees.trim()
-                            // }
-                          />
+                        <Checkbox
+                          value="agree"
+                          color="primary"
+                          checked={isCheckboxChecked}
+                          onChange={handleCheckboxChange}
+                          disabled={
+                            !!errors.orgName ||
+                            !!errors.email ||
+                            !!errors.password ||
+                            !!errors.confirmPassword ||
+                            !!errors.category ||
+                            !!errors.place ||
+                            !!errors.registrationNumber ||
+                            !!errors.numberOfEmployees ||
+                            !formData.orgName ||
+                            !formData.email ||
+                            !formData.password ||
+                            !formData.confirmPassword ||
+                            !formData.category ||
+                            !formData.place ||
+                            !formData.registrationNumber ||
+                            !formData.numberOfEmployees
+                          }
+                        />
                       }
                       label="I agree to the terms and conditions"
                     />
@@ -677,7 +721,6 @@ console.log(formData)
                       variant="contained"
                       sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
                       disabled={!isCheckboxChecked}
-                      
                     >
                       Sign Up
                     </Button>
@@ -720,13 +763,53 @@ console.log(formData)
                 </Box>
               </Grid>
             </Grid>
+
+            <Modal open={isModalOpen} onClose={handleModalClose}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: isMobile ? "90%" : "auto",
+                  maxWidth: 400,
+                  bgcolor: "background.paper",
+                  border: "none",
+                  boxShadow: 24,
+                  p: 4,
+                  mx: isMobile ? "auto" : 0,
+                }}
+              >
+                <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+                  Sign Up Successful!
+                </Typography>
+                <Typography variant="body1">
+                  Congratulations! You have successfully signed up.
+                </Typography>
+                <Typography variant="body1">
+                  A verification link is sent to your email. Please verify to
+                  login.
+                </Typography>
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    color: "text.secondary",
+                  }}
+                  onClick={handleModalClose}
+                >
+                  <CloseIcon />
+                </IconButton>
+
+                {/* Modal content */}
+              </Box>
+            </Modal>
           </>
         )}
-        
       </ThemeProvider>
     </>
   );
 };
 
 export default Signup;
-
