@@ -105,6 +105,7 @@ const Login = ({ loginType }) => {
 
   return (
     <ThemeProvider theme={theme}>
+      
       {loginType === "user" && (
         <>
           <Grid container component="main" sx={{ height: "100vh" }}>

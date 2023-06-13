@@ -36,7 +36,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      callbackURL:process.env.CALLBACK_URL,
     },
     (accessToken, refreshToken, profile, done) => {
       // Strategy callback implementation
@@ -51,11 +51,11 @@ passport.use(
 app.use('/', user_router)
 app.use('/organisation',organisation_router)
 
-app.use('/auth/',authRoutes)
+app.use('/auth',authRoutes)
 
 
 mongoose.connect(process.env.MONGODB_URL).then(()=>{
-    app.listen(3000)
+    app.listen(process.env.PORT)
     console.log('mongoose connected succesfully!')
 }).catch((err)=>{
    console.log(err)

@@ -1,0 +1,72 @@
+body{
+    background-color:#f3f2ee;
+  
+}
+
+.right-card{
+    border: 0.1px rgb(176, 176, 176) solid;    border-right: 2rem;
+    border-radius: 4px;
+    margin-right: 5rem ;
+   
+}
+.center-card{
+    border:1px  rgb(242, 240, 240)solid;
+    border-radius: 4px;
+    border: 0.1px rgb(176, 176, 176) solid;
+
+}
+
+.left-card{
+    border: 0.1px rgb(176, 176, 176) solid;
+    border-radius: 4px;
+    margin-left: 3rem;
+    height: 400px;
+}
+
+.posts{
+    border: 0.1px rgb(176, 176, 176) solid;    border-right: 2rem;
+    border-radius:4px;
+    box-shadow: 2px 2px 4px 4px rgba(167, 167, 167, 0.1) !important;
+    margin-top: 1.6rem;
+    background-color:#ffffff;
+    padding-top: 2px;
+}
+.Post-image{
+    margin: 0.5rem;
+    
+}
+.Post-card{
+      background-color: rgb(0, 0, 0) ;
+     
+}
+.post-text{
+    background-color:#ffffff;
+}
+.right-card-bottom{
+    background-color:#f3f2ee  !important;
+    margin-right: 5rem ;
+    box-shadow: none !important;
+}
+
+
+@media (max-width: 600px) {
+    .left-card {
+      display: none;
+    }
+    .right-card{
+        display: none;
+    }
+    .center-card{
+        margin: 1rem;
+    }
+    .posts{
+        width: 100%;
+        margin: 0.5rem;
+    }
+    .center-card.text-field{
+        width: auto;
+    }
+    .right-card-bottom{
+        display: none;
+    }
+  }

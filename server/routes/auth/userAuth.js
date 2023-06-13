@@ -3,7 +3,7 @@ const router = Router();
 const { googleCallback } = require('../../controllers/auth/googleAuth');
 
 // Routes
-router.get("/google", googleCallback);
+router.post("/google", googleCallback);
 
 
 module.exports  = router

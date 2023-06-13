@@ -22,10 +22,23 @@ const GoogleIcon = (props) => (
 );
 
   const Signup = ({ signupType }) => {
+
     const clientId =
       "525754537141-kgphi4blqb4c6b8t10m6if5hg3ggm3ri.apps.googleusercontent.com";
     const onSuccess = (res) => {
-      console.log("Login success! res:", res);
+      console.log("Login success! res:", res)
+      axiosInstance
+      .post('/auth/google', { token: res.tokenId })
+      .then((res) => {
+        console.log(res.data)
+        if(res.data?.success){
+          console.log("great!")
+        }
+      })
+      .catch((error) => {
+        // Handle any errors
+        console.error(error);
+      })
     };
     const onFailure = (res) => {
       console.log("Loginfailed! res:", res);

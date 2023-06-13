@@ -5,7 +5,7 @@ import PublicRoutes from './utils/PublicRoutes';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Signup from './components/signup';
 import Login from './components/login';
-import Posts from './components/Posts';
+import Posts from './components/userPages/Posts';
 import UserProfile from './components/UserProfile';
 
 

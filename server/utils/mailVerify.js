@@ -28,10 +28,10 @@ const sendVerificationEmail = async (email, verificationUrl) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    return info;
+    return info
   } catch (error) {
     console.log(error);
-    throw new Error('Error sending verification email');
+    throw new Error('Error sending verification email')
   }
 };
 

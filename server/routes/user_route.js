@@ -10,6 +10,7 @@ router.post('/login',login)
 
 
 router.get('/verify/:token', verifyEmail)
+
 router.get('/user',verifyToken,getUser)
 
 module.exports  = router
