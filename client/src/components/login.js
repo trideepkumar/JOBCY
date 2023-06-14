@@ -80,6 +80,7 @@ const Login = ({ loginType }) => {
   
         if (response.data?.success) {
           localStorage.setItem("token", response.data.token);
+          console.log(response.data.token)
           localStorage.setItem("user", JSON.stringify(response.data.user));
           dispatch(setAuth());
           navigate(redirectRoute) 

@@ -17,6 +17,10 @@ const userSchema = new Schema({
         required: true,
         minlength: 6
     },
+    backgroundimage:{
+        type:String,
+        default:''
+    },
     image: {
         type: String,
         default:''
@@ -38,21 +42,34 @@ const userSchema = new Schema({
         default: ''
     },
     skills: {
-        type: String,
-        default: false
+        type: Array,
+        default: []
     },
     experience: {
-        type: String,
-        default: false
+        type: Array,
+        default: []
     },
     education: {
-        type: String,
-        default: false
+        type: Array,
+        default: []
+    },
+
+    place:{
+        type:String,
+        default:''
+    },
+    state:{
+        type:String,
+        default:''
+    },
+    country:{
+        type:String,
+        default:''
     },
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);

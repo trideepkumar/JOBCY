@@ -1,12 +1,11 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import ResponsiveAppBar from './components/ResponsiveAppBar';
 import PublicRoutes from './utils/PublicRoutes';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Signup from './components/signup';
 import Login from './components/login';
-import Posts from './components/userPages/Posts';
-import UserProfile from './components/UserProfile';
+import Posts from './components/userPages/Posts/Posts';
+import Profile from './components/userPages/Profile/Profile';
 
 
 
@@ -15,9 +14,6 @@ function App() {
     
       <div className="App">
         <Routes>
-        <Route>
-            <Route path='/' element={<ResponsiveAppBar/>}/>
-          </Route>
           <Route  element={<PublicRoutes></PublicRoutes>}>
             <Route path="/signup" element={<Signup signupType='user' />} />
             <Route path="/organisation/signup" element={<Signup signupType='organisation' />} />
@@ -27,9 +23,11 @@ function App() {
 
           <Route  element={<ProtectedRoutes></ProtectedRoutes>}>
           <Route path="/posts" element={<Posts />} />
+          <Route path="/profile" element={<Profile/>} />
           </Route>
 
-          <Route path='/profile' element ={<UserProfile/>}/>
+
+
          
           
           </Routes>

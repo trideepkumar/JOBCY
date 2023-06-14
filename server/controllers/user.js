@@ -155,8 +155,41 @@ const verifyEmail = async (req, res) => {
   }
 };
 
+const updateAbout = async (req, res) => {
+  try {
+    console.log('about update')
+    const { username, designation, place, state, country, about } = req.body;
+    console.log(username,designation,place,state,country,about)
+    // Find the user by their ID
+    console.log(req.params)
+    const user = await User.findById(req.params._id); 
+    // Assuming you have authentication middleware to get the user ID from the request
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Update the user's information
+    user.username = username || user.username;
+    user.designation = designation || user.designation;
+    user.place = place || user.place;
+    user.state = state || user.state;
+    user.country = country || user.country;
+    user.about = about || user.about;
+    
+    // Save the updated user
+    await user.save()
+    
+    res.status(200).json({ message: 'User information updated successfully', user });
+  } catch (error) {
+    console.error('Error updating user information:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 exports.signup = signup;
 exports.login = login;
 exports.verifyToken = verifyToken;
 exports.getUser = getUser;
 exports.verifyEmail = verifyEmail;
+exports.updateAbout = updateAbout;

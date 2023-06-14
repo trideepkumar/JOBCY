@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { clearAuth } from "../../app/features/auth/authSlice";
+import { clearAuth } from "../../../app/features/auth/authSlice";
 import {
   Grid,
   Card,
@@ -54,7 +54,7 @@ function Posts() {
         <Grid item lg={3}>
           <Card
             className="left-card"
-            style={{ position: "sticky", top: "5rem" }}
+            style={{ position: "sticky", top: "3rem" }}
           >
              <div style={{ display: "flex", justifyContent: "center" ,paddingTop:'20px' , backgroundImage: `url(${process.env.PUBLIC_URL}/backgroundllinkedin.jpg)`, backgroundSize: 'cover'}}>
             <Avatar src="/public/signupmain.jpeg"  style={{ width: 80, height: 80 }}/>
@@ -68,17 +68,17 @@ function Posts() {
               </Typography>
               <Divider style={{ marginTop: "1rem" }} />
 
-              <Typography variant="body2">
+              <Typography variant="body2" style={{textAlign:'justify'}}>
                 Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica
+                6,000 species, ranging across all continents except Antarctica...
               </Typography>
               <Divider style={{ marginTop: "1rem" }} />
             </CardContent>
             <Divider style={{ marginTop: "1rem" }} />
 
             <CardActions  style={{ display: "flex", justifyContent: "center" ,alignItems:'center'}}>
-              <Button size="small" style={{ border: "0.5px solid black" ,marginTop:'10px',width:'100%'}}> Edit Profile</Button>
-              <Button size="small" style={{ border: "0.5px solid black",marginTop:'10px',width:'100%' }}> Learn More</Button>
+              <Button size="small" style={{ border: "0.5px solid black" ,marginTop:'10px',width:'100%',color:'#ff6e14'}}> Edit Profile</Button>
+              <Button size="small" style={{ border: "0.5px solid black",marginTop:'10px',width:'100%',color:'#ff6e14' }}> Connections</Button>
             </CardActions>
             <Divider style={{ marginTop: "1rem" }} />
 
@@ -88,7 +88,7 @@ function Posts() {
 
         <Grid item lg={6} spacing={2}>
           <Card className="center-card">
-            <CardContent sx={{ display: "flex" }}>
+            <CardContent sx={{ display: "flex"}}>
               <Avatar sx={{ marginRight: "7px" }} />
               <Button
                 sx={{ width: "90%" }}
@@ -102,20 +102,20 @@ function Posts() {
             <CardActions
               sx={{ display: "flex", justifyContent: "space-around" }}
             >
-              <Button size="small">
-                <IconButton size="small" color="primary">
+              <Button size="small" className="post-icon">
+                <IconButton size="small" style={{color:'green'}}  >
                   <ImageIcon />
                 </IconButton>
                 Image
               </Button>
-              <Button size="small">
+              <Button size="small" className="post-icon">
                 <IconButton size="small" color="primary">
                   <MovieIcon />
                 </IconButton>
                 Video
               </Button>
-              <Button size="small">
-                <IconButton size="small" color="primary">
+              <Button size="small" className="post-icon">
+                <IconButton size="small" style={{color:'red'}} >
                   <ArticleIcon />
                 </IconButton>
                 Article
@@ -398,7 +398,7 @@ function Posts() {
               image="/static/images/cards/contemplative-reptile.jpg"
               title="green iguana"
             />
-            <CardContent>
+            <CardContent style={{color:'#ff6e14'}}>
               <Typography gutterBottom variant="h5" component="div">
                 Lizard
               </Typography>
@@ -407,10 +407,7 @@ function Posts() {
                 6,000 species, ranging across all continents except Antarctica
               </Typography>
             </CardContent>
-            <CardActions>
-              <Button size="small">Share</Button>
-              <Button size="small">Learn More</Button>
-            </CardActions>
+          
           </Card>
         </Grid>
 
