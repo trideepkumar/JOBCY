@@ -125,8 +125,9 @@ const verifyToken = async (req, res, next) => {
 
 const getUser = async (req, res) => {
   console.log('get user started!');
-  const userId = req.id;
-  // console.log(userId)
+  console.log(req.params._id)
+  const userId = req.params._id;
+  console.log(userId)
   let user;
   try {
     user = await User.findById(userId, "-password");
@@ -158,8 +159,8 @@ const verifyEmail = async (req, res) => {
 const updateAbout = async (req, res) => {
   try {
     console.log('about update')
-    const { username, designation, place, state, country, about } = req.body;
-    console.log(username,designation,place,state,country,about)
+    const { name, designation, place, state, country, about } = req.body;
+    console.log(name,designation,place,state,country,about)
     // Find the user by their ID
     console.log(req.params)
     const user = await User.findById(req.params._id); 
@@ -170,7 +171,7 @@ const updateAbout = async (req, res) => {
     }
     
     // Update the user's information
-    user.username = username || user.username;
+    user.name = name || user.name;
     user.designation = designation || user.designation;
     user.place = place || user.place;
     user.state = state || user.state;
@@ -187,9 +188,58 @@ const updateAbout = async (req, res) => {
   }
 };
 
+
+const updateExperience = async (req, res) => {
+  try {
+    const {
+      'experience[0].companyName': companyName,
+      'experience[0].duration': duration,
+      'experience[0].title': title,
+      'education[0].institutionName': institutionName,
+      'education[0].qualification': qualification,
+      'education[0].aboutEdu': educationAbout
+    } = req.body;
+
+
+    // Find the user by their ID
+    const user = await User.findById(req.params._id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const newExperience = {
+      companyName,
+      duration,
+      title,
+    };
+    const newEducation = {
+      institutionName,
+      qualification,
+      aboutEdu: educationAbout,
+    };
+
+
+    user.experience.push(newExperience);
+    user.education.push(newEducation);
+
+
+    await user.save();
+
+    res.status(200).json({ message: 'User experience updated successfully', user });
+  } catch (error) {
+    console.error('Error updating user experience:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+
+
 exports.signup = signup;
 exports.login = login;
 exports.verifyToken = verifyToken;
 exports.getUser = getUser;
 exports.verifyEmail = verifyEmail;
 exports.updateAbout = updateAbout;
+exports.updateExperience =updateExperience

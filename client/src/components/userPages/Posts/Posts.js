@@ -77,7 +77,7 @@ function Posts() {
             <Divider style={{ marginTop: "1rem" }} />
 
             <CardActions  style={{ display: "flex", justifyContent: "center" ,alignItems:'center'}}>
-              <Button size="small" style={{ border: "0.5px solid black" ,marginTop:'10px',width:'100%',color:'#ff6e14'}}> Edit Profile</Button>
+              <Button size="small" style={{ border: "0.5px solid black" ,marginTop:'10px',width:'100%',color:'#ff6e14'}} > Edit Profile</Button>
               <Button size="small" style={{ border: "0.5px solid black",marginTop:'10px',width:'100%',color:'#ff6e14' }}> Connections</Button>
             </CardActions>
             <Divider style={{ marginTop: "1rem" }} />

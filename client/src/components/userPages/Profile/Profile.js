@@ -15,39 +15,12 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import axiosInstance from '../../../api/axiosinstance';
+import UserModal from "../Modal.js/userModal";
 
 function Profile() {
-
-  const [abouts,setAbouts] = useState()
- 
-
   const authState = useSelector((state) => {
     return state.auth.authState;
-  })
-
-  const handleAbout = async (event)=>{
-    console.log('1')
-    const endpoint = `/updateAbout/${authState._id}`;
-    const data = {
-      username : authState.name,
-      designation : authState.designation,
-      place : authState.place,
-      state : authState.state,
-      country : authState.country,
-      about : authState.about
-    };
-
-    const response = await axiosInstance.post(endpoint, data);
-    if (response.data?.success) {
-       setAbouts(response.data)
-    }
-
-    console.log(endpoint)
-    
-  }
-
-  
+  });
 
   return (
     <>
@@ -126,11 +99,8 @@ function Profile() {
                     </Box>
                   </Box>
                   <Box>
-                    <Button onClick={handleAbout}>
-                      <EditIcon
-                        size="small"
-                        style={{ color: "#ff6e14", marginRight: "100%" }}
-                      />
+                    <Button>
+                      <UserModal type="about" />
                     </Button>
                   </Box>
                 </Box>
@@ -230,14 +200,7 @@ function Profile() {
                 >
                   Experience
                 </Typography>
-                <EditIcon
-                  size="small"
-                  style={{
-                    color: "#ff6e14",
-                    marginRight: "1rem",
-                    marginTop: "0.5rem",
-                  }}
-                />
+                <UserModal type="experience" />
               </Box>
               <Divider style={{ marginBottom: "1rem" }} />
               <Box
@@ -247,51 +210,40 @@ function Profile() {
                 style={{ display: "grid", justifyContent: "left" }}
                 className="experience-box"
               >
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
+                {authState.experience.map((experience, index) => (
+                  <Box
+                    key={index}
+                    item
+                    lg={12}
+                    sx={4}
+                    style={{ display: "grid", justifyContent: "left" }}
+                    className="experience-box"
                   >
-                    {" "}
-                    COMPANYS NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    Company's About
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    {" "}
-                    COMPANYS NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    Company's About
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    {" "}
-                    COMPANYS NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    Company's About
-                  </Typography>
-                </Box>
+                    <Box style={{ marginBottom: "1rem" }}>
+                      <Typography
+                        variant="body1"
+                        style={{ textAlign: "left", paddingLeft: "1rem" }}
+                      >
+                        {experience.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        style={{ textAlign: "left", paddingLeft: "1rem" }}
+                      >
+                        {experience.companyName}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        style={{ textAlign: "left", paddingLeft: "1rem" }}
+                      >
+                        {experience.duration}
+                      </Typography>
+                    </Box>
+                    {index < authState.experience.length - 1 && (
+                      <Divider style={{ marginBottom: "1rem" }} />
+                    )}
+                  </Box>
+                ))}
               </Box>
             </Card>
 
@@ -314,69 +266,43 @@ function Profile() {
                 >
                   Education
                 </Typography>
-                <EditIcon
-                  size="small"
-                  style={{
-                    color: "#ff6e14",
-                    marginRight: "1rem",
-                    marginTop: "0.5rem",
-                  }}
-                />
+                <UserModal type="education" />
               </Box>
               <Divider style={{ marginBottom: "1rem" }} />
-              <Box
-                item
-                lg={12}
-                sx={4}
-                style={{ display: "grid", justifyContent: "left" }}
-                className="experience-box"
-              >
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    {" "}
-                    EDUCATIONAL INSTITUTIONAL NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    About Education
-                  </Typography>
+              {authState.education.map((education, index) => (
+                <Box
+                  key={index}
+                  item
+                  lg={12}
+                  sx={4}
+                  style={{ display: "grid", justifyContent: "left" }}
+                  className="experience-box"
+                >
+                  <Box style={{ marginBottom: "1rem" }}>
+                    <Typography
+                      variant="body1"
+                      style={{ textAlign: "left", paddingLeft: "1rem" }}
+                    >
+                      {education.institutionName}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{ textAlign: "left", paddingLeft: "1rem" }}
+                    >
+                      {education.qualification}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      style={{ textAlign: "left", paddingLeft: "1rem" }}
+                    >
+                      {education.aboutEdu}
+                    </Typography>
+                  </Box>
+                  {index < authState.education.length - 1 && (
+                    <Divider style={{ marginBottom: "1rem" }} />
+                  )}
                 </Box>
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    {" "}
-                    EDUCATIONAL INSTITUTIONAL NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    About Education
-                  </Typography>
-                </Box>
-                <Box style={{ marginBottom: "1rem" }}>
-                  <Typography
-                    variant="body1"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    {" "}
-                    EDUCATIONAL INSTITUTIONAL NAME
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    style={{ textAlign: "left", paddingLeft: "1rem" }}
-                  >
-                    About Education
-                  </Typography>
-                </Box>
-              </Box>
+              ))}
             </Card>
 
             {/* PROJECTS */}
