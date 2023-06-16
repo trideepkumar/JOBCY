@@ -5,11 +5,12 @@ import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Input } from "@mui/material";
+import { Divider, Input } from "@mui/material";
 import axiosInstance from "../../../api/axiosinstance";
 import EditIcon from "@mui/icons-material/Edit";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "../../../app/features/auth/authSlice";
+import "./userModal.css";
 
 const style = {
   position: "absolute",
@@ -32,6 +33,8 @@ export default function UserModal({ type }) {
   });
 
   const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [file, setFile] = useState(null)
 
   const initialFormData = {
     name: authState.name || "",
@@ -61,6 +64,26 @@ export default function UserModal({ type }) {
         about: "",
       },
     ],
+    jobtitles: [
+      {
+        jobtitle: "",
+      },
+    ],
+    profPic: "",
+    backgroundPic: "",
+  };
+
+  //for image change in the modal
+  const handleImageChange = (event) => {
+    // const file = event.target.files[0];
+    setFile(event.target.files[0])
+    const imageUrl = URL.createObjectURL(event.target.files[0]);
+    // const imageMYUrl = event.target.files[0]
+    setSelectedImage(imageUrl);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      profPic: imageUrl,
+    }));
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -127,7 +150,11 @@ export default function UserModal({ type }) {
           dispatch(setAuth());
           handleClose();
         }
-      } else if (type === "experience" || type==="education") {
+      } else if (
+        type === "experience" ||
+        type === "education" ||
+        type === "jobtitle"
+      ) {
         try {
           console.log("experience");
           let endpoint = `updateExperience/${authState._id}`;
@@ -145,24 +172,54 @@ export default function UserModal({ type }) {
         } catch (error) {
           console.error("Error updating experience:", error);
         }
+      } else if (type === "profile") {
+        console.log("profile ");
+        let endpoint = `updatepic/${authState._id}`;
+        console.log(endpoint);
+        const form = new FormData()
+        Object.entries(formData).forEach(([key, value]) => {
+          form.append(key, value);
+      });
+      form.append('image', file)
+        const response = await axiosInstance.patch(endpoint, form, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        console.log(response);
+        if (response.status === 200) {
+          let userEndpoint = `user/${authState._id}`;
+          const user = await axiosInstance.get(userEndpoint);
+          localStorage.setItem("user", JSON.stringify(user.data.user));
+          dispatch(setAuth());
+        }
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [handleInputChange]);
+  // useEffect(() => {
+  //   console.log(formData);
+  // }, [handleInputChange]);
 
   return (
     <div>
-      <Button onClick={handleOpen}>
+      {type === "about" ||
+      type === "experience" ||
+      type === "education" ||
+      type === "project" ||
+      type === "jobtitle" ||
+      type === "profile" ? (
         <EditIcon
           size="small"
           style={{ color: "#ff6e14", marginRight: "100%" }}
+          onClick={handleOpen}
         />
-      </Button>
+      ) : (
+        () => console.log("hi")
+      )}
+
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -187,6 +244,10 @@ export default function UserModal({ type }) {
               {type === "experience" && "ADD EXPERIENCE"}
               {type === "education" && "ADD EDUCATION"}
               {type === "project" && "ADD PROJECT"}
+              {type === "jobtitle" && "ADD JOB TITLE"}
+              {type === "profile" && "ADD A PROFILE PICTURE"}
+
+              <Divider sx={{ marginBottom: "10px", marginTop: "10px" }} />
             </Typography>
 
             {type === "about" && (
@@ -327,6 +388,54 @@ export default function UserModal({ type }) {
                 />
               </Box>
             )}
+
+            {type === "jobtitle" && (
+              <Box style={{ marginBottom: "1rem" }}>
+                <Typography>ADD JOB TITLE</Typography>
+                <Divider sx={{ marginBottom: "10px", marginTop: "10px" }} />
+                <Input
+                  name={`jobtitles[0].jobtitle`}
+                  placeholder="Job title here..."
+                  onChange={handleInputChange}
+                  error={!!errors.jobtitles?.jobtitle}
+                  helperText={errors.jobtitles?.jobtitle}
+                  required
+                />
+              </Box>
+            )}
+
+            {type === "profile" && (
+              <Box>
+                <Box sx={{ paddingLeft: "8rem" }}>
+                  <form
+                    onSubmit={handleSubmit}
+                    encType="multipart/form-data"
+                    name="file-input"
+                  >
+                    <div className="image-upload">
+                      <label htmlFor="file-input" style={{ cursor: "pointer" }}>
+                        <img
+                          src={
+                            selectedImage ||
+                            "https://icons.iconarchive.com/icons/dtafalonso/android-lollipop/128/Downloads-icon.png"
+                          }
+                          alt="Upload icon"
+                          style={{ maxWidth: "50%", borderRadius: "50px" }}
+                        />
+                      </label>
+
+                      <input
+                        id="file-input"
+                        type="file"
+                        onChange={handleImageChange}
+                        style={{ display: "none" }} // Hide the input element visually
+                      />
+                    </div>
+                  </form>
+                </Box>
+              </Box>
+            )}
+
             <Box style={{ background: "#ff6e14" }}>
               <Button
                 onClick={handleSubmit}

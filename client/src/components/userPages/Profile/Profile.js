@@ -1,5 +1,5 @@
 import "./Profile.css";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Grid,
   Card,
@@ -11,9 +11,10 @@ import {
   Divider,
   CardMedia,
   Box,
+  Chip,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
+import { Delete } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import UserModal from "../Modal.js/userModal";
 
@@ -21,6 +22,15 @@ function Profile() {
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
+
+  const [showModal, setShowModal] = useState(false);
+
+  const handlePorfpic = () => {
+    console.log("hi pro");
+    setShowModal(true);
+
+    console.log(showModal);
+  };
 
   return (
     <>
@@ -45,18 +55,20 @@ function Profile() {
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <div style={{ color: "white" }}>
-                    <Button>
-                      <Avatar
-                        src="/public/signupmain.jpeg"
-                        style={{
-                          width: 80,
-                          height: 80,
-                          marginLeft: "15px",
-                          marginTop: "1rem",
-                        }}
-                      />
-                    </Button>
+                  <div style={{ position: "relative", color: "white" }}>
+                    <Avatar
+                      src="/public/signupmain.jpeg"
+                      style={{
+                        width: 100,
+                        height: 100,
+                        marginLeft: "15px",
+                        marginTop: "1rem",
+                      }}
+                      onClick={handlePorfpic}
+                    />  
+                    <div style={{ position: "absolute", top: '90px', left: '55px',cursor:'pointer' }}>
+                      <UserModal type="profile" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -145,39 +157,34 @@ function Profile() {
                   style={{ textAlign: "left", paddingLeft: "1rem" }}
                   gutterBottom
                 >
-                  Skills
+                  Job Title
                 </Typography>
-                <EditIcon
-                  size="small"
-                  style={{ color: "#ff6e14", marginRight: "1rem" }}
-                />
+                <UserModal type="jobtitle" />
               </Box>
               <Divider style={{ marginBottom: "1rem" }} />
               <Box
                 item
                 lg={12}
-                sx={6}
+                xs={6}
+                sm={6}
                 style={{ display: "flex", justifyContent: "left" }}
                 className="skill-box"
               >
-                <Button className="skill-button">HTML</Button>
-                <Button className="skill-button">CSS</Button>
-                <Button className="skill-button">JAVASCRIPT</Button>
-                <Button className="skill-button">NODE JS</Button>
-                <Button className="skill-button">EXPRESS JS</Button>
-                <Button className="skill-button">MONGO DB</Button>
-                <Button className="skill-button">TYPESCRIPT</Button>
-                <Button className="skill-button">REACT</Button>
-                <Button
-                  style={{
-                    background: "#25916f",
-                    color: "white",
-                    marginLeft: "1rem",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  ADD SKILLS +
-                </Button>
+                {authState.jobtitles.map((jobtitle, index) => (
+                  <Chip
+                    key={index}
+                    label={jobtitle.jobtitle}
+                    // onClick={handleClick}
+                    // onDelete={handleDelete}
+                    deleteIcon="delete"
+                    sx={{
+                      background: "#FF6E14",
+                      color: "white",
+                      marginLeft: "10px",
+                      marginBottom: "10px",
+                    }}
+                  />
+                ))}
               </Box>
             </Card>
 
@@ -200,6 +207,7 @@ function Profile() {
                 >
                   Experience
                 </Typography>
+
                 <UserModal type="experience" />
               </Box>
               <Divider style={{ marginBottom: "1rem" }} />

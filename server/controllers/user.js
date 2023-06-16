@@ -4,11 +4,12 @@ const Token = require("../model/Token");
 const jwt = require("jsonwebtoken");
 const sendVerificationEmail = require("../utils/mailVerify");
 const crypto = require("crypto");
+const axios = require("axios");
 
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-   console.log(req.body)
+    console.log(req.body);
     // Check if user with the same email already exists
     const existingUser = await User.findOne({ email });
 
@@ -54,7 +55,7 @@ const signup = async (req, res) => {
     console.error(error);
     res.json({ message: "An error occurred during signup.", success: false });
   }
-}
+};
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -70,14 +71,18 @@ const login = async (req, res) => {
   if (!existingUser) {
     return res
       .status(400)
-      .json({ message: "user not registered! SignUp please!" , success:false});
+      .json({ message: "user not registered! SignUp please!", success: false });
   }
   const isPasswordCorrect = bcrypt.compareSync(password, existingUser.password);
   if (!isPasswordCorrect) {
-    return res.status(400).json({ message: "Invalid password!!" , success:false});
+    return res
+      .status(400)
+      .json({ message: "Invalid password!!", success: false });
   }
   if (!existingUser.isVerified) {
-    return res.status(400).json({ message: "Verify Your Existing account!" ,success:false});
+    return res
+      .status(400)
+      .json({ message: "Verify Your Existing account!", success: false });
   }
   if (existingUser && existingUser.isVerified) {
     // console.log("jwt start")
@@ -98,19 +103,17 @@ const login = async (req, res) => {
       user: existingUser,
       token: token,
     });
-  
   }
-}
-
+};
 
 const verifyToken = async (req, res, next) => {
-  console.log('verification started');
+  console.log("verification started");
   const token = req.headers.authorization;
-  console.log(token)
+  console.log(token);
   if (!token) {
     return res.status(404).json({ message: "No authorization header found" });
   }
-  
+
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(400).json({ message: "Invalid token found!" });
@@ -118,16 +121,15 @@ const verifyToken = async (req, res, next) => {
     req.id = user.id;
     next();
   });
-  
+
   console.log("end");
 };
 
-
 const getUser = async (req, res) => {
-  console.log('get user started!');
-  console.log(req.params._id)
+  console.log("get user started!");
+  console.log(req.params._id);
   const userId = req.params._id;
-  console.log(userId)
+  console.log(userId);
   let user;
   try {
     user = await User.findById(userId, "-password");
@@ -139,7 +141,7 @@ const getUser = async (req, res) => {
     return res.status(404).json({ message: "user not found!" });
   }
   return res.status(200).json({ user });
-}
+};
 
 // for email verification
 
@@ -149,7 +151,7 @@ const verifyEmail = async (req, res) => {
     console.log(token);
     await User.updateOne({ _id: token.userId }, { $set: { isVerified: true } });
     await Token.findByIdAndRemove(token._id);
-    res.redirect('http://localhost:3001/login');
+    res.redirect("http://localhost:3001/login");
     // res.json({ message: "email verification successfull", success: true });
   } catch (err) {
     res.status(400).send("error Occured");
@@ -158,18 +160,18 @@ const verifyEmail = async (req, res) => {
 
 const updateAbout = async (req, res) => {
   try {
-    console.log('about update')
+    console.log("about update");
     const { name, designation, place, state, country, about } = req.body;
-    console.log(name,designation,place,state,country,about)
+    console.log(name, designation, place, state, country, about);
     // Find the user by their ID
-    console.log(req.params)
-    const user = await User.findById(req.params._id); 
+    console.log(req.params);
+    const user = await User.findById(req.params._id);
     // Assuming you have authentication middleware to get the user ID from the request
-    
+
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
-    
+
     // Update the user's information
     user.name = name || user.name;
     user.designation = designation || user.designation;
@@ -177,64 +179,108 @@ const updateAbout = async (req, res) => {
     user.state = state || user.state;
     user.country = country || user.country;
     user.about = about || user.about;
-    
+
     // Save the updated user
-    await user.save()
-    
-    res.status(200).json({ message: 'User information updated successfully', user });
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "User information updated successfully", user });
   } catch (error) {
-    console.error('Error updating user information:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error updating user information:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
-
 
 const updateExperience = async (req, res) => {
   try {
+    console.log('hello')
     const {
-      'experience[0].companyName': companyName,
-      'experience[0].duration': duration,
-      'experience[0].title': title,
-      'education[0].institutionName': institutionName,
-      'education[0].qualification': qualification,
-      'education[0].aboutEdu': educationAbout
+      "experience[0].companyName": companyName,
+      "experience[0].duration": duration,
+      "experience[0].title": title,
+      "education[0].institutionName": institutionName,
+      "education[0].qualification": qualification,
+      "education[0].aboutEdu": educationAbout,
+      "jobtitles[0].jobtitle": jobtitle,
     } = req.body;
 
-
-    // Find the user by their ID
     const user = await User.findById(req.params._id);
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
-    const newExperience = {
-      companyName,
-      duration,
-      title,
-    };
-    const newEducation = {
-      institutionName,
-      qualification,
-      aboutEdu: educationAbout,
-    };
+    const newExperience = {};
+    const newEducation = {};
+    const newJobTitle = {};
 
+    if (companyName && duration && title) {
+      newExperience.companyName = companyName;
+      newExperience.duration = duration;
+      newExperience.title = title;
+    }
 
-    user.experience.push(newExperience);
-    user.education.push(newEducation);
+    if (institutionName && qualification && educationAbout) {
+      newEducation.institutionName = institutionName;
+      newEducation.qualification = qualification;
+      newEducation.aboutEdu = educationAbout;
+    }
 
+    if (jobtitle) {
+      newJobTitle.jobtitle = jobtitle;
+    }
+
+    if (Object.keys(newExperience).length > 0) {
+      user.experience.push(newExperience);
+    }
+
+    if (Object.keys(newEducation).length > 0) {
+      user.education.push(newEducation);
+    }
+
+    if (Object.keys(newJobTitle).length > 0) {
+      user.jobtitles.push(newJobTitle);
+    }
 
     await user.save();
 
-    res.status(200).json({ message: 'User experience updated successfully', user });
+    res
+      .status(200)
+      .json({ message: "User experience updated successfully", user });
   } catch (error) {
-    console.error('Error updating user experience:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error updating user experience:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
+const updateProfilepic = async (req, res) => {
+  console.log('prof pic update');
+  try {
+    console.log("1")
+    console.log(req.body)
+    console.log(req.file)
+    if (!req.file) {
+      return res.json({ error: "Image is required" });
+    }
+    console.log("2")
+    const path = req.file.path.slice(7);
+    console.log(path)
+    const filepath = `http://localhost:${process.env.PORT}/${path}`;
+    console.log(filepath)
+    
+    await User.findOneAndUpdate(
+      { _id: req.params._id },
+      { $set: { profPic: filepath } }
+    );
 
-
+    console.log("Profile picture updated");
+    res.json({ success: true, url: filepath });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
 
 exports.signup = signup;
 exports.login = login;
@@ -242,4 +288,5 @@ exports.verifyToken = verifyToken;
 exports.getUser = getUser;
 exports.verifyEmail = verifyEmail;
 exports.updateAbout = updateAbout;
-exports.updateExperience =updateExperience
+exports.updateExperience = updateExperience;
+exports.updateProfilepic = updateProfilepic;

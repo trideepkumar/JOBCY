@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
+const MAX_JOB_TITLES_COUNT = 5; 
+
 const userSchema = new Schema({
   name: {
     type: String,
@@ -17,11 +19,11 @@ const userSchema = new Schema({
     required: true,
     minlength: 6,
   },
-  backgroundimage: {
+  backgroundPic: {
     type: String,
     default: "",
   },
-  image: {
+  profPic: {
     type: String,
     default: "",
   },
@@ -41,10 +43,9 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
-  skills: {
-    type: Array,
-    default: [],
-  },
+  jobtitles: [{
+     jobtitle:String
+  }],
   experience: [
     {
       companyName: String,
@@ -77,5 +78,11 @@ const userSchema = new Schema({
     default: Date.now,
   },
 });
+
+
+userSchema.path("jobtitles").validate(function (jobtitles) {
+  return jobtitles && jobtitles.length <= MAX_JOB_TITLES_COUNT;
+}, `Job titles array can have a maximum of ${MAX_JOB_TITLES_COUNT} items.`);
+
 
 module.exports = mongoose.model("User", userSchema);
