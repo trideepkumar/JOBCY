@@ -14,8 +14,19 @@ import {
   Box,
   Typography,
 } from "@mui/material";
+import axiosInstance from "../../api/axiosinstance";
+import { setorganisationAuth } from "../../app/features/auth/organisationauthSlice";
+import { useSelector } from "react-redux";
+
+
 
 const Jobposts = () => {
+
+  const authState = useSelector((state) => {
+    return state.organisationauth.authState;
+  });
+
+
   const [jobTitle, setJobTitle] = useState("");
   const [jobType, setJobType] = useState("");
   const [qualification, setQualification] = useState("");
@@ -24,6 +35,9 @@ const Jobposts = () => {
   const [salaryMax, setSalaryMax] = useState("");
   const [hiringProcess, setHiringProcess] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+
+
+
 
   const handleJobTypeChange = (event) => {
     setJobType(event.target.value);
@@ -37,22 +51,27 @@ const Jobposts = () => {
     setHiringProcess(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
+    console.log("handlesubmit started")
     event.preventDefault();
-    console.log(
-      jobTitle,
-      jobType,
-      qualification,
-      location,
-      salaryMax,
-      salaryMin,
-      jobDescription,
-      hiringProcess
-    );
-    // Here you can perform form submission logic
-    // You can access the form data from the component's state variables
-  };
+    const formData = {
+      jobTitle:jobTitle,
+      jobType:jobType,
+      qualification:qualification,
+      location:location,
+      salaryMin:salaryMin,
+      salaryMax:salaryMax,
+      jobDescription:jobDescription,
+      hiringProcess:hiringProcess,
+    };
+    console.log(formData);
+    let endpoint=`/organisation/jobposts/${authState._id}`
+    console.log(endpoint)
+    let data = formData
+    const response = await axiosInstance.post(endpoint, data);
+    console.log(response.data)
 
+  };
   return (
     <Grid
       container

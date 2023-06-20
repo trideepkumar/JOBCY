@@ -149,9 +149,49 @@ const verifyEmail = async (req, res) => {
   }
 };
 
+const jobposts = async (req, res) => {
+  console.log("hi jobposts")
+  try {
+    const { jobTitle, jobType, qualification, location, salaryMin, salaryMax, hiringProcess, jobDescription } = req.body;
+     console.log(req.params._id)
+    // Find the organization by ID
+    const organization = await Organization.findById(req.params._id);
+
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    // Create a new job object
+    const newJob = {
+      jobTitle,
+      jobType,
+      qualification,
+      location,
+      salaryMin,
+      salaryMax,
+      hiringProcess,
+      jobDescription,
+      appliedCandidates: []
+    };
+
+    // Add the new job to the organization's jobposts array
+    organization.jobposts.push(newJob);
+
+    // Save the organization with the new job
+    await organization.save();
+
+    res.status(201).json(newJob);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
 module.exports = {
   signup,
   login,
   verifyToken,
-  verifyEmail
+  verifyEmail,
+  jobposts
 };
+

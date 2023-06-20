@@ -1,14 +1,21 @@
 const express = require("express");
-const {signup,login,verifyEmail,verifyToken} = require("../controllers/organisation");
+const {signup,login,verifyEmail,verifyToken,jobposts} = require("../controllers/organisation");
+
+
 
 const router = express.Router();
+
+
+router.get('/verify/:token', verifyEmail)
 
 
 router.post("/signup", signup);
 
 router.post("/login",login)
 
-router.get('/verify/:token', verifyEmail)
+router.post('/jobposts/:_id',jobposts)
+
+
 
 
 

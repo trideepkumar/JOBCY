@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const user = require('./user');
 
 const organizationSchema = new mongoose.Schema({
     orgName: {
@@ -39,8 +40,25 @@ const organizationSchema = new mongoose.Schema({
   isVerified:{
     type:Boolean,
     default:false
-  }
-
+  },
+  jobposts:[
+    {
+      jobTitle:String,
+      jobType:String,
+      qualification:String,
+      location:String,
+      salaryMin:Number,
+      salaryMax:Number,
+      hiringProcess:String,
+      jobDescription:String,
+      appliedCandidates:[
+        {
+          type:mongoose.Schema.Types.ObjectId,
+          ref:user
+        }
+      ],
+    }
+  ]
 });
 
 const Organization = mongoose.model('Organization', organizationSchema);

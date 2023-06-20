@@ -173,7 +173,7 @@ export default function UserModal({ type }) {
           console.error("Error updating experience:", error);
         }
       } else if (type === "profile") {
-        console.log("profile ");
+        console.log("profile");
         let endpoint = `updatepic/${authState._id}`;
         console.log(endpoint);
         const form = new FormData()
