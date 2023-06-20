@@ -10,39 +10,36 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { SvgIcon, Modal } from "@mui/material";
+import {  Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import IconButton from "@mui/material/IconButton";
 import { GoogleLogin } from "react-google-login";
 import { gapi } from "gapi-script";
 
-const GoogleIcon = (props) => (
-  <SvgIcon {...props}>{/* Google Icon SVG Paths */}</SvgIcon>
-);
 
-  const Signup = ({ signupType }) => {
 
-    const clientId =
-      "525754537141-kgphi4blqb4c6b8t10m6if5hg3ggm3ri.apps.googleusercontent.com";
-    const onSuccess = (res) => {
-      console.log("Login success! res:", res)
-      axiosInstance
-      .post('/auth/google', { token: res.tokenId })
+const Signup = ({ signupType }) => {
+  const clientId =
+    "525754537141-kgphi4blqb4c6b8t10m6if5hg3ggm3ri.apps.googleusercontent.com";
+  const onSuccess = (res) => {
+    console.log("Login success! res:", res);
+    axiosInstance
+      .post("/auth/google", { token: res.tokenId })
       .then((res) => {
-        console.log(res.data)
-        if(res.data?.success){
-          console.log("great!")
+        console.log(res.data);
+        if (res.data?.success) {
+          console.log("great!");
         }
       })
       .catch((error) => {
         // Handle any errors
         console.error(error);
-      })
-    };
-    const onFailure = (res) => {
-      console.log("Loginfailed! res:", res);
-    };
+      });
+  };
+  const onFailure = (res) => {
+    console.log("Loginfailed! res:", res);
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -86,7 +83,12 @@ const GoogleIcon = (props) => (
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    if (signupType === "user") {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    } else if (signupType === "organisation") {
+      setorganisationFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
 
     // Validate the field
     const validationErrors = validateField(name, value);
@@ -160,15 +162,17 @@ const GoogleIcon = (props) => (
           validationErrors.password = "Password must be at least 6 characters";
         }
         break;
-      case "confirmPassword":
-        if (value !== formData.password) {
-          validationErrors.confirmPassword = "Passwords do not match";
-        }
-        break;
+        case "confirmPassword":
+          if (signupType === "user" && value !== formData.password) {
+            validationErrors.confirmPassword = "Passwords do not match";
+          } else if (signupType === "organisation" && value !== organizationFormData.password) {
+            validationErrors.confirmPassword = "Passwords do not match";
+          }
+          break;
       default:
         break;
     }
-
+    
     return validationErrors;
   };
 
@@ -182,7 +186,6 @@ const GoogleIcon = (props) => (
         validationErrors[field] = fieldErrors[field];
       }
     }
-
     setErrors(validationErrors);
     return validationErrors;
   };
@@ -191,11 +194,12 @@ const GoogleIcon = (props) => (
     event.preventDefault();
     let validationErrors = {};
     if (signupType === "organisation") {
-      validationErrors = validateFormData(formData);
+      validationErrors = validateFormData(organizationFormData);
+      console.log("org");
     } else if (signupType === "user") {
       validationErrors = validateFormData(formData);
     }
-    console.log("hello");
+
     console.log(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
@@ -206,9 +210,7 @@ const GoogleIcon = (props) => (
 
         if (signupType === "organisation") {
           endpoint = "/organisation/signup";
-          data = formData;
-          console.log("hellos1");
-          console.log(formData);
+          data = organizationFormData;
         } else if (signupType === "user") {
           endpoint = "/signup";
           data = formData;
@@ -222,7 +224,7 @@ const GoogleIcon = (props) => (
 
           // Clear the form based on signupType
           if (signupType === "organisation") {
-            setFormData({
+            setorganisationFormData({
               orgName: "",
               email: "",
               category: "",
@@ -398,17 +400,17 @@ const GoogleIcon = (props) => (
                     </Typography>
 
                     {/* <div id="signInButton"  > */}
-                      <GoogleLogin
-                        clientId={clientId}
-                        buttonText="SignUp with Google"
-                        onSuccess={onSuccess}
-                        onFailure={onFailure}
-                        cookiePolicy={"single_host_origin"}
-                        isSignedIn={true}
-                        style={{width: '100%'}}
-                        sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
-                        className="custom-google-login"
-                      />
+                    <GoogleLogin
+                      clientId={clientId}
+                      buttonText="SignUp with Google"
+                      onSuccess={onSuccess}
+                      onFailure={onFailure}
+                      cookiePolicy={"single_host_origin"}
+                      isSignedIn={true}
+                      style={{ width: "100%" }}
+                      sx={{ mt: 3, mb: 1, bgcolor: "#ff6e14" }}
+                      className="custom-google-login"
+                    />
                     {/* </div> */}
                     <Grid container justifyContent="flex-end">
                       <Grid item>
@@ -422,7 +424,7 @@ const GoogleIcon = (props) => (
                             }}
                           >
                             <Typography variant="body2">
-                              <Link href="/login" >
+                              <Link href="/login">
                                 Already have an account? Sign in
                               </Link>
                             </Typography>
@@ -567,7 +569,7 @@ const GoogleIcon = (props) => (
                           label="Organization Name"
                           name="orgName"
                           autoComplete="organization-name"
-                          value={formData.orgName}
+                          value={organizationFormData.orgName}
                           onChange={handleChange}
                           error={!!errors.orgName}
                           helperText={errors.orgName}
@@ -582,7 +584,7 @@ const GoogleIcon = (props) => (
                           label="Email Address"
                           name="email"
                           autoComplete="email"
-                          value={formData.email}
+                          value={organizationFormData.email}
                           onChange={handleChange}
                           error={!!errors.email}
                           helperText={errors.email}
@@ -598,7 +600,7 @@ const GoogleIcon = (props) => (
                           type="password"
                           id="password"
                           autoComplete="new-password"
-                          value={formData.password}
+                          value={organizationFormData.password}
                           onChange={handleChange}
                           error={!!errors.password}
                           helperText={errors.password}
@@ -614,7 +616,7 @@ const GoogleIcon = (props) => (
                           type="password"
                           id="confirmPassword"
                           autoComplete="new-password"
-                          value={formData.confirmPassword}
+                          value={organizationFormData.confirmPassword}
                           onChange={handleChange}
                           error={!!errors.confirmPassword}
                           helperText={errors.confirmPassword}
@@ -631,7 +633,7 @@ const GoogleIcon = (props) => (
                           label="Category"
                           name="category"
                           autoComplete="category"
-                          value={formData.category}
+                          value={organizationFormData.category}
                           onChange={handleChange}
                           error={!!errors.category}
                           helperText={errors.category}
@@ -646,7 +648,7 @@ const GoogleIcon = (props) => (
                           label="Place"
                           name="place"
                           autoComplete="place"
-                          value={formData.place}
+                          value={organizationFormData.place}
                           onChange={handleChange}
                           error={!!errors.place}
                           helperText={errors.place}
@@ -661,7 +663,7 @@ const GoogleIcon = (props) => (
                           label="Registration Number"
                           name="registrationNumber"
                           autoComplete="registration-number"
-                          value={formData.registrationNumber}
+                          value={organizationFormData.registrationNumber}
                           onChange={handleChange}
                           error={!!errors.registrationNumber}
                           helperText={errors.registrationNumber}
@@ -677,7 +679,7 @@ const GoogleIcon = (props) => (
                           label="Number of Employees"
                           name="numberOfEmployees"
                           autoComplete="number-of-employees"
-                          value={formData.numberOfEmployees}
+                          value={organizationFormData.numberOfEmployees}
                           onChange={handleChange}
                           error={!!errors.numberOfEmployees}
                           helperText={errors.numberOfEmployees}
@@ -692,28 +694,11 @@ const GoogleIcon = (props) => (
                           color="primary"
                           checked={isCheckboxChecked}
                           onChange={handleCheckboxChange}
-                          disabled={
-                            !!errors.orgName ||
-                            !!errors.email ||
-                            !!errors.password ||
-                            !!errors.confirmPassword ||
-                            !!errors.category ||
-                            !!errors.place ||
-                            !!errors.registrationNumber ||
-                            !!errors.numberOfEmployees ||
-                            !formData.orgName ||
-                            !formData.email ||
-                            !formData.password ||
-                            !formData.confirmPassword ||
-                            !formData.category ||
-                            !formData.place ||
-                            !formData.registrationNumber ||
-                            !formData.numberOfEmployees
-                          }
                         />
                       }
                       label="I agree to the terms and conditions"
                     />
+
 
                     {respons && !respons?.data?.success && (
                       <Typography
@@ -736,21 +721,6 @@ const GoogleIcon = (props) => (
                       disabled={!isCheckboxChecked}
                     >
                       Sign Up
-                    </Button>
-                    <Typography sx={{ my: 1, textAlign: "center" }}>
-                      OR
-                    </Typography>
-
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="contained"
-                      sx={{ mt: 1, mb: 2, bgcolor: "#ff6e14" }}
-                    >
-                      <GoogleIcon
-                        sx={{ marginRight: "0.5em", color: "blue" }}
-                      />
-                      Sign Up with Google
                     </Button>
                     <Grid container justifyContent="flex-end">
                       <Grid item>

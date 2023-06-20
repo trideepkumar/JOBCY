@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -427,6 +427,7 @@ export default function UserModal({ type }) {
                       <input
                         id="file-input"
                         type="file"
+                        accept="image/*"
                         onChange={handleImageChange}
                         style={{ display: "none" }} // Hide the input element visually
                       />
@@ -448,6 +449,8 @@ export default function UserModal({ type }) {
                 Submit
               </Button>
             </Box>
+
+            
           </Box>
         </Fade>
       </Modal>

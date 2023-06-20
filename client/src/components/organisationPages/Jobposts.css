@@ -1,0 +1,14 @@
+.main{
+    padding: 10%;
+}
+.mainbox{
+    border: 2px #ff6e14 solid !important;
+    border-radius: 6px ;
+     padding: 5% 5% 5% 5%;
+}
+
+.btn:hover{
+    background-color: aliceblue !important;
+    color: #ff6e14;
+    border: 0.8px solid grey;
+}

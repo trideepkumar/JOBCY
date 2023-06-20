@@ -11,6 +11,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/features/auth/authSlice";
+import { setorganisationAuth } from "../app/features/auth/organisationauthSlice";
 
 const Login = ({ loginType }) => {
   const [formData, setFormData] = useState({
@@ -58,6 +59,8 @@ const Login = ({ loginType }) => {
     const isFormValid = Object.keys(validationErrors).length === 0;
     setIsFormValid(isFormValid);
   };
+
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
   
@@ -79,11 +82,22 @@ const Login = ({ loginType }) => {
         const response = await axiosInstance.post(loginEndpoint, formData);
   
         if (response.data?.success) {
-          localStorage.setItem("token", response.data.token);
-          console.log(response.data.token)
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-          dispatch(setAuth());
-          navigate(redirectRoute) 
+          // localStorage.setItem("token", response.data.token);
+          // console.log(response.data.token)
+          if(loginType==='user'){
+            console.log(response.data.user)
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            dispatch(setAuth());
+            navigate(redirectRoute) 
+          }else if ( loginType === 'organisation'){
+            console.log("org data")
+            console.log(response.data.organisation)
+            localStorage.setItem("organisation", JSON.stringify(response.data.organisation));
+            dispatch(setorganisationAuth());
+            navigate(redirectRoute) 
+          }
+          
+          
         } else {
           setResponse(response?.data?.message);
           setErrors({ message: response?.data?.message });

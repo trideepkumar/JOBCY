@@ -1,5 +1,5 @@
 import "./Profile.css";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Grid,
   Card,
@@ -14,8 +14,8 @@ import {
   Chip,
 } from "@mui/material";
 import { useState } from "react";
-import { Delete } from "@mui/icons-material";
 import { useSelector } from "react-redux";
+import PersonIcon from "@mui/icons-material/Person";
 import UserModal from "../Modal.js/userModal";
 
 function Profile() {
@@ -24,12 +24,20 @@ function Profile() {
   });
 
   const [showModal, setShowModal] = useState(false);
+  const [showbackgroundImage, setshowbackgroundImage] = useState(false);
 
   const handlePorfpic = () => {
     console.log("hi pro");
     setShowModal(true);
 
     console.log(showModal);
+  };
+
+  const handleBackgroundChange = () => {
+    console.log("hi back");
+    setshowbackgroundImage(true);
+    setShowModal(true);
+    console.log(showbackgroundImage);
   };
 
   return (
@@ -43,21 +51,24 @@ function Profile() {
               style={{ marginTop: "5rem", marginLeft: "3rem" }}
             >
               <div
+                onClick={handleBackgroundChange}
                 style={{
                   paddingTop: "20px",
-                  backgroundImage: `url(${process.env.PUBLIC_URL}/backgroundllinkedin.jpg)`,
-                  backgroundSize: "cover",
+                  backgroundImage: `url(${
+                    authState.backgroundImage || process.env.PUBLIC_URL
+                  }/jobcyback.jpeg)`,
+                  backgroundSize: "contain",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "0 20px",
-                  height: "35%",
+                  padding: "0 15px",
+                  height: "45%",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <div style={{ position: "relative", color: "white" }}>
                     <Avatar
-                      src="/public/signupmain.jpeg"
+                      src={authState.profPic}
                       style={{
                         width: 100,
                         height: 100,
@@ -65,8 +76,17 @@ function Profile() {
                         marginTop: "1rem",
                       }}
                       onClick={handlePorfpic}
-                    />  
-                    <div style={{ position: "absolute", top: '90px', left: '55px',cursor:'pointer' }}>
+                    >
+                      {!authState.profPic && <PersonIcon />}
+                    </Avatar>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "90px",
+                        left: "55px",
+                        cursor: "pointer",
+                      }}
+                    >
                       <UserModal type="profile" />
                     </div>
                   </div>
@@ -102,9 +122,16 @@ function Profile() {
                           gutterBottom
                           variant="body2"
                           component="div"
-                          style={{ display: "flex", justifyContent: "left" }}
+                          style={{
+                            display: "flex",
+                            justifyContent: "left",
+                            textAlign: "left",
+                          }}
                         >
-                          {authState.place},{authState.state},
+                          {authState.place}
+                          <br />
+                          {authState.state}
+                          <br />
                           {authState.country}
                         </Typography>
                       </Box>

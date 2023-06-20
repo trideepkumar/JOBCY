@@ -72,31 +72,31 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  let existingUser;
+  let existingOrganisation;
 
   try {
     console.log("loginworks");
-    existingUser = await Organization.findOne({ email: email });
-    console.log(existingUser);
+    existingOrganisation = await Organization.findOne({ email: email });
+    console.log(existingOrganisation);
   } catch (err) {
     console.log(err);
   }
-  if (!existingUser) {
+  if (!existingOrganisation) {
     return res
       .status(400)
       .json({ message: "user not registered! SignUp please!" , success:false});
   }
-  const isPasswordCorrect = bcrypt.compareSync(password, existingUser.password);
+  const isPasswordCorrect = bcrypt.compareSync(password, existingOrganisation.password);
   if (!isPasswordCorrect) {
     return res.status(400).json({ message: "Invalid password!!" , success:false});
   }
-  if (!existingUser.isVerified) {
+  if (!existingOrganisation.isVerified) {
     return res.status(400).json({ message: "Verify Your Existing account!" ,success:false});
   }
-  if (existingUser && existingUser.isVerified) {
+  if (existingOrganisation && existingOrganisation.isVerified) {
     // console.log("jwt start")
     const token = jwt.sign(
-      { id: existingUser._id },
+      { id: existingOrganisation._id },
       process.env.JWT_SECRET_KEY,
       {
         expiresIn: "1d",
@@ -109,7 +109,7 @@ const login = async (req, res) => {
     };
     res.status(200).cookie("token", token, options).json({
       success: true,
-      user: existingUser,
+      organisation: existingOrganisation,
       token: token,
     });
   
