@@ -82,8 +82,8 @@ const Login = ({ loginType }) => {
         const response = await axiosInstance.post(loginEndpoint, formData);
   
         if (response.data?.success) {
-          // localStorage.setItem("token", response.data.token);
-          // console.log(response.data.token)
+          localStorage.setItem("token", response.data.token);
+          console.log(response.data.token)
           if(loginType==='user'){
             console.log(response.data.user)
             localStorage.setItem("user", JSON.stringify(response.data.user));

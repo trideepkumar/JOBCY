@@ -12,12 +12,18 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Jobs.css";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSelector } from "react-redux";
+import axiosInstance from "../../api/axiosinstance";
+import Placeholder from "./placeholders/Placeholder";
+import CloseIcon from "@mui/icons-material/Close";
 
 function Jobs() {
   const authState = useSelector((state) => {
@@ -25,6 +31,49 @@ function Jobs() {
   });
 
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [filteredJobposts, setFilteredJobposts] = useState(authState.jobposts);
+  const [showEmptySearchError, setShowEmptySearchError] = useState(false);
+
+  const handleSubmit = async () => {
+    if (searchKeyword.trim() === "") {
+      setShowEmptySearchError(true);
+      return;
+    } else {
+      let token = localStorage.getItem("token");
+      let endpoint = `/organisation/jobs/search?title=${searchKeyword}`;
+      const response = await axiosInstance.post(
+        endpoint,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        console.log(response.data.jobs);
+        setFilteredJobposts(response.data.jobs);
+      }
+    }
+  };
+
+  const handleCloseEmptySearchError = () => {
+    setShowEmptySearchError(false);
+  };
+
+  useEffect(() => {
+    if (showEmptySearchError) {
+      const timer = setTimeout(() => {
+        handleCloseEmptySearchError();
+      }, 1000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [showEmptySearchError]);
 
   return (
     <>
@@ -39,7 +88,6 @@ function Jobs() {
               marginTop: "3.4rem",
               width: "20rem",
               border: "0.01px solid lightgrey",
-              position: "sticky",
               top: "2rem",
               position: "fixed",
             }}
@@ -50,7 +98,13 @@ function Jobs() {
                 Search
               </Typography>
               <Divider sx={{ my: 2 }} />
-              <TextField label="Search input" variant="outlined" fullWidth />
+              <TextField
+                label="Search input"
+                variant="outlined"
+                fullWidth
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+              />
               <Button
                 fullWidth
                 style={{
@@ -58,6 +112,7 @@ function Jobs() {
                   color: "white",
                   marginTop: "1rem",
                 }}
+                onClick={handleSubmit}
               >
                 Search
               </Button>
@@ -73,7 +128,6 @@ function Jobs() {
               marginTop: "17rem",
               width: "20rem",
               border: "0.01px solid lightgrey",
-              position: "sticky",
               top: "2rem",
               position: "fixed",
               textAlign: "left",
@@ -197,6 +251,43 @@ function Jobs() {
               </FormControl>
             </Box>
           </Card>
+
+          {/* for dialouge */}
+          <Dialog
+            open={showEmptySearchError}
+            onClose={handleCloseEmptySearchError}
+            PaperProps={{
+              style: {
+                position: "absolute",
+                right: "1rem",
+                bottom: "1rem",
+                minWidth: "200px",
+                color:'#ff6e14',
+                border:'0.05px solid #ff6e14'
+              },
+            }}
+          >
+            <DialogTitle>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <DialogContent>
+              <Typography variant="body1">
+                 enter a search keyword.
+              </Typography>
+            </DialogContent>
+                <IconButton
+                  aria-label="close"
+                  onClick={handleCloseEmptySearchError}
+                  style={{color:'#ff6e14'}}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+            </DialogTitle>
+          </Dialog>
         </Grid>
 
         {/* left */}
@@ -217,65 +308,74 @@ function Jobs() {
           }}
           className="card"
         >
-          <div
-           className="scroll"
-          >
-            {authState.jobposts.map((jobpost, index) => (
-              <Card
-                key={index}
-                className="main"
-                style={{ marginBottom: "1rem" }}
-              >
-                <Box display="flex" alignItems="center">
-                  <div
-                    style={{
-                      display: "flex",
-                      textAlign: "left",
-                      paddingTop: "0px",
-                      marginRight: "10px",
-                    }}
-                  >
-                    <Avatar
-                      src="/public/signupmain.jpeg"
-                      style={{ width: 80, height: 80 }}
-                    />
-                  </div>
-                  <Box flexGrow={1}>
-                    <Typography variant="h5" textAlign="left" color="#0d65c2">
-                      {jobpost.jobTitle}
-                    </Typography>
-                    <Typography textAlign="left" variant="body1">
-                      {authState.orgName}
-                    </Typography>
-                    <Typography textAlign="left" variant="body2" color="grey">
-                      {jobpost.location}, {jobpost.hiringProcess},{" "}
-                      {jobpost.jobType}
-                    </Typography>
-                    <Typography textAlign="left" variant="body2" color="grey">
-                      Qualifications: {jobpost.qualification}
-                    </Typography>
-                    <Typography textAlign="left" variant="body2" color="grey">
-                      Salary: {jobpost.salaryMin} - {jobpost.salaryMax}
-                    </Typography>
-                    <Typography textAlign="left" variant="body2" color="grey">
-                      Created at: {jobpost.createdAt}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{ display: "flex", gap: "10px", paddingLeft: "50px" }}
-                  >
-                    <IconButton style={{ color: "#ff6e14" }}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      style={{ backgroundColor: "white", color: "red" }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
+          <div className="scroll">
+            {filteredJobposts.length === 0 ? (
+              <Card className="main" style={{ marginBottom: "1rem" }}>
+                <Box sx={{ p: 2 }}>
+                  <Placeholder />
+                  <Typography variant="body1" style={{ color: "grey" }}>
+                    No job posts available.
+                  </Typography>
                 </Box>
               </Card>
-            ))}
+            ) : (
+              filteredJobposts.map((jobpost, index) => (
+                <Card
+                  key={index}
+                  className="main"
+                  style={{ marginBottom: "1rem" }}
+                >
+                  <Box display="flex" alignItems="center">
+                    <div
+                      style={{
+                        display: "flex",
+                        textAlign: "left",
+                        paddingTop: "0px",
+                        marginRight: "10px",
+                      }}
+                    >
+                      <Avatar
+                        src="/public/signupmain.jpeg"
+                        style={{ width: 80, height: 80 }}
+                      />
+                    </div>
+                    <Box flexGrow={1}>
+                      <Typography variant="h5" textAlign="left" color="#0d65c2">
+                        {jobpost.jobTitle}
+                      </Typography>
+                      <Typography textAlign="left" variant="body1">
+                        {authState.orgName}
+                      </Typography>
+                      <Typography textAlign="left" variant="body2" color="grey">
+                        {jobpost.location}, {jobpost.hiringProcess},{" "}
+                        {jobpost.jobType}
+                      </Typography>
+                      <Typography textAlign="left" variant="body2" color="grey">
+                        Qualifications: {jobpost.qualification}
+                      </Typography>
+                      <Typography textAlign="left" variant="body2" color="grey">
+                        Salary: {jobpost.salaryMin} - {jobpost.salaryMax}
+                      </Typography>
+                      <Typography textAlign="left" variant="body2" color="grey">
+                        Created at: {jobpost.createdAt}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{ display: "flex", gap: "10px", paddingLeft: "50px" }}
+                    >
+                      <IconButton style={{ color: "#ff6e14" }}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        style={{ backgroundColor: "white", color: "red" }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Card>
+              ))
+            )}
           </div>
         </Card>
       </Grid>

@@ -118,7 +118,7 @@ const login = async (req, res) => {
 
 const verifyToken = async (req, res, next) => {
   console.log('verification started');
-  const token = req.headers.authorization;
+  const token = req.headers.authorization.split(" ")[1] ;
   console.log(token)
   if (!token) {
     return res.status(404).json({ message: "No authorization header found" });
@@ -126,13 +126,14 @@ const verifyToken = async (req, res, next) => {
   
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
+      console.log("error")
       return res.status(400).json({ message: "Invalid token found!" });
     }
     req.id = user.id;
+    console.log(req.id)
     next();
   });
-  
-  console.log("end");
+  console.log("end")
 };
 
 
@@ -182,9 +183,10 @@ const jobposts = async (req, res) => {
   }
 };
 
-const jobsearch = async (req, res) => {
-
+const jobsearch = async(req, res) => {
+  console.log("jobSearch started")
   const { title } = req.query;
+
   try {
     const organisation = await Organization.find({_id: req.id});
     const jobs = organisation[0].jobposts.filter(item => item.jobTitle === title)    
