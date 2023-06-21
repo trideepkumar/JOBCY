@@ -1,0 +1,36 @@
+.jobcard {
+  background: grey;
+  height: 100vh;
+  width: 80%;
+}
+
+.left-card {
+  margin-top: 50px;
+}
+
+.main {
+  border: 0.5px solid white;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 50px;
+  padding: 10px 10px 10px 10px !important;
+  width: 60vw;
+}
+
+.card{
+    box-shadow: 5px 10px 10px 10px whitesmoke !important;
+    margin-bottom:0px !important ;
+}
+
+
+
+@media (max-width: 600px) {
+  .left-card {
+    display: none;
+  }
+  .main {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 10px;
+  }
+}

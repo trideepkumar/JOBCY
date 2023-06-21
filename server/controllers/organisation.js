@@ -154,7 +154,6 @@ const jobposts = async (req, res) => {
   try {
     const { jobTitle, jobType, qualification, location, salaryMin, salaryMax, hiringProcess, jobDescription } = req.body;
      console.log(req.params._id)
-    // Find the organization by ID
     const organization = await Organization.findById(req.params._id);
 
     if (!organization) {
@@ -174,17 +173,27 @@ const jobposts = async (req, res) => {
       appliedCandidates: []
     };
 
-    // Add the new job to the organization's jobposts array
     organization.jobposts.push(newJob);
-
-    // Save the organization with the new job
     await organization.save();
 
-    res.status(201).json(newJob);
+    res.status(200).json({organization:organization,newJob:newJob,success:true});
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
+const jobsearch = async (req, res) => {
+
+  const { title } = req.query;
+  try {
+    const organisation = await Organization.find({_id: req.id});
+    const jobs = organisation[0].jobposts.filter(item => item.jobTitle === title)    
+
+    res.json({jobs:jobs,success:true});
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred during the search.' });
+  }
+}
 
 
 module.exports = {
@@ -192,6 +201,7 @@ module.exports = {
   login,
   verifyToken,
   verifyEmail,
-  jobposts
+  jobposts,
+  jobsearch
 };
 

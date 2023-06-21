@@ -1,5 +1,5 @@
 const express = require("express");
-const {signup,login,verifyEmail,verifyToken,jobposts} = require("../controllers/organisation");
+const {signup,login,verifyEmail,verifyToken,jobposts ,jobsearch} = require("../controllers/organisation");
 
 
 
@@ -15,6 +15,9 @@ router.post("/login",login)
 
 router.post('/jobposts/:_id',jobposts)
 
+//search router for job title search
+
+router.post('/jobs/search' , verifyToken ,jobsearch)
 
 
 

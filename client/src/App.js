@@ -10,6 +10,7 @@ import Posts from './components/userPages/Posts/Posts';
 import Profile from './components/userPages/Profile/Profile';
 import Home from './components/organisationPages/home';
 import Jobposts from './components/organisationPages/Jobposts';
+import Jobs from './components/organisationPages/Jobs';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route element={<OrgProtectedRoutes/>} >
           <Route path="/organisation/dashboard" element={<Home/>} />
           <Route path="/organisation/jobposts"  element={<Jobposts/>} />
+          <Route path='/organisation/jobs' element={<Jobs/>}/>
           </Route>
 
           </Routes>

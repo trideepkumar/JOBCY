@@ -16,16 +16,12 @@ import {
 } from "@mui/material";
 import axiosInstance from "../../api/axiosinstance";
 import { setorganisationAuth } from "../../app/features/auth/organisationauthSlice";
-import { useSelector } from "react-redux";
-
-
+import { useDispatch, useSelector } from "react-redux";
 
 const Jobposts = () => {
-
   const authState = useSelector((state) => {
     return state.organisationauth.authState;
   });
-
 
   const [jobTitle, setJobTitle] = useState("");
   const [jobType, setJobType] = useState("");
@@ -35,9 +31,7 @@ const Jobposts = () => {
   const [salaryMax, setSalaryMax] = useState("");
   const [hiringProcess, setHiringProcess] = useState("");
   const [jobDescription, setJobDescription] = useState("");
-
-
-
+  const dispatch = useDispatch();
 
   const handleJobTypeChange = (event) => {
     setJobType(event.target.value);
@@ -51,27 +45,45 @@ const Jobposts = () => {
     setHiringProcess(event.target.value);
   };
 
-  const handleSubmit = async(event) => {
-    console.log("handlesubmit started")
+  const handleSubmit = async (event) => {
+    console.log("handleSubmit started");
     event.preventDefault();
     const formData = {
-      jobTitle:jobTitle,
-      jobType:jobType,
-      qualification:qualification,
-      location:location,
-      salaryMin:salaryMin,
-      salaryMax:salaryMax,
-      jobDescription:jobDescription,
-      hiringProcess:hiringProcess,
+      jobTitle: jobTitle,
+      jobType: jobType,
+      qualification: qualification,
+      location: location,
+      salaryMin: salaryMin,
+      salaryMax: salaryMax,
+      jobDescription: jobDescription,
+      hiringProcess: hiringProcess,
     };
     console.log(formData);
-    let endpoint=`/organisation/jobposts/${authState._id}`
-    console.log(endpoint)
-    let data = formData
+    let endpoint = `/organisation/jobposts/${authState._id}`;
+    console.log(endpoint);
+    let data = formData;
     const response = await axiosInstance.post(endpoint, data);
-    console.log(response.data)
-
+    console.log(response.data);
+    if (response.data.success) {
+      setJobTitle("");
+      setJobType("");
+      setQualification("");
+      setLocation("");
+      setSalaryMin("");
+      setSalaryMax("");
+      setJobDescription("");
+      setHiringProcess("");
+      console.log(response.data.organization)
+      if (response.data.organization) {
+        localStorage.setItem(
+          "organisation",
+          JSON.stringify(response.data.organization)
+        );
+      }
+      dispatch(setorganisationAuth());
+    }
   };
+
   return (
     <Grid
       container
@@ -223,9 +235,7 @@ const Jobposts = () => {
                         value="walk-in"
                         sx={{
                           color:
-                            hiringProcess === "walk-in"
-                              ? "#ff6e14"
-                              : "inherit",
+                            hiringProcess === "walk-in" ? "#ff6e14" : "inherit",
                           "&.Mui-checked": {
                             color: "#ff6e14",
                           },
