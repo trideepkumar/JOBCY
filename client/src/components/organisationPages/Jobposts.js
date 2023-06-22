@@ -49,6 +49,7 @@ const Jobposts = () => {
     console.log("handleSubmit started");
     event.preventDefault();
     const formData = {
+      orgName:authState.orgName,
       jobTitle: jobTitle,
       jobType: jobType,
       qualification: qualification,

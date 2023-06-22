@@ -4,6 +4,7 @@ const Organization = require("../model/organisation");
 const Token = require("../model/Token");
 const sendVerificationEmail = require("../utils/mailVerify");
 const jwt = require("jsonwebtoken");
+const Jobs = require('../model/jobs')
 
 
 const signup = async (req, res) => {
@@ -151,18 +152,21 @@ const verifyEmail = async (req, res) => {
 };
 
 const jobposts = async (req, res) => {
-  console.log("hi jobposts")
+  console.log("hi jobpostsss");
   try {
-    const { jobTitle, jobType, qualification, location, salaryMin, salaryMax, hiringProcess, jobDescription } = req.body;
-     console.log(req.params._id)
+    const { orgName, jobTitle, jobType, qualification, location, salaryMin, salaryMax, hiringProcess, jobDescription } = req.body;
+    console.log(req.params._id);
     const organization = await Organization.findById(req.params._id);
 
     if (!organization) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
-    // Create a new job object
-    const newJob = {
+    console.log(organization._id)
+
+    // Create a new job document
+    const newJob = new Jobs({
+      orgName,
       jobTitle,
       jobType,
       qualification,
@@ -171,17 +175,19 @@ const jobposts = async (req, res) => {
       salaryMax,
       hiringProcess,
       jobDescription,
-      appliedCandidates: []
-    };
+      appliedCandidates: [],
+      organization: organization._id
+    });
 
-    organization.jobposts.push(newJob);
-    await organization.save();
 
-    res.status(200).json({organization:organization,newJob:newJob,success:true});
+    await newJob.save();
+
+    res.status(200).json({ organization: organization, newJob: newJob, success: true });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 const jobsearch = async(req, res) => {
   console.log("jobSearch started")

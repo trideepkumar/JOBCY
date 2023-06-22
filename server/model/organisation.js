@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const user = require('./user');
+const mongoose = require("mongoose");
+const user = require("./user");
 
 const organizationSchema = new mongoose.Schema({
-    orgName: {
+  orgName: {
     type: String,
     required: true,
     trim: true,
@@ -28,40 +28,44 @@ const organizationSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  password:{
-    type:String,
-    required:true,
-    minlength: 6
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
   },
   numberOfEmployees: {
     type: Number,
     required: true,
   },
-  isVerified:{
-    type:Boolean,
-    default:false
+  isVerified: {
+    type: Boolean,
+    default: false,
   },
-  jobposts:[
+  jobposts: [
     {
-      jobTitle:String,
-      jobType:String,
-      qualification:String,
-      location:String,
-      salaryMin:Number,
-      salaryMax:Number,
-      hiringProcess:String,
-      jobDescription:String,
-      appliedCandidates:[
+      orgName: String,
+      jobTitle: String,
+      jobType: String,
+      qualification: String,
+      location: String,
+      salaryMin: Number,
+      salaryMax: Number,
+      hiringProcess: String,
+      jobDescription: String,
+      appliedCandidates: [
         {
-          type:mongoose.Schema.Types.ObjectId,
-          ref:user
-        }
+          type: mongoose.Schema.Types.ObjectId,
+          ref: user,
+        },
       ],
-      
-    }
-  ]
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
-const Organization = mongoose.model('Organization', organizationSchema);
+const Organization = mongoose.model("Organization", organizationSchema);
 
 module.exports = Organization;

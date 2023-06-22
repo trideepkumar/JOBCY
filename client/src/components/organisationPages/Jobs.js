@@ -78,6 +78,7 @@ function Jobs() {
   return (
     <>
       <Grid container spacing={0.5}>
+        {/* left */}
         <Grid item lg={3} style={{ display: "grid" }}>
           <Card
             style={{
@@ -262,8 +263,8 @@ function Jobs() {
                 right: "1rem",
                 bottom: "1rem",
                 minWidth: "200px",
-                color:'#ff6e14',
-                border:'0.05px solid #ff6e14'
+                color: "#ff6e14",
+                border: "0.05px solid #ff6e14",
               },
             }}
           >
@@ -274,14 +275,14 @@ function Jobs() {
                 justifyContent="space-between"
               >
                 <DialogContent>
-              <Typography variant="body1">
-                 enter a search keyword.
-              </Typography>
-            </DialogContent>
+                  <Typography variant="body1">
+                    enter a search keyword.
+                  </Typography>
+                </DialogContent>
                 <IconButton
                   aria-label="close"
                   onClick={handleCloseEmptySearchError}
-                  style={{color:'#ff6e14'}}
+                  style={{ color: "#ff6e14" }}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -290,7 +291,7 @@ function Jobs() {
           </Dialog>
         </Grid>
 
-        {/* left */}
+        {/* right */}
         <Card
           item
           xs={8}

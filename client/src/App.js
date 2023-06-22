@@ -11,6 +11,7 @@ import Profile from './components/userPages/Profile/Profile';
 import Home from './components/organisationPages/home';
 import Jobposts from './components/organisationPages/Jobposts';
 import Jobs from './components/organisationPages/Jobs';
+import Userjob from './components/userPages/Userjob/Userjob';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route  element={<ProtectedRoutes></ProtectedRoutes>}>
           <Route path="/posts" element={<Posts />} />
           <Route path="/profile" element={<Profile/>} />
+          <Route path='/jobs' element={<Userjob/>} />
           </Route>
 
           <Route element={<OrgPublicRoutes></OrgPublicRoutes>}>

@@ -432,6 +432,7 @@ export default function UserModal({ type }) {
                         style={{ display: "none" }} // Hide the input element visually
                       />
                     </div>
+                    
                   </form>
                 </Box>
               </Box>

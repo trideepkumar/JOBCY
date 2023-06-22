@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const sendVerificationEmail = require("../utils/mailVerify");
 const crypto = require("crypto");
 const axios = require("axios");
+const Organizations = require('../model/organisation')
+const Jobs = require('../model/jobs')
 
 const signup = async (req, res) => {
   try {
@@ -282,6 +284,19 @@ const updateProfilepic = async (req, res) => {
   }
 };
 
+const getJobs = async (req, res) => {
+  try {
+    const jobs = await Jobs.find();
+
+    res.status(200).json({ jobs: jobs, success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred', success: false });
+  }
+};
+
+ 
+
+
 exports.signup = signup;
 exports.login = login;
 exports.verifyToken = verifyToken;
@@ -290,3 +305,4 @@ exports.verifyEmail = verifyEmail;
 exports.updateAbout = updateAbout;
 exports.updateExperience = updateExperience;
 exports.updateProfilepic = updateProfilepic;
+exports.getJobs = getJobs
