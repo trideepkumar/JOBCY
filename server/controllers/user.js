@@ -4,9 +4,15 @@ const Token = require("../model/Token");
 const jwt = require("jsonwebtoken");
 const sendVerificationEmail = require("../utils/mailVerify");
 const crypto = require("crypto");
-const axios = require("axios");
-const Organizations = require('../model/organisation')
-const Jobs = require('../model/jobs')
+const Organizations = require("../model/organisation");
+const Jobs = require("../model/jobs");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dbnrosh3i",
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const signup = async (req, res) => {
   try {
@@ -196,7 +202,7 @@ const updateAbout = async (req, res) => {
 
 const updateExperience = async (req, res) => {
   try {
-    console.log('hello')
+    console.log("hello");
     const {
       "experience[0].companyName": companyName,
       "experience[0].duration": duration,
@@ -257,20 +263,20 @@ const updateExperience = async (req, res) => {
 };
 
 const updateProfilepic = async (req, res) => {
-  console.log('prof pic update');
+  console.log("prof pic update");
   try {
-    console.log("1")
-    console.log(req.body)
-    console.log(req.file)
+    console.log("1");
+    console.log(req.body);
+    console.log(req.file);
     if (!req.file) {
       return res.json({ error: "Image is required" });
     }
-    console.log("2")
+    console.log("2");
     const path = req.file.path.slice(7);
-    console.log(path)
+    console.log(path);
     const filepath = `http://localhost:${process.env.PORT}/${path}`;
-    console.log(filepath)
-    
+    console.log(filepath);
+
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { profPic: filepath } }
@@ -290,11 +296,81 @@ const getJobs = async (req, res) => {
 
     res.status(200).json({ jobs: jobs, success: true });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred', success: false });
+    res.status(500).json({ error: "An error occurred", success: false });
   }
 };
 
- 
+const updateResume = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.json({ error: "Resume file is required" });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    const filepath = result.secure_url;
+
+    await User.findOneAndUpdate(
+      { _id: req.params._id },
+      { $set: { resume: filepath } }
+    );
+
+    console.log("Resume updated");
+    res.json({ success: true, url: filepath });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "An error occurred", success: false });
+  }
+};
+
+const fetchResume = async (req, res) => {
+  try {
+    const userId = req.params._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const resumeData = user.resume;
+
+    res.json(resumeData);
+  } catch (error) {
+    console.error("Error fetching resume data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const applyJob = async (req, res) => {
+  try {
+    console.log("applyjob");
+    console.log(req.body);
+    const { jobId, userId } = req.body;
+    console.log(jobId);
+    console.log(userId);
+
+    const job = await Jobs.findById(jobId);
+    // console.log(job);
+
+    if (!job) {
+      return res.status(404).json({ error: "Job not found",success:false });
+    }
+
+    if (job.appliedCandidates.includes(userId)) {
+      return res.status(400).json({ error: "User already applied for this job" ,success:false });
+    }
+
+    job.appliedCandidates.push(userId);
+    await job.save();
+
+    res.json({ message: "Job applied successfully" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 
 exports.signup = signup;
@@ -305,4 +381,7 @@ exports.verifyEmail = verifyEmail;
 exports.updateAbout = updateAbout;
 exports.updateExperience = updateExperience;
 exports.updateProfilepic = updateProfilepic;
-exports.getJobs = getJobs
+exports.getJobs = getJobs;
+exports.updateResume = updateResume;
+exports.fetchResume = fetchResume;
+exports.applyJob = applyJob;

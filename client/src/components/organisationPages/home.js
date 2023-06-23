@@ -2,7 +2,7 @@ import React from 'react'
 
 function home() {
   return (
-    <div>hello organisation dash</div>
+    <div>hello organisation dashboard</div>
   )
 }
 

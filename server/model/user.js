@@ -73,6 +73,10 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
+  resume:{
+    type: String,
+    default: "",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

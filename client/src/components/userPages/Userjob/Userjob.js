@@ -14,10 +14,42 @@ import {
 import { Send } from "@mui/icons-material";
 import axiosInstance from "../../../api/axiosinstance";
 import "./Userjob.css";
+import { useSelector } from "react-redux";
+import Toast from "../Toasts/Toasts";
 
 function Userjob() {
+  const authState = useSelector((state) => {
+    return state.auth.authState;
+  });
+
+
+
   const [jobPosts, setJobPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [Toasts, setToasts] = useState(false);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
+  const handleApply = async (jobId) => {
+    console.log("job applied", jobId);
+    const userId = authState._id;
+    console.log(userId);
+    const endpoint = `/applyjob/${jobId}`;
+    console.log(endpoint);
+
+    try {
+      const response = await axiosInstance.post(endpoint, {
+        userId: userId,
+        jobId: jobId,
+      });
+      console.log(response);
+      if (response.data.success) {
+        console.log("done");
+        setToasts(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,8 +57,16 @@ function Userjob() {
         const response = await axiosInstance.get("/jobs");
         const jobs = response.data.jobs || [];
         console.log(jobs);
+         console.log(`${authState._id}`)
+         const hasApplied = jobs
+         .flatMap((job) => job.appliedCandidates)
+         .includes(String(authState._id));
+       
+       
+        console.log(hasApplied);
 
         setJobPosts(jobs);
+        setAppliedJobs(hasApplied);
       } catch (error) {
         console.error(error);
       }
@@ -81,10 +121,11 @@ function Userjob() {
           <Box
             sx={{
               justifyContent: "space-between",
-              alignItems: "center",
+              // alignItems: "center",
               width: "100%",
               height: "615px",
               overflowY: "auto",
+              border: "0.1px solid grey",
             }}
             className="posts"
           >
@@ -95,8 +136,7 @@ function Userjob() {
               <Card
                 className="main"
                 style={{
-                  marginBottom: "0.2rem",
-                  width: "94%",
+                  border: "0.1px solid grey",
                 }}
               >
                 <CardContent>
@@ -115,7 +155,13 @@ function Userjob() {
                 .map((jobpost) => (
                   <Card
                     className="main"
-                    style={{  width: "94%" }}
+                    style={{
+                      width: "88.4%",
+                      border: "0.01px solid smokegrey",
+                      height: "12%",
+                      paddingTop: "20px",
+                      paddingLeft: "10px",
+                    }}
                     key={jobpost._id}
                   >
                     <Box display="flex" alignItems="center">
@@ -123,7 +169,6 @@ function Userjob() {
                         style={{
                           display: "flex",
                           textAlign: "left",
-                          paddingTop: "0px",
                           marginRight: "10px",
                         }}
                       >
@@ -136,7 +181,7 @@ function Userjob() {
                           }}
                         />
                       </div>
-                      <Box flexGrow={1}>
+                      <Box flexGrow={1} sx={{}}>
                         <Typography
                           variant="h5"
                           textAlign="left"
@@ -180,7 +225,7 @@ function Userjob() {
                         sx={{
                           display: "flex",
                           gap: "10px",
-                          paddingLeft: "50px",
+                          // paddingLeft: "100px",
                         }}
                       >
                         <Button
@@ -200,6 +245,7 @@ function Userjob() {
                             border: "0.1px solid grey",
                           }}
                           className="apply"
+                          onClick={() => handleApply(jobpost._id)}
                         >
                           Apply
                           <Send

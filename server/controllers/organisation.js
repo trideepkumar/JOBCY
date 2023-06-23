@@ -189,19 +189,23 @@ const jobposts = async (req, res) => {
 };
 
 
-const jobsearch = async(req, res) => {
-  console.log("jobSearch started")
-  const { title } = req.query;
-
+const getJobsByOrganization = async(req,res)=>{
+  console.log('hello')
+  const orgName = req.params.orgName;
+  console.log(orgName)
   try {
-    const organisation = await Organization.find({_id: req.id});
-    const jobs = organisation[0].jobposts.filter(item => item.jobTitle === title)    
-
-    res.json({jobs:jobs,success:true});
+    const jobs = await Jobs.find({ orgName: orgName });
+    console.log(jobs)
+    res.json(jobs);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred during the search.' });
+    res.status(500).json({ error: "Failed to fetch jobs" });
   }
 }
+
+
+
+
+
 
 
 module.exports = {
@@ -210,6 +214,6 @@ module.exports = {
   verifyToken,
   verifyEmail,
   jobposts,
-  jobsearch
+  getJobsByOrganization
 };
 

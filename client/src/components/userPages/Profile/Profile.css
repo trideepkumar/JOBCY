@@ -8,6 +8,11 @@
    
 }
 
+.resume:hover{
+  color: black;
+  border: 1px solid #ff6e14;
+}
+
 @media (max-width: 600px) {
     .right-card{
         display: none;

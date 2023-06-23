@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Typography,
-  CardActions,
   Button,
   Avatar,
   Divider,
@@ -17,8 +16,12 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import PersonIcon from "@mui/icons-material/Person";
 import UserModal from "../Modal.js/userModal";
+import ResumeModal from "../Modal.js/ResumeModal";
+import Preview from "../Modal.js/Preview";
 
 function Profile() {
+
+
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
@@ -29,10 +32,10 @@ function Profile() {
   const handlePorfpic = () => {
     console.log("hi pro");
     setShowModal(true);
-
     console.log(showModal);
   };
 
+  
   const handleBackgroundChange = () => {
     console.log("hi back");
     setshowbackgroundImage(true);
@@ -44,6 +47,7 @@ function Profile() {
     <>
       {authState && (
         <Grid container spacing={5}>
+          {/* profile side */}
           <Grid item lg={9} sm={12}>
             {/* maincard */}
             <Card
@@ -166,7 +170,7 @@ function Profile() {
               </CardContent>
             </Card>
 
-            {/* skills */}
+            {/* jobtitle */}
             <Card
               item
               sm={6}
@@ -370,25 +374,27 @@ function Profile() {
             </Card>
           </Grid>
 
+
+           {/* resume upload */}
           <Grid item lg={3} className="right-grid">
             <Card
               className="right-card"
               style={{ position: "sticky", top: "5rem", marginTop: "5rem" }}
             >
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  Lizard
+                <Typography gutterBottom variant="body1" component="div">
+                  <b>Job seeker guidance</b>
                 </Typography>
-                <Typography variant="body2">
-                  Lizards are a widespread group of squamate reptiles, with over
-                  6,000 species, ranging across all continents except Antarctica
+
+                <Typography variant="body2" textAlign="left" sx={{marginBottom:'10px'}}>
+                  Upload your resume for applying jobs & for a better
+                  experience.
                 </Typography>
+                <ResumeModal/>
+                <Preview/>
               </CardContent>
-              <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
-              </CardActions>
             </Card>
+
             <Card
               className="right-card-bottom"
               style={{ position: "sticky", top: "5rem" }}
