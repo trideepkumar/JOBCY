@@ -12,6 +12,7 @@
 
 .App-header {
   background-color: #282c34;
+  /* background-color: black !important; */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -36,4 +37,52 @@
 
 .custom-google-login .abcRioButton.abcRioButtonLight.abcRioButtonLightBlue {
   width: 12rem;
+}
+
+
+/* scrollbar.css */
+
+/* Webkit (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ff6e14;
+  border-radius: 3px;
+  transition: background-color 0.1s;
+}
+
+/* Add whitish progression effect */
+::-webkit-scrollbar-thumb:active {
+  background-color: #ffffff;
+  transition: background-color 0.3s;
+}
+
+/* Firefox */
+* {
+  scrollbar-color: #ff6e14 transparent;
+  scrollbar-width: thin;
+}
+
+/* Animation */
+@keyframes scrollbar-pulse {
+  0% {
+    background-color: #ff6e14;
+  }
+  50% {
+    background-color: #ffffff;
+  }
+  100% {
+    background-color: #ff6e14;
+  }
+}
+
+/* Apply animation to thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  animation: scrollbar-pulse 1s infinite;
 }

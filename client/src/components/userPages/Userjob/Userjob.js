@@ -18,11 +18,10 @@ import { useSelector } from "react-redux";
 import Toast from "../Toasts/Toasts";
 
 function Userjob() {
+  
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
-
-
 
   const [jobPosts, setJobPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -57,12 +56,11 @@ function Userjob() {
         const response = await axiosInstance.get("/jobs");
         const jobs = response.data.jobs || [];
         console.log(jobs);
-         console.log(`${authState._id}`)
-         const hasApplied = jobs
-         .flatMap((job) => job.appliedCandidates)
-         .includes(String(authState._id));
-       
-       
+
+        const hasApplied = jobs
+          .flatMap((job) => job.appliedCandidates)
+          .some((candidate) => candidate[0] === authState._id)
+
         console.log(hasApplied);
 
         setJobPosts(jobs);
@@ -156,11 +154,11 @@ function Userjob() {
                   <Card
                     className="main"
                     style={{
-                      width: "88.4%",
+                      width: "84.5%",
                       border: "0.01px solid smokegrey",
                       height: "12%",
                       paddingTop: "20px",
-                      paddingLeft: "10px",
+                      paddingLeft: "35px",
                     }}
                     key={jobpost._id}
                   >
@@ -228,34 +226,64 @@ function Userjob() {
                           // paddingLeft: "100px",
                         }}
                       >
-                        <Button
+                        <Box
                           sx={{
-                            textTransform: "none",
-                            border: "0.1px solid grey",
+                            display: "flex",
+                            gap: "10px",
+                            // paddingLeft: "100px",
                           }}
-                          className="details"
                         >
-                          Details
-                        </Button>
-                        <Button
-                          sx={{
-                            background: "#ff6e14",
-                            color: "white",
-                            textTransform: "none",
-                            border: "0.1px solid grey",
-                          }}
-                          className="apply"
-                          onClick={() => handleApply(jobpost._id)}
-                        >
-                          Apply
-                          <Send
+                          <Button
                             sx={{
-                              transform: "rotate(310deg)",
-                              fontSize: "small",
-                              marginLeft: "4px",
+                              textTransform: "none",
+                              border: "0.1px solid grey",
                             }}
-                          />
-                        </Button>
+                            className="details"
+                          >
+                            Details
+                          </Button>
+                          {appliedJobs ? (
+                            <Button
+                              sx={{
+                                background: "#ff6e14",
+                                color: "white",
+                                textTransform: "none",
+                                border: "0.1px solid grey",
+                              }}
+                              className="apply"
+                              disabled
+                            >
+                              Applied
+                              <Send
+                                sx={{
+                                  transform: "rotate(310deg)",
+                                  fontSize: "small",
+                                  marginLeft: "4px",
+                                }}
+                              />
+                            </Button>
+                          ) : (
+                            <Button
+                              sx={{
+                                background: "#ff6e14",
+                                color: "white",
+                                textTransform: "none",
+                                border: "0.1px solid grey",
+                              }}
+                              className="apply"
+                              onClick={() => handleApply(jobpost._id)}
+                            >
+                              Apply
+                              <Send
+                                sx={{
+                                  transform: "rotate(310deg)",
+                                  fontSize: "small",
+                                  marginLeft: "4px",
+                                }}
+                              />
+                            </Button>
+                          )}
+                        </Box>
                       </Box>
                     </Box>
                   </Card>

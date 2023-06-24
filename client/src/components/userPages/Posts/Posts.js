@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { clearAuth } from "../../../app/features/auth/authSlice";
@@ -13,7 +13,7 @@ import {
   Box,
   Avatar,
   CardActionArea,
-  Divider
+  Divider,
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import MovieIcon from "@mui/icons-material/Movie";
@@ -22,17 +22,21 @@ import { IconButton } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import SendIcon from "@mui/icons-material/Share";
 import ReportIcon from "@mui/icons-material/Report";
-
+import Post from "../Modal.js/PostsModal";
 import "./Posts.css";
+import axiosInstance from "../../../api/axiosinstance";
+
 
 function Posts() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const authState = useSelector((state) => {
-    return state.auth;
-  });
 
-  console.log(authState);
+  const [showModal, setShowModal] = useState(false);
+  const [postData, setpostData] = useState("");
+
+  const authState = useSelector((state) => {
+    return state.auth.authState;
+  });
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -42,6 +46,31 @@ function Posts() {
     navigate("/login");
   };
 
+  const handlePosts = () => {
+    console.log("clicked");
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        let endpoint = `/post/${authState._id}`;
+        console.log(endpoint);
+        const response = await axiosInstance.get(endpoint);
+        setpostData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  
+
   return (
     <>
       <div style={{ marginBottom: "40px" }}>
@@ -49,61 +78,117 @@ function Posts() {
       </div>
 
       <Grid container spacing={5}>
-
-
+        {/* left */}
         <Grid item lg={3}>
           <Card
             className="left-card"
-            style={{ position: "sticky", top: "3rem" }}
+            style={{ position: "fixed", top: "3.5rem",width:'20%' }}
           >
-             <div style={{ display: "flex", justifyContent: "center" ,paddingTop:'20px' , backgroundImage: `url(${process.env.PUBLIC_URL}/backgroundllinkedin.jpg)`, backgroundSize: 'cover'}}>
-            <Avatar src="/public/signupmain.jpeg"  style={{ width: 80, height: 80 }}/>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                paddingTop: "20px",
+                backgroundImage: authState.backgroundPic
+                  ? `url(${authState.backgroundPic})`
+                  : `url(${process.env.PUBLIC_URL}/jobcyback.jpeg)`,
+                backgroundSize: "cover",
+              }}
+            >
+              {authState.profPic ? (
+                <Avatar
+                  src={authState.profPic}
+                  style={{ width: 80, height: 80 }}
+                />
+              ) : (
+                <Avatar style={{ width: 80, height: 80 }}>
+                  {authState.username[0]}
+                </Avatar>
+              )}{" "}
             </div>
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
-                User Name
+                {authState.name}
               </Typography>
-              <Typography gutterBottom variant="h6" component="div">
-                Description
+              <Typography gutterBottom variant="body2" component="div">
+                {authState.designation}
               </Typography>
               <Divider style={{ marginTop: "1rem" }} />
 
-              <Typography variant="body2" style={{textAlign:'justify'}}>
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica...
+              <Typography variant="body2" style={{ textAlign: "center" }}>
+                {authState.about}
               </Typography>
               <Divider style={{ marginTop: "1rem" }} />
             </CardContent>
             <Divider style={{ marginTop: "1rem" }} />
 
-            <CardActions  style={{ display: "flex", justifyContent: "center" ,alignItems:'center'}}>
-              <Button size="small" style={{ border: "0.5px solid black" ,marginTop:'10px',width:'100%',color:'#ff6e14'}} > Edit Profile</Button>
-              <Button size="small" style={{ border: "0.5px solid black",marginTop:'10px',width:'100%',color:'#ff6e14' }}> Connections</Button>
+            <CardActions
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                size="small"
+                style={{
+                  border: "0.5px solid black",
+                  marginTop: "10px",
+                  width: "100%",
+                  color: "#ff6e14",
+                }}
+                onClick={() => navigate("/profile")}
+              >
+                {" "}
+                Edit Profile
+              </Button>
+              <Button
+                size="small"
+                style={{
+                  border: "0.5px solid black",
+                  marginTop: "10px",
+                  width: "100%",
+                  color: "#ff6e14",
+                }}
+              >
+                {" "}
+                Connections
+              </Button>
             </CardActions>
             <Divider style={{ marginTop: "1rem" }} />
-
           </Card>
         </Grid>
 
-
         <Grid item lg={6} spacing={2}>
           <Card className="center-card">
-            <CardContent sx={{ display: "flex"}}>
-              <Avatar sx={{ marginRight: "7px" }} />
+            
+            <CardContent sx={{ display: "flex" }}>
+              {authState.profPic ? (
+                <Avatar
+                  src={authState.profPic}
+                  style={{ width: 50, height: 50, marginRight: "4px" }}
+                />
+              ) : (
+                <Avatar style={{ width: 80, height: 80 }}>
+                  {authState.username[0]}
+                </Avatar>
+              )}{" "}
               <Button
                 sx={{ width: "90%" }}
                 variant="outlined"
                 size="small"
                 className="text-field"
+                onClick={handlePosts}
               >
                 Post your thoughts...
               </Button>
+              {showModal && <Post onClose={handleCloseModal} />}{" "}
             </CardContent>
             <CardActions
               sx={{ display: "flex", justifyContent: "space-around" }}
             >
               <Button size="small" className="post-icon">
-                <IconButton size="small" style={{color:'green'}}  >
+                <IconButton size="small" style={{ color: "green" }}>
                   <ImageIcon />
                 </IconButton>
                 Image
@@ -115,7 +200,7 @@ function Posts() {
                 Video
               </Button>
               <Button size="small" className="post-icon">
-                <IconButton size="small" style={{color:'red'}} >
+                <IconButton size="small" style={{ color: "red" }}>
                   <ArticleIcon />
                 </IconButton>
                 Article
@@ -124,294 +209,280 @@ function Posts() {
           </Card>
 
           {/* posts card */}
-          <Box
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-            }}
-            className="posts"
-          >
+          {postData.length === 0 ? (
             <Box
-              key="item._id"
               sx={{
-                display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "0.5rem",
-                marginTop: "0.3rem",
-                paddingLeft: "0.5rem",
-                paddingRight: "0.2rem",
+                width: "50%",
+                marginLeft: "5rem",
+                marginTop: "50rem",
               }}
+              className="posts"
             >
-              <Avatar
-                src="/public/signupmain.jpeg"
-                sx={{ marginRight: "10px" }}
-              />
-              <Box sx={{ marginRight: "1rem" }}>
-                <Typography sx={{ textAlign: "left" }} variant="body1">
-                  Username
-                </Typography>
-                <Typography variant="body2">Designation</Typography>
-              </Box>
-            </Box>
-            <Box className="Post-image">
-              <Card sx={{ maxWidth: 700 }} className="Post-card">
-                <CardActionArea>
-                  <Typography
-                    variant="body2"
-                    className="post-text"
-                    align="left"
-                    style={{ paddingBottom: "10px" }}
-                  >
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica....
-                  </Typography>
-                  <CardMedia
-                    component="img"
-                    height="400"
-                    src={process.env.PUBLIC_URL + "/postsimge.jpeg"}
-                    alt="Posts image"
-                  />
-                </CardActionArea>
-              </Card>
-            </Box>
-            <CardActions>
+              {/* User details */}
               <Box
                 sx={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
+                  alignItems: "left",
+                  marginBottom: "0.5rem",
+                  marginTop: "0.5rem",
+                  paddingLeft: "0.5rem",
+                  paddingRight: "0.2rem",
                 }}
               >
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ThumbUpIcon />
-                  </IconButton>{" "}
-                  Like
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <SendIcon />
-                  </IconButton>{" "}
-                  Sent
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ReportIcon />
-                  </IconButton>{" "}
-                  Report
-                </Typography>
+                <Avatar src="" sx={{ marginRight: "10px" }} />
+                <Box sx={{ marginRight: "1rem" }}>
+                  <Box>
+                    <Typography
+                      sx={{ textAlign: "left", fontSize: "0.9rem" }}
+                      variant="body1"
+                    >
+                      post.username
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography
+                      sx={{ textAlign: "left", fontSize: "0.7rem" }}
+                      variant="subtitle1"
+                    >
+                      post.designation
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography
+                      sx={{ textAlign: "left", fontSize: "0.6rem" }}
+                      variant="subtitle2"
+                    >
+                      post.location
+                    </Typography>
+                  </Box>
+                </Box>
               </Box>
-            </CardActions>
-          </Box>
 
-          <Box
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-            }}
-            className="posts"
-          >
-            <Box
-              key="item._id"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "0.5rem",
-                marginTop: "0.3rem",
-                paddingLeft: "0.5rem",
-                paddingRight: "0.2rem",
-              }}
-            >
-              <Avatar src="/public/signupmain.jpeg" />
-              <Box sx={{ marginRight: "1rem" }}>
-                <Typography sx={{ textAlign: "left" }}>Username</Typography>
-                <Typography>Designationdddddfffgghhhh</Typography>
+              {/* Post content */}
+              <Box className="Post-image">
+                <Card sx={{ maxWidth: 700 }} className="Post-card">
+                  <CardActionArea>
+                    <Typography
+                      variant="body2"
+                      className="post-text"
+                      align="left"
+                      style={{ paddingBottom: "10px" }}
+                    >
+                      post.description
+                    </Typography>
+                    <CardMedia
+                      component="img"
+                      height="400"
+                      src=""
+                      alt="Posts image"
+                    />
+                  </CardActionArea>
+                </Card>
               </Box>
-            </Box>
-            <Box className="Post-image">
-              <Card sx={{ maxWidth: 700 }} className="Post-card">
-                <CardActionArea>
-                  <Typography
-                    variant="body2"
-                    className="post-text"
-                    align="left"
-                    style={{ paddingBottom: "10px" }}
-                  >
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica....
-                  </Typography>
-                  <CardMedia
-                    component="img"
-                    height="400"
-                    src={process.env.PUBLIC_URL + "/postsimge.jpeg"}
-                    alt="Posts image"
-                  />
-                </CardActionArea>
-              </Card>
-            </Box>
-            <CardActions>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
-                }}
-              >
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ThumbUpIcon />
-                  </IconButton>{" "}
-                  Like
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <SendIcon />
-                  </IconButton>{" "}
-                  Sent
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ReportIcon />
-                  </IconButton>{" "}
-                  Report
-                </Typography>
-              </Box>
-            </CardActions>
-          </Box>
 
-          <Box
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-            }}
-            className="posts"
-          >
-            <Box
-              key="item._id"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "0.5rem",
-                marginTop: "0.3rem",
-                paddingLeft: "0.5rem",
-                paddingRight: "0.2rem",
-              }}
-            >
-              <Avatar src="/public/signupmain.jpeg" />
-              <Box sx={{ marginRight: "1rem" }}>
-                <Typography sx={{ textAlign: "left" }}>Username</Typography>
-                <Typography>Designationdddddfffgghhhh</Typography>
-              </Box>
-            </Box>
-            <Box className="Post-image">
-              <Card sx={{ maxWidth: 700 }} className="Post-card">
-                <CardActionArea>
-                  <Typography
-                    variant="body2"
-                    className="post-text"
-                    align="left"
-                    style={{ paddingBottom: "10px" }}
-                  >
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica....
+              {/* Post actions */}
+              <CardActions>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    paddingLeft: "15px",
+                    paddingRight: "15px",
+                  }}
+                >
+                  <Typography style={{ color: "grey" }}>
+                    <IconButton size="small">
+                      <ThumbUpIcon />
+                    </IconButton>{" "}
+                    Like
                   </Typography>
-                  <CardMedia
-                    component="img"
-                    height="400"
-                    src={process.env.PUBLIC_URL + "/postsimge.jpeg"}
-                    alt="Posts image"
-                  />
-                </CardActionArea>
-              </Card>
+                  <Typography style={{ color: "grey" }}>
+                    <IconButton size="small">
+                      <SendIcon />
+                    </IconButton>{" "}
+                    Sent
+                  </Typography>
+                  <Typography style={{ color: "grey" }}>
+                    <IconButton size="small">
+                      <ReportIcon />
+                    </IconButton>{" "}
+                    Report
+                  </Typography>
+                </Box>
+              </CardActions>
             </Box>
-            <CardActions>
+          ) : (
+            postData.map((post) => (
               <Box
+                key={post._id}
                 sx={{
-                  display: "flex",
                   justifyContent: "space-between",
+                  alignItems: "left",
                   width: "100%",
-                  paddingLeft: "15px",
-                  paddingRight: "15px",
                 }}
+                className="posts"
               >
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ThumbUpIcon />
-                  </IconButton>{" "}
-                  Like
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <SendIcon />
-                  </IconButton>{" "}
-                  Sent
-                </Typography>
-                <Typography style={{ color: "grey" }}>
-                  <IconButton size="small">
-                    <ReportIcon />
-                  </IconButton>{" "}
-                  Report
-                </Typography>
+                {/* User details */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "left",
+                    marginBottom: "0.5rem",
+                    marginTop: "0.3rem",
+                    paddingLeft: "0.5rem",
+                    paddingRight: "0.2rem",
+                  }}
+                >
+                  <Avatar
+                    src={post.userProfileImage}
+                    sx={{ marginRight: "10px" }}
+                  />
+                  <Box sx={{ marginRight: "1rem" }}>
+                    <Box>
+                      <Typography
+                        sx={{ textAlign: "left", fontSize: "0.9rem" }}
+                        variant="body1"
+                      >
+                        {post.username}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        sx={{ textAlign: "left", fontSize: "0.7rem" }}
+                        variant="subtitle1"
+                      >
+                        {post.designation}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        sx={{ textAlign: "left", fontSize: "0.6rem" }}
+                        variant="subtitle2"
+                      >
+                        {post.location}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Post content */}
+                <Box className="Post-image">
+                  <Card sx={{ maxWidth: 700 }} className="Post-card">
+                    <CardActionArea>
+                      <Typography
+                        variant="body2"
+                        className="post-text"
+                        align="left"
+                        style={{ paddingBottom: "10px" }}
+                      >
+                        {post.description}
+                      </Typography>
+                      <CardMedia
+                        component="img"
+                        height="400"
+                        src={post.media}
+                        alt="Posts image"
+                      />
+                    </CardActionArea>
+                  </Card>
+                </Box>
+
+                {/* Post actions */}
+                <CardActions>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      paddingLeft: "15px",
+                      paddingRight: "15px",
+                    }}
+                  >
+                    <Typography style={{ color: "grey" }}>
+                      <IconButton size="small">
+                        <ThumbUpIcon />
+                      </IconButton>{" "}
+                      Like
+                    </Typography>
+                    <Typography style={{ color: "grey" }}>
+                      <IconButton size="small">
+                        <SendIcon />
+                      </IconButton>{" "}
+                      Sent
+                    </Typography>
+                    <Typography style={{ color: "grey" }}>
+                      <IconButton size="small">
+                        <ReportIcon />
+                      </IconButton>{" "}
+                      Report
+                    </Typography>
+                  </Box>
+                </CardActions>
               </Box>
-            </CardActions>
-          </Box>
+            ))
+          )}
+         
         </Grid>
 
-
         <Grid item lg={3}>
-          <Card className="right-card">
+          <Card className="right-card" sx={{ position: 'fixed'}} >
             <CardMedia
               sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
+              image="/JOBCY ICON.png"
               title="green iguana"
             />
             <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2">
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica
+              <Typography variant="body2" textAlign="auto">
+                Unlock your career potential and discover endless opportunities
+                with our comprehensive job portal, connecting talented
+                individuals with top-tier employers worldwide.
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small">Share</Button>
-              <Button size="small">Learn More</Button>
+              <Box sx={{display:'grid',width:'100%',alignItems:'center'}} >
+                <Button size="small" sx={{border:'0.1px solid #ff6e14',color:'#ff6e14',marginBottom:'5px'}}>Find Jobs</Button>
+                <Button size="small" sx={{border:'0.1px solid #ff6e14',color:'grey'}}>Discover More</Button>
+              </Box>
             </CardActions>
           </Card>
           <Card
             className="right-card-bottom"
-            style={{ position: "sticky", top: "5rem" }}
+            style={{ position: "fixed", top: "35rem",paddingLeft:'25px' }}
           >
-            <CardMedia
-              sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
-              title="green iguana"
-            />
-            <CardContent style={{color:'#ff6e14'}}>
+            
+            <CardContent style={{ color: "#ff6e14" }}>
               <Typography gutterBottom variant="h5" component="div">
-                Lizard
+                JOBCY 
               </Typography>
-              <Typography variant="body2">
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica
-              </Typography>
+              <Typography variant="body2" component="div">
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        <li>About</li>
+        <li>Accessibility</li>
+        <li>Help Center</li>
+      </ul>
+    </div>
+    <div>
+      <ul style={{ listStyleType: "none", padding: 0 }}>
+        <li>Privacy &amp; Terms</li>
+        <li>Ad Choices</li>
+        <li>Advertising</li>
+      </ul>
+    </div>
+   
+  </div>
+</Typography>
+<Typography variant="body2" style={{ fontSize: "0.7rem" }}>
+  JOCY Corporation © 2023
+</Typography>
+
             </CardContent>
-          
           </Card>
         </Grid>
-
-
       </Grid>
     </>
   );

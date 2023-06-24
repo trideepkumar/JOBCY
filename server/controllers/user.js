@@ -6,7 +6,11 @@ const sendVerificationEmail = require("../utils/mailVerify");
 const crypto = require("crypto");
 const Organizations = require("../model/organisation");
 const Jobs = require("../model/jobs");
-const cloudinary = require("cloudinary").v2;
+const Post = require("../model/post");
+const cloudinary = require('cloudinary').v2;
+
+// const {cloudinary} = require('../middlewares/cloudinary')
+
 
 cloudinary.config({
   cloud_name: "dbnrosh3i",
@@ -352,24 +356,59 @@ const applyJob = async (req, res) => {
     // console.log(job);
 
     if (!job) {
-      return res.status(404).json({ error: "Job not found",success:false });
+      return res.status(404).json({ error: "Job not found", success: false });
     }
 
     if (job.appliedCandidates.includes(userId)) {
-      return res.status(400).json({ error: "User already applied for this job" ,success:false });
+      return res
+        .status(400)
+        .json({ error: "User already applied for this job", success: false });
     }
 
     job.appliedCandidates.push(userId);
     await job.save();
 
     res.json({ message: "Job applied successfully" });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+const createPost = async (req, res) => {
+  try {
+    console.log('post create starts..')
+    const { description, location, createdBy ,media} = req.body;
+    console.log(media)
+    // const mediaUpload = await cloudinary.uploader.upload(req.file.path);
+    // const mediaUrl = mediaUpload.secure_url;
+    const post = new Post({
+      createdBy:createdBy,
+      description:description,
+      location:location,
+      media: media,
+    });
+    const savedPost = await post.save();
+    res.status(201).json(savedPost);
+  } catch (error) {
+    console.error("Error creating post:", error);
+    res.status(500).json({ error: "Failed to create post" });
+  }
+};
+
+const getPosts = async (req, res) => {
+  try {
+    console.log("getPosts fetching");
+    const userId = req.params._id;
+    console.log(userId);
+    const posts = await Post.find({ createdBy: userId }).sort({ createdAt: -1 });
+    console.log(posts);
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+};
 
 
 
@@ -385,3 +424,5 @@ exports.getJobs = getJobs;
 exports.updateResume = updateResume;
 exports.fetchResume = fetchResume;
 exports.applyJob = applyJob;
+exports.createPost = createPost;
+exports.getPosts = getPosts
