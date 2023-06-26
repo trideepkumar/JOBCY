@@ -26,3 +26,6 @@
     background-color: #ff6e14;
   }
   
+  .chip{
+    border: 0.5px solid #ff6e14 !important;
+  }

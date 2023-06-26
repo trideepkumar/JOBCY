@@ -117,7 +117,7 @@ function ResumeModal() {
             Upload resume
           </Button>
         )}
-        <ToastContainer /> 
+        <ToastContainer style={{marginTop:'39rem'}} /> 
       </CardActions>
 
     </div>

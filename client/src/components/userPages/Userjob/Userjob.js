@@ -10,12 +10,20 @@ import {
   Button,
   Divider,
   TextField,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Chip,
+  Stack,
+  Link,
 } from "@mui/material";
 import { Send } from "@mui/icons-material";
 import axiosInstance from "../../../api/axiosinstance";
 import "./Userjob.css";
 import { useSelector } from "react-redux";
-import Toast from "../Toasts/Toasts";
+// import Toast from "../Toasts/Toasts";
+import Appbar from "../../Appbar/Appbar";
 
 function Userjob() {
   
@@ -23,6 +31,7 @@ function Userjob() {
     return state.auth.authState;
   });
 
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [jobPosts, setJobPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [Toasts, setToasts] = useState(false);
@@ -59,7 +68,7 @@ function Userjob() {
 
         const hasApplied = jobs
           .flatMap((job) => job.appliedCandidates)
-          .some((candidate) => candidate[0] === authState._id)
+          .some((candidate) => candidate[0] === authState._id);
 
         console.log(hasApplied);
 
@@ -75,6 +84,7 @@ function Userjob() {
 
   return (
     <>
+      <Appbar />
       <Grid container spacing={5}>
         {/* left */}
         <Grid item lg={3}>
@@ -106,12 +116,112 @@ function Userjob() {
               />
             </Box>
           </Card>
+
+          {/* categories */}
+          <Card
+            style={{
+              background: "white",
+              margin: "4rem 5rem 3rem 2rem",
+              borderRadius: "5px",
+              boxShadow: "1px 1px 2px white",
+              marginTop: "14rem",
+              width: "20rem",
+              border: "0.01px solid lightgrey",
+              top: "2rem",
+              position: "fixed",
+              textAlign: "left",
+            }}
+            className="card"
+          >
+            <Box sx={{ p: 2 }}>
+              <Typography variant="body2" component="div" textAlign="left">
+                Categories
+              </Typography>
+              <Divider sx={{ my: 2 }} />
+
+              <TextField
+                style={{
+                  width: "95%",
+                  borderRadius: "3px",
+                }}
+                variant="outlined"
+                placeholder="Search categories here..."
+              />
+
+              <Divider sx={{ my: 2 }} />
+
+              <FormControl component="fieldset">
+                <RadioGroup
+                  aria-label="category"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <FormControlLabel
+                    value="construction"
+                    control={<Radio color="primary" />}
+                    label="Construction"
+                  />
+                  <FormControlLabel
+                    value="Technology"
+                    control={<Radio color="primary" />}
+                    label="Technology"
+                  />
+                  <FormControlLabel
+                    value="Health Sector"
+                    control={<Radio color="primary" />}
+                    label="Health Sector"
+                  />
+                  <FormControlLabel
+                    value="Arts & crafts"
+                    control={<Radio color="primary" />}
+                    label="Arts & crafts"
+                  />
+                  <FormControlLabel
+                    value="Mechanical Fields"
+                    control={<Radio color="primary" />}
+                    label="Mechanical Fields"
+                  />
+                  <FormControlLabel
+                    value="Manufacturing"
+                    control={<Radio color="primary" />}
+                    label="Manufacturing"
+                  />
+                  <FormControlLabel
+                    value="Industrial"
+                    control={<Radio color="primary" />}
+                    label="Industrial"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Box>
+          </Card>
         </Grid>
 
         {/* center */}
         <Grid item lg={6} spacing={4} sx={{ marginTop: "5.5rem" }}>
-          <Card className="center-card">
-            <CardContent sx={{ display: "flex" }}>search templates</CardContent>
+          <Card
+            className="center-card"
+            style={{ position: "fixed", width: "43.8rem" }}
+          >
+            <CardContent sx={{ display: "grid", textAlign: "left" }}>
+              <Typography> Suggested job searches</Typography>
+              <br></br>
+              <Stack direction="row" spacing={1}>
+                <Chip label="Technology" variant="outlined" className="chip" />
+                <Chip
+                  label="Fullstack Developer"
+                  variant="outlined"
+                  className="chip"
+                />
+                <Chip
+                  label="Full time jobs"
+                  variant="outlined"
+                  className="chip"
+                />
+                <Chip label="Student" variant="outlined" className="chip" />
+                <Chip label="Technology" variant="outlined" className="chip" />
+              </Stack>
+            </CardContent>
           </Card>
 
           {/* posts card */}
@@ -120,10 +230,12 @@ function Userjob() {
             sx={{
               justifyContent: "space-between",
               // alignItems: "center",
-              width: "100%",
-              height: "615px",
+              width: "48.5%",
+              height: "570px",
+              marginTop: "8rem",
               overflowY: "auto",
               border: "0.1px solid grey",
+              position: "fixed",
             }}
             className="posts"
           >
@@ -293,22 +405,57 @@ function Userjob() {
         </Grid>
 
         {/* right */}
-        <Grid item lg={3} sx={{ marginTop: "3.3rem" }}>
+        <Grid item lg={3} sx={{ marginTop: "5.6rem" }}>
           <Card className="right-card">
-            <CardContent></CardContent>
+            <CardContent sx={{ textAlign: "left" }}>
+              <Typography
+                variant="body1"
+                style={{ fontSize: "1.2rem", color: "#ff6e14" }}
+              >
+                Job seeker guidance
+              </Typography>
+              <Typography variant="body2" style={{ marginBottom: "1rem" }}>
+                Explore our curated guide of expert-led courses, such as how to
+                improve your resume and grow your network, to help you land your
+                next opportunity.
+              </Typography>
+              <Link href="/profile">Do you want to improve your resume?</Link>{" "}
+            </CardContent>
           </Card>
+          
+
           <Card
             className="right-card-bottom"
-            style={{ position: "sticky", top: "5rem" }}
+            style={{ position: "fixed", top: "35rem", paddingLeft: "25px" }}
           >
-            <CardMedia
-              sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
-              title="green iguana"
-            />
-            <CardContent
-              style={{ color: "#ff6e14", border: "0.1px solid grey" }}
-            ></CardContent>
+            <CardContent style={{ color: "#ff6e14" }}>
+              <Typography gutterBottom variant="h5" component="div">
+                JOBCY
+              </Typography>
+              <Typography variant="body2" component="div">
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
+                      <li>About</li>
+                      <li>Accessibility</li>
+                      <li>Help Center</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
+                      <li>Privacy &amp; Terms</li>
+                      <li>Ad Choices</li>
+                      <li>Advertising</li>
+                    </ul>
+                  </div>
+                </div>
+              </Typography>
+              <Typography variant="body2" style={{ fontSize: "0.7rem" }}>
+                JOCY Corporation © 2023
+              </Typography>
+            </CardContent>
           </Card>
         </Grid>
       </Grid>

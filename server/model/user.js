@@ -46,6 +46,9 @@ const userSchema = new Schema({
   jobtitles: [{
      jobtitle:String
   }],
+  skills: [{
+    skill:String
+ }],
   experience: [
     {
       companyName: String,

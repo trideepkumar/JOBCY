@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/features/auth/authSlice";
 import { setorganisationAuth } from "../app/features/auth/organisationauthSlice";
+import Appbar from '../components/Appbar/Appbar'
 
 const Login = ({ loginType }) => {
   const [formData, setFormData] = useState({
@@ -120,7 +121,7 @@ const Login = ({ loginType }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      
+      <Appbar/>
       {loginType === "user" && (
         <>
           <Grid container component="main" sx={{ height: "100vh" }}>

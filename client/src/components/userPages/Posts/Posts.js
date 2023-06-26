@@ -15,6 +15,7 @@ import {
   CardActionArea,
   Divider,
 } from "@mui/material";
+import Appbar from "../../Appbar/Appbar";
 import ImageIcon from "@mui/icons-material/Image";
 import MovieIcon from "@mui/icons-material/Movie";
 import ArticleIcon from "@mui/icons-material/Article";
@@ -25,7 +26,7 @@ import ReportIcon from "@mui/icons-material/Report";
 import Post from "../Modal.js/PostsModal";
 import "./Posts.css";
 import axiosInstance from "../../../api/axiosinstance";
-
+// import placeholder from "client/public/post placeholder.jpeg"
 
 function Posts() {
   const navigate = useNavigate();
@@ -52,6 +53,7 @@ function Posts() {
   };
 
   const handleCloseModal = () => {
+    console.log("closed");
     setShowModal(false);
   };
 
@@ -69,10 +71,10 @@ function Posts() {
     fetchUserData();
   }, []);
 
-  
-
+ 
   return (
     <>
+      <Appbar />
       <div style={{ marginBottom: "40px" }}>
         <button onClick={handleLogout}>Logout</button>
       </div>
@@ -82,7 +84,7 @@ function Posts() {
         <Grid item lg={3}>
           <Card
             className="left-card"
-            style={{ position: "fixed", top: "3.5rem",width:'20%' }}
+            style={{ position: "fixed", top: "5rem", width: "20%" }}
           >
             <div
               style={{
@@ -160,8 +162,7 @@ function Posts() {
         </Grid>
 
         <Grid item lg={6} spacing={2}>
-          <Card className="center-card">
-            
+          <Card className="center-card" style={{ marginTop: "1.4rem" }}>
             <CardContent sx={{ display: "flex" }}>
               {authState.profPic ? (
                 <Avatar
@@ -214,9 +215,9 @@ function Posts() {
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "50%",
-                marginLeft: "5rem",
-                marginTop: "50rem",
+                width: "100%",
+                marginLeft: "0rem",
+                marginTop: "1rem",
               }}
               className="posts"
             >
@@ -231,31 +232,25 @@ function Posts() {
                   paddingRight: "0.2rem",
                 }}
               >
-                <Avatar src="" sx={{ marginRight: "10px" }} />
+                {/* <Avatar src="" sx={{ marginRight: "10px" }} /> */}
                 <Box sx={{ marginRight: "1rem" }}>
                   <Box>
                     <Typography
                       sx={{ textAlign: "left", fontSize: "0.9rem" }}
                       variant="body1"
-                    >
-                      post.username
-                    </Typography>
+                    ></Typography>
                   </Box>
                   <Box>
                     <Typography
                       sx={{ textAlign: "left", fontSize: "0.7rem" }}
                       variant="subtitle1"
-                    >
-                      post.designation
-                    </Typography>
+                    ></Typography>
                   </Box>
                   <Box>
                     <Typography
                       sx={{ textAlign: "left", fontSize: "0.6rem" }}
                       variant="subtitle2"
-                    >
-                      post.location
-                    </Typography>
+                    ></Typography>
                   </Box>
                 </Box>
               </Box>
@@ -269,13 +264,12 @@ function Posts() {
                       className="post-text"
                       align="left"
                       style={{ paddingBottom: "10px" }}
-                    >
-                      post.description
-                    </Typography>
+                    ></Typography>
+                   
                     <CardMedia
                       component="img"
                       height="400"
-                      src=""
+                      src="/nopost.png"
                       alt="Posts image"
                     />
                   </CardActionArea>
@@ -292,26 +286,7 @@ function Posts() {
                     paddingLeft: "15px",
                     paddingRight: "15px",
                   }}
-                >
-                  <Typography style={{ color: "grey" }}>
-                    <IconButton size="small">
-                      <ThumbUpIcon />
-                    </IconButton>{" "}
-                    Like
-                  </Typography>
-                  <Typography style={{ color: "grey" }}>
-                    <IconButton size="small">
-                      <SendIcon />
-                    </IconButton>{" "}
-                    Sent
-                  </Typography>
-                  <Typography style={{ color: "grey" }}>
-                    <IconButton size="small">
-                      <ReportIcon />
-                    </IconButton>{" "}
-                    Report
-                  </Typography>
-                </Box>
+                ></Box>
               </CardActions>
             </Box>
           ) : (
@@ -424,11 +399,13 @@ function Posts() {
               </Box>
             ))
           )}
-         
         </Grid>
 
         <Grid item lg={3}>
-          <Card className="right-card" sx={{ position: 'fixed'}} >
+          <Card
+            className="right-card"
+            sx={{ position: "fixed", marginTop: "1.4rem" }}
+          >
             <CardMedia
               sx={{ height: 140 }}
               image="/JOBCY ICON.png"
@@ -442,44 +419,59 @@ function Posts() {
               </Typography>
             </CardContent>
             <CardActions>
-              <Box sx={{display:'grid',width:'100%',alignItems:'center'}} >
-                <Button size="small" sx={{border:'0.1px solid #ff6e14',color:'#ff6e14',marginBottom:'5px'}}>Find Jobs</Button>
-                <Button size="small" sx={{border:'0.1px solid #ff6e14',color:'grey'}}>Discover More</Button>
+              <Box
+                sx={{ display: "grid", width: "100%", alignItems: "center" }}
+              >
+                <Button
+                  size="small"
+                  sx={{
+                    border: "0.1px solid #ff6e14",
+                    color: "#ff6e14",
+                    marginBottom: "5px",
+                  }}
+                >
+                  Find Jobs
+                </Button>
+                <Button
+                  size="small"
+                  sx={{ border: "0.1px solid #ff6e14", color: "grey" }}
+                >
+                  Discover More
+                </Button>
               </Box>
             </CardActions>
           </Card>
           <Card
             className="right-card-bottom"
-            style={{ position: "fixed", top: "35rem",paddingLeft:'25px' }}
+            style={{ position: "fixed", top: "35rem", paddingLeft: "25px" }}
           >
-            
             <CardContent style={{ color: "#ff6e14" }}>
               <Typography gutterBottom variant="h5" component="div">
-                JOBCY 
+                JOBCY
               </Typography>
               <Typography variant="body2" component="div">
-  <div style={{ display: "flex", justifyContent: "space-between" }}>
-    <div>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        <li>About</li>
-        <li>Accessibility</li>
-        <li>Help Center</li>
-      </ul>
-    </div>
-    <div>
-      <ul style={{ listStyleType: "none", padding: 0 }}>
-        <li>Privacy &amp; Terms</li>
-        <li>Ad Choices</li>
-        <li>Advertising</li>
-      </ul>
-    </div>
-   
-  </div>
-</Typography>
-<Typography variant="body2" style={{ fontSize: "0.7rem" }}>
-  JOCY Corporation © 2023
-</Typography>
-
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
+                      <li>About</li>
+                      <li>Accessibility</li>
+                      <li>Help Center</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <ul style={{ listStyleType: "none", padding: 0 }}>
+                      <li>Privacy &amp; Terms</li>
+                      <li>Ad Choices</li>
+                      <li>Advertising</li>
+                    </ul>
+                  </div>
+                </div>
+              </Typography>
+              <Typography variant="body2" style={{ fontSize: "0.7rem" }}>
+                JOCY Corporation © 2023
+              </Typography>
             </CardContent>
           </Card>
         </Grid>

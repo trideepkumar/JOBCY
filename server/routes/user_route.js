@@ -1,7 +1,7 @@
 const express = require('express')
 const router =  express.Router();
 const {upload} = require('../middlewares/userMiddleware')
-const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts} = require('../controllers/user')
+const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts,deleteJobTitle} = require('../controllers/user')
 
 
 
@@ -24,6 +24,9 @@ router.post('/post',upload.single('media'),createPost)
 router.patch('/updateAbout/:_id',updateAbout)
 router.patch('/updatepic/:_id', upload.single('image'),updateProfilepic)
 router.patch('/updateresume/:_id',upload.single('image'),updateResume)
+
+
+router.delete('/deletejobtitle/:userId/:jobTitleId', deleteJobTitle);
 
 
 module.exports  = router

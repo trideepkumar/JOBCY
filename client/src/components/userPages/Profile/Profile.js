@@ -1,5 +1,5 @@
 import "./Profile.css";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Grid,
   Card,
@@ -11,21 +11,25 @@ import {
   CardMedia,
   Box,
   Chip,
+  IconButton,
 } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PersonIcon from "@mui/icons-material/Person";
 import UserModal from "../Modal.js/userModal";
 import ResumeModal from "../Modal.js/ResumeModal";
 import Preview from "../Modal.js/Preview";
+import Appbar from "../../Appbar/Appbar";
+import { Cancel as CancelIcon } from "@mui/icons-material";
+import axiosInstance from "../../../api/axiosinstance";
+import { setAuth } from "../../../app/features/auth/authSlice";
 
 function Profile() {
-
-
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
 
+  const dispatch = useDispatch;
   const [showModal, setShowModal] = useState(false);
   const [showbackgroundImage, setshowbackgroundImage] = useState(false);
 
@@ -35,7 +39,6 @@ function Profile() {
     console.log(showModal);
   };
 
-  
   const handleBackgroundChange = () => {
     console.log("hi back");
     setshowbackgroundImage(true);
@@ -43,8 +46,32 @@ function Profile() {
     console.log(showbackgroundImage);
   };
 
+  const handleDelete = async (jobTitleId) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/deletejobtitle/${authState._id}/${jobTitleId}`
+      );
+      console.log(response.data);
+
+      const updatedAuthState = { ...authState };
+      console.log(updatedAuthState);
+      updatedAuthState.jobtitles = updatedAuthState.jobtitles.filter(
+        (jobTitle) => jobTitle._id !== jobTitleId
+      );
+      if (response.status === 200) {
+        let userEndpoint = `user/${authState._id}`;
+        const user = await axiosInstance.get(userEndpoint);
+        localStorage.setItem("user", JSON.stringify(user.data.user));
+        dispatch(setAuth());
+      }
+    } catch (error) {
+      console.error("Error deleting job title:", error);
+    }
+  };
+
   return (
     <>
+      <Appbar />
       {authState && (
         <Grid container spacing={5}>
           {/* profile side */}
@@ -170,6 +197,63 @@ function Profile() {
               </CardContent>
             </Card>
 
+            {/* skills */}
+            <Card
+              item
+              sm={6}
+              style={{
+                marginTop: "2rem",
+                marginLeft: "3rem",
+                display: "grid",
+                textAlign: "left",
+              }}
+              className="skill-main-card"
+            >
+              <Box style={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography
+                  variant="h6"
+                  style={{ textAlign: "left", paddingLeft: "1rem" }}
+                  gutterBottom
+                >
+                  Skills
+                </Typography>
+                <UserModal type="skills" />
+              </Box>
+              <Divider style={{ marginBottom: "1rem" }} />
+              <Box
+                item
+                lg={12}
+                xs={6}
+                sm={6}
+                style={{ display: "flex", justifyContent: "left" }}
+                className="skill-box"
+              >
+                {authState.skills.map((jobtitle, index) => (
+                  <Chip
+                    key={index}
+                    label={jobtitle.jobtitle}
+                    onDelete={() => handleDelete(jobtitle._id)}
+                    onClick={() => console.log("Chip clicked")}
+                    sx={{
+                      background: "#FF6E14",
+                      color: "white",
+                      marginLeft: "10px",
+                      marginBottom: "10px",
+                    }}
+                    deleteIcon={
+                      <IconButton
+                        size="small"
+                        aria-label="delete"
+                        onClick={handleDelete}
+                      >
+                        <CancelIcon fontSize="small" />
+                      </IconButton>
+                    }
+                  />
+                ))}
+              </Box>
+            </Card>
+
             {/* jobtitle */}
             <Card
               item
@@ -205,15 +289,23 @@ function Profile() {
                   <Chip
                     key={index}
                     label={jobtitle.jobtitle}
-                    // onClick={handleClick}
-                    // onDelete={handleDelete}
-                    deleteIcon="delete"
+                    onDelete={() => handleDelete(jobtitle._id)}
+                    onClick={() => console.log("Chip clicked")}
                     sx={{
                       background: "#FF6E14",
                       color: "white",
                       marginLeft: "10px",
                       marginBottom: "10px",
                     }}
+                    deleteIcon={
+                      <IconButton
+                        size="small"
+                        aria-label="delete"
+                        onClick={handleDelete}
+                      >
+                        <CancelIcon fontSize="small" />
+                      </IconButton>
+                    }
                   />
                 ))}
               </Box>
@@ -374,8 +466,7 @@ function Profile() {
             </Card>
           </Grid>
 
-
-           {/* resume upload */}
+          {/* resume upload */}
           <Grid item lg={3} className="right-grid">
             <Card
               className="right-card"
@@ -386,12 +477,16 @@ function Profile() {
                   <b>Job seeker guidance</b>
                 </Typography>
 
-                <Typography variant="body2" textAlign="left" sx={{marginBottom:'10px'}}>
+                <Typography
+                  variant="body2"
+                  textAlign="left"
+                  sx={{ marginBottom: "10px" }}
+                >
                   Upload your resume for applying jobs & for a better
                   experience.
                 </Typography>
-                <ResumeModal/>
-                <Preview/>
+                <ResumeModal />
+                <Preview />
               </CardContent>
             </Card>
 

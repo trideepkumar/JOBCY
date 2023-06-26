@@ -34,7 +34,7 @@ export default function UserModal({ type }) {
 
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [file, setFile] = useState(null)
+  const [file, setFile] = useState(null);
 
   const initialFormData = {
     name: authState.name || "",
@@ -76,7 +76,7 @@ export default function UserModal({ type }) {
   //for image change in the modal
   const handleImageChange = (event) => {
     // const file = event.target.files[0];
-    setFile(event.target.files[0])
+    setFile(event.target.files[0]);
     const imageUrl = URL.createObjectURL(event.target.files[0]);
     // const imageMYUrl = event.target.files[0]
     setSelectedImage(imageUrl);
@@ -153,10 +153,13 @@ export default function UserModal({ type }) {
       } else if (
         type === "experience" ||
         type === "education" ||
-        type === "jobtitle"
+        type === "jobtitle" ||
+        type === "skills"
       ) {
         try {
           console.log("experience");
+          const skillsData = { skills: [{ skills: formData.skills }] };
+          console.log(skillsData)
           let endpoint = `updateExperience/${authState._id}`;
           console.log(endpoint);
           console.log(formData);
@@ -176,15 +179,15 @@ export default function UserModal({ type }) {
         console.log("profile");
         let endpoint = `updatepic/${authState._id}`;
         console.log(endpoint);
-        const form = new FormData()
+        const form = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
           form.append(key, value);
-      });
-      form.append('image', file)
+        });
+        form.append("image", file);
         const response = await axiosInstance.patch(endpoint, form, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
         console.log(response);
         if (response.status === 200) {
@@ -210,6 +213,7 @@ export default function UserModal({ type }) {
       type === "education" ||
       type === "project" ||
       type === "jobtitle" ||
+      type === "skills" ||
       type === "profile" ? (
         <EditIcon
           size="small"
@@ -246,6 +250,7 @@ export default function UserModal({ type }) {
               {type === "project" && "ADD PROJECT"}
               {type === "jobtitle" && "ADD JOB TITLE"}
               {type === "profile" && "ADD A PROFILE PICTURE"}
+              {type === "skills" && "ADD YOUR SKILLS"}
 
               <Divider sx={{ marginBottom: "10px", marginTop: "10px" }} />
             </Typography>
@@ -389,6 +394,21 @@ export default function UserModal({ type }) {
               </Box>
             )}
 
+            {type === "skills" && (
+              <Box style={{ marginBottom: "1rem" }}>
+                <Typography>ADD SKILLS</Typography>
+                <Divider sx={{ marginBottom: "10px", marginTop: "10px" }} />
+                <Input
+                  name={`skills[0].skills`}
+                  placeholder="Skills here..."
+                  onChange={handleInputChange}
+                  error={!!errors.skills?.skills}
+                  helperText={errors.skills?.skills}
+                  required
+                />
+              </Box>
+            )}
+
             {type === "jobtitle" && (
               <Box style={{ marginBottom: "1rem" }}>
                 <Typography>ADD JOB TITLE</Typography>
@@ -432,7 +452,6 @@ export default function UserModal({ type }) {
                         style={{ display: "none" }} // Hide the input element visually
                       />
                     </div>
-                    
                   </form>
                 </Box>
               </Box>
@@ -450,8 +469,6 @@ export default function UserModal({ type }) {
                 Submit
               </Button>
             </Box>
-
-            
           </Box>
         </Fade>
       </Modal>

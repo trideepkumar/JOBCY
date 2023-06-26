@@ -206,7 +206,6 @@ const updateAbout = async (req, res) => {
 
 const updateExperience = async (req, res) => {
   try {
-    console.log("hello");
     const {
       "experience[0].companyName": companyName,
       "experience[0].duration": duration,
@@ -215,8 +214,10 @@ const updateExperience = async (req, res) => {
       "education[0].qualification": qualification,
       "education[0].aboutEdu": educationAbout,
       "jobtitles[0].jobtitle": jobtitle,
+      "skills[0].skill": skill,
     } = req.body;
-
+  
+    console.log(req.body)
     const user = await User.findById(req.params._id);
 
     if (!user) {
@@ -226,6 +227,7 @@ const updateExperience = async (req, res) => {
     const newExperience = {};
     const newEducation = {};
     const newJobTitle = {};
+    const newSkill = {};
 
     if (companyName && duration && title) {
       newExperience.companyName = companyName;
@@ -243,6 +245,10 @@ const updateExperience = async (req, res) => {
       newJobTitle.jobtitle = jobtitle;
     }
 
+    if (skill) {
+      newSkill.skill = skill;
+    }
+
     if (Object.keys(newExperience).length > 0) {
       user.experience.push(newExperience);
     }
@@ -255,16 +261,19 @@ const updateExperience = async (req, res) => {
       user.jobtitles.push(newJobTitle);
     }
 
+    if (Object.keys(newSkill).length > 0) {
+      user.skills.push(newSkill);
+    }
+
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "User experience updated successfully", user });
+    res.status(200).json({ message: "User experience updated successfully", user });
   } catch (error) {
     console.error("Error updating user experience:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 const updateProfilepic = async (req, res) => {
   console.log("prof pic update");
@@ -380,8 +389,11 @@ const createPost = async (req, res) => {
     console.log('post create starts..')
     const { description, location, createdBy ,media} = req.body;
     console.log(media)
-    // const mediaUpload = await cloudinary.uploader.upload(req.file.path);
+   
+    console.log(req.body)
+    // const mediaUpload = await cloudinary.uploader.upload(req.media);
     // const mediaUrl = mediaUpload.secure_url;
+    // console.log(mediaUrl)
     const post = new Post({
       createdBy:createdBy,
       description:description,
@@ -410,6 +422,32 @@ const getPosts = async (req, res) => {
   }
 };
 
+const deleteJobTitle = async (req, res) => {
+  try {
+    const { userId, jobTitleId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const jobTitleIndex = user.jobtitles.findIndex((title) => title._id.toString() === jobTitleId);
+    if (jobTitleIndex === -1) {
+      return res.status(404).json({ message: 'Job title not found' });
+    }
+
+    // Delete the job title from the user's jobtitles array
+    user.jobtitles.splice(jobTitleIndex, 1);
+    await user.save();
+
+    res.json({ message: 'Job title deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting job title:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 
 exports.signup = signup;
@@ -426,3 +464,4 @@ exports.fetchResume = fetchResume;
 exports.applyJob = applyJob;
 exports.createPost = createPost;
 exports.getPosts = getPosts
+exports.deleteJobTitle = deleteJobTitle
