@@ -1,0 +1,10 @@
+.avatar {
+  width: 80px;
+  height: 80px;
+  transition: transform 0.7s;
+}
+
+.avatar:hover {
+  transform: scale(1.2);
+}
+

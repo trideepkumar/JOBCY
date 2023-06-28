@@ -12,6 +12,7 @@ import Home from './components/organisationPages/home';
 import Jobposts from './components/organisationPages/Jobposts';
 import Jobs from './components/organisationPages/Jobs';
 import Userjob from './components/userPages/Userjob/Userjob';
+import AddFriends from './components/userPages/Addfriends/AddFriends';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/posts" element={<Posts />} />
           <Route path="/profile" element={<Profile/>} />
           <Route path='/jobs' element={<Userjob/>} />
+          <Route path='/friends' element={<AddFriends/>}/>
           </Route>
 
           <Route element={<OrgPublicRoutes></OrgPublicRoutes>}>

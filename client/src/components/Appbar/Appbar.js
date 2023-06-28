@@ -154,8 +154,8 @@ const Navbar = () => {
                 Home
               </Typography>
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
-              <Group />
+            <MenuItem >
+              <Group/>
               <Typography variant="inherit" sx={{ ml: 1 }}>
                 Groups
               </Typography>
@@ -208,7 +208,7 @@ const Navbar = () => {
             >
               <Home />
             </IconButton>
-            <IconButton color="inherit" style={{ color: "#ff6e14" }}>
+            <IconButton color="inherit" style={{ color: "#ff6e14" }}  onClick={() => navigate("/friends")}>
               <Group />
             </IconButton>
             <IconButton

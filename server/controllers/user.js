@@ -7,10 +7,9 @@ const crypto = require("crypto");
 const Organizations = require("../model/organisation");
 const Jobs = require("../model/jobs");
 const Post = require("../model/post");
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require("cloudinary").v2;
 
 // const {cloudinary} = require('../middlewares/cloudinary')
-
 
 cloudinary.config({
   cloud_name: "dbnrosh3i",
@@ -155,6 +154,17 @@ const getUser = async (req, res) => {
   return res.status(200).json({ user });
 };
 
+const getAllusers = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    console.log(_id);
+    const users = await User.find({ isVerified: true, _id: { $ne: _id } });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
 // for email verification
 
 const verifyEmail = async (req, res) => {
@@ -216,8 +226,8 @@ const updateExperience = async (req, res) => {
       "jobtitles[0].jobtitle": jobtitle,
       "skills[0].skill": skill,
     } = req.body;
-  
-    console.log(req.body)
+
+    console.log(req.body);
     const user = await User.findById(req.params._id);
 
     if (!user) {
@@ -267,13 +277,14 @@ const updateExperience = async (req, res) => {
 
     await user.save();
 
-    res.status(200).json({ message: "User experience updated successfully", user });
+    res
+      .status(200)
+      .json({ message: "User experience updated successfully", user });
   } catch (error) {
     console.error("Error updating user experience:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 const updateProfilepic = async (req, res) => {
   console.log("prof pic update");
@@ -386,18 +397,18 @@ const applyJob = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    console.log('post create starts..')
-    const { description, location, createdBy ,media} = req.body;
-    console.log(media)
-   
-    console.log(req.body)
+    console.log("post create starts..");
+    const { description, location, createdBy, media } = req.body;
+    console.log(media);
+
+    console.log(req.body);
     // const mediaUpload = await cloudinary.uploader.upload(req.media);
     // const mediaUrl = mediaUpload.secure_url;
     // console.log(mediaUrl)
     const post = new Post({
-      createdBy:createdBy,
-      description:description,
-      location:location,
+      createdBy: createdBy,
+      description: description,
+      location: location,
       media: media,
     });
     const savedPost = await post.save();
@@ -413,7 +424,9 @@ const getPosts = async (req, res) => {
     console.log("getPosts fetching");
     const userId = req.params._id;
     console.log(userId);
-    const posts = await Post.find({ createdBy: userId }).sort({ createdAt: -1 });
+    const posts = await Post.find({ createdBy: userId }).sort({
+      createdAt: -1,
+    });
     console.log(posts);
     res.status(200).json(posts);
   } catch (error) {
@@ -428,26 +441,62 @@ const deleteJobTitle = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const jobTitleIndex = user.jobtitles.findIndex((title) => title._id.toString() === jobTitleId);
+    const jobTitleIndex = user.jobtitles.findIndex(
+      (title) => title._id.toString() === jobTitleId
+    );
     if (jobTitleIndex === -1) {
-      return res.status(404).json({ message: 'Job title not found' });
+      return res.status(404).json({ message: "Job title not found" });
     }
 
     // Delete the job title from the user's jobtitles array
     user.jobtitles.splice(jobTitleIndex, 1);
     await user.save();
 
-    res.json({ message: 'Job title deleted successfully' });
+    res.json({ message: "Job title deleted successfully" });
   } catch (error) {
-    console.error('Error deleting job title:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Error deleting job title:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
+const friendRequest = async (req, res) => {
+  const receiverId = req.params._id;
+  const { userId } = req.body;
+  const senderId = userId;
 
+  try {
+    const receiver = await User.findById(receiverId);
+    if (!receiver) {
+      return res.status(404).json({ error: "Receiver user not found" });
+    }
+
+    const sender = await User.findById(senderId);
+    if (!sender) {
+      return res.status(404).json({ error: "Sender user not found" });
+    }
+
+    if (
+      receiver.friendRequests.includes(senderId) ||
+      sender.friendRequests.includes(receiverId)
+    ) {
+      return res.status(400).json({ error: "Friend request already sent" });
+    }
+
+    sender.friendRequests.push(receiverId);
+    await sender.save();
+
+    receiver.friendRequests.push(senderId);
+    await receiver.save();
+
+    res.status(200).json({ message: "Friend request sent successfully", receiver });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
 
 exports.signup = signup;
@@ -463,5 +512,7 @@ exports.updateResume = updateResume;
 exports.fetchResume = fetchResume;
 exports.applyJob = applyJob;
 exports.createPost = createPost;
-exports.getPosts = getPosts
-exports.deleteJobTitle = deleteJobTitle
+exports.getPosts = getPosts;
+exports.deleteJobTitle = deleteJobTitle;
+exports.getAllusers = getAllusers;
+exports.friendRequest = friendRequest;
