@@ -84,9 +84,17 @@ const userSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  friendRequests: [{
+  friendRequestsent: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  }],
+  friendRequestrecieved: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  orgFollowing:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization'
   }],
   createdAt: {
     type: Date,

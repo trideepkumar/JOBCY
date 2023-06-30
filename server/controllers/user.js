@@ -4,7 +4,7 @@ const Token = require("../model/Token");
 const jwt = require("jsonwebtoken");
 const sendVerificationEmail = require("../utils/mailVerify");
 const crypto = require("crypto");
-const Organizations = require("../model/organisation");
+const Organization = require("../model/organisation");
 const Jobs = require("../model/jobs");
 const Post = require("../model/post");
 const cloudinary = require("cloudinary").v2;
@@ -463,41 +463,79 @@ const deleteJobTitle = async (req, res) => {
 };
 
 const friendRequest = async (req, res) => {
-  const receiverId = req.params._id;
+  const senderId = req.params._id;
   const { userId } = req.body;
-  const senderId = userId;
+  const receiverId = userId;
 
   try {
-    const receiver = await User.findById(receiverId);
-    if (!receiver) {
-      return res.status(404).json({ error: "Receiver user not found" });
-    }
-
     const sender = await User.findById(senderId);
     if (!sender) {
       return res.status(404).json({ error: "Sender user not found" });
     }
 
+    const receiver = await User.findById(receiverId);
+    if (!receiver) {
+      return res.status(404).json({ error: "Receiver user not found" });
+    }
+
     if (
-      receiver.friendRequests.includes(senderId) ||
-      sender.friendRequests.includes(receiverId)
+      receiver.friendRequestrecieved.includes(senderId) ||
+      sender.friendRequestsent.includes(receiverId)
     ) {
       return res.status(400).json({ error: "Friend request already sent" });
     }
 
-    sender.friendRequests.push(receiverId);
+    sender.friendRequestsent.push(receiverId);
     await sender.save();
 
-    receiver.friendRequests.push(senderId);
+    receiver.friendRequestrecieved.push(senderId);
     await receiver.save();
 
-    res.status(200).json({ message: "Friend request sent successfully", receiver });
+    console.log("me"+sender)
+
+    res.status(200).json({ message: "Friend request sent successfully", sender });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Server error" });
   }
 };
 
+
+const getAllorganisations = async (req, res) => {
+  try {
+    const organizations = await Organization.find();
+    res.json(organizations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch organizations" });
+  }
+};
+
+const orgFollow = async (req, res) => {
+  try {
+    const userId = req.params;
+    const orgId = req.body.orgId;
+
+    const user = await User.findById(userId);
+    const organization = await Organization.findById(orgId);
+
+    if (
+      user.orgFollowing.includes(orgId) ||
+      organization.followers.includes(userId)
+    ) {
+      return res.status(404).json({ error: "Already Followed" });
+    }
+
+    user.orgFollowing.push(orgId);
+    await user.save();
+    organization.followers.push(userId);
+    await organization.save();
+    res.status(200).json({ message: "Followed successfully", user });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 exports.signup = signup;
 exports.login = login;
@@ -516,3 +554,5 @@ exports.getPosts = getPosts;
 exports.deleteJobTitle = deleteJobTitle;
 exports.getAllusers = getAllusers;
 exports.friendRequest = friendRequest;
+exports.getAllorganisations = getAllorganisations;
+exports.orgFollow = orgFollow;

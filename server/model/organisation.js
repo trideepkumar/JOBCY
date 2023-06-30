@@ -18,6 +18,10 @@ const organizationSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  about: {
+    type: String,
+    default: "",
+  },
   place: {
     type: String,
     required: true,
@@ -27,6 +31,14 @@ const organizationSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+  },
+  backgroundPic: {
+    type: String,
+    default: "",
+  },
+  profPic: {
+    type: String,
+    default: "",
   },
   password: {
     type: String,
@@ -41,6 +53,10 @@ const organizationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  followers:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   jobposts: [
     {
       orgName: String,

@@ -13,6 +13,7 @@ import Jobposts from './components/organisationPages/Jobposts';
 import Jobs from './components/organisationPages/Jobs';
 import Userjob from './components/userPages/Userjob/Userjob';
 import AddFriends from './components/userPages/Addfriends/AddFriends';
+import OrgProfile from './components/organisationPages/Profile/OrgProfile';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path="/organisation/dashboard" element={<Home/>} />
           <Route path="/organisation/jobposts"  element={<Jobposts/>} />
           <Route path='/organisation/jobs' element={<Jobs/>}/>
+          <Route path='/organisation/profile' element={<OrgProfile/>}/>
           </Route>
 
           </Routes>

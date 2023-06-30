@@ -165,13 +165,13 @@ export default function UserModal({ type }) {
           console.log(formData);
           const response = await axiosInstance.post(endpoint, formData);
           console.log(response);
-          if (response.status === 200) {
-            let userEndpoint = `user/${authState._id}`;
-            const user = await axiosInstance.get(userEndpoint);
-            localStorage.setItem("user", JSON.stringify(user.data.user));
-            dispatch(setAuth());
-            handleClose();
-          }
+            if (response.status === 200) {
+              let userEndpoint = `user/${authState._id}`;
+              const user = await axiosInstance.get(userEndpoint);
+              localStorage.setItem("user", JSON.stringify(user.data.user));
+              dispatch(setAuth());
+              handleClose();
+            }
         } catch (error) {
           console.error("Error updating experience:", error);
         }
