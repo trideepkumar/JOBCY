@@ -26,6 +26,8 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import UserNotification from "../Notifications/UserNotification";
+
 
 const Navbar = () => {
   const authState = useSelector((state) => {
@@ -38,7 +40,8 @@ const Navbar = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const [openNotify ,setopenNotify] = useState(false)
+ 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -64,6 +67,14 @@ const Navbar = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
     setMenuOpen(false);
+  };
+
+  const handleNotify = ()=>{
+    setopenNotify(true)
+  }
+  
+  const handleCloseNotify = () => {
+    setopenNotify(false);
   };
 
   if (!loggedIn) {
@@ -221,9 +232,10 @@ const Navbar = () => {
             <IconButton color="inherit" style={{ color: "#ff6e14" }}>
               <Chat />
             </IconButton>
-            <IconButton color="inherit" style={{ color: "#ff6e14" }}>
+            <IconButton color="inherit" style={{ color: "#ff6e14" }} onClick={handleNotify}>
               <Notifications />
             </IconButton>
+            {openNotify && <UserNotification  onClose={handleCloseNotify} />}
             {/* Avatar */}
             {/* {profilePicture ? (
               <Avatar src={profilePicture} alt="Profile Picture" />

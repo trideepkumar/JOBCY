@@ -26,7 +26,6 @@ import { useSelector } from "react-redux";
 import Appbar from "../../Appbar/Appbar";
 
 function Userjob() {
-  
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
@@ -73,7 +72,7 @@ function Userjob() {
         console.log(hasApplied);
 
         setJobPosts(jobs);
-        setAppliedJobs(hasApplied);
+        setAppliedJobs({ [authState._id]: hasApplied });
       } catch (error) {
         console.error(error);
       }
@@ -81,6 +80,11 @@ function Userjob() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    console.log("jobposts");
+    console.log(jobPosts);
+  });
 
   return (
     <>
@@ -354,7 +358,7 @@ function Userjob() {
                           >
                             Details
                           </Button>
-                          {appliedJobs ? (
+                          {appliedJobs[jobpost._id] ? (
                             <Button
                               sx={{
                                 background: "#ff6e14",
@@ -422,7 +426,6 @@ function Userjob() {
               <Link href="/profile">Do you want to improve your resume?</Link>{" "}
             </CardContent>
           </Card>
-          
 
           <Card
             className="right-card-bottom"
