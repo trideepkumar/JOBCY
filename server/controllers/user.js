@@ -491,15 +491,16 @@ const friendRequest = async (req, res) => {
     receiver.friendRequestrecieved.push(senderId);
     await receiver.save();
 
-    console.log("me"+sender)
+    console.log("me" + sender);
 
-    res.status(200).json({ message: "Friend request sent successfully", sender });
+    res
+      .status(200)
+      .json({ message: "Friend request sent successfully", sender });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Server error" });
   }
 };
-
 
 const getAllorganisations = async (req, res) => {
   try {
@@ -537,6 +538,76 @@ const orgFollow = async (req, res) => {
   }
 };
 
+const getFriendRequests = async (req, res) => {
+  try {
+   
+    const user = await User.findById(req.query._id).populate(
+      "friendRequestrecieved"
+    );
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const friendRequests = user.friendRequestrecieved;
+    const friendRequestData = friendRequests.map((request) => {
+      return {
+        _id: request._id,
+        name: request.name,
+        profPic: request.profPic,
+        designation: request.designation,
+      };
+    });
+
+    res.send(friendRequestData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+const acceptFriendRequest = async (req, res) => {
+  try {
+    const friendUserId = req.body.userId;
+    console.log("friendrequests:-"+friendUserId);
+    const userId = req.params;
+    console.log("userId :-"+userId);
+
+    const user = await User.findOne({ _id: userId });
+    console.log("user"+user)
+    if (user) {
+      const friendIndex = user.friendRequestrecieved.indexOf(friendUserId);
+      if (friendIndex !== -1) {
+        user.friendRequestrecieved.splice(friendIndex, 1);
+        user.friends.push(friendUserId);
+        await user.save();
+      }
+    }
+
+    const oppositeUser = await User.findOne({ _id: friendUserId });
+
+    console.log("opposite user", oppositeUser);
+    if (oppositeUser) {
+      const friendUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
+      console.log(friendUserIndex)
+      if (friendUserIndex !== -1) {
+        oppositeUser.friendRequestsent.splice(friendUserIndex, 1);
+        oppositeUser.friends.push(user._id);
+        await oppositeUser.save();
+      }
+    }
+
+    res.status(200).json({ message: "Friend request accepted successfully" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while accepting friend request" });
+  }
+};
+
+
+
+
 exports.signup = signup;
 exports.login = login;
 exports.verifyToken = verifyToken;
@@ -556,3 +627,5 @@ exports.getAllusers = getAllusers;
 exports.friendRequest = friendRequest;
 exports.getAllorganisations = getAllorganisations;
 exports.orgFollow = orgFollow;
+exports.getFriendRequests = getFriendRequests;
+exports.acceptFriendRequest = acceptFriendRequest;
