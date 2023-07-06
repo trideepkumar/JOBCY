@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Modal from "@mui/material/Modal";
 import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
 import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
@@ -10,17 +8,14 @@ import Grid from "@mui/material/Grid";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../api/axiosinstance";
 import { Typography } from "@mui/material";
-import NotifyToast from '../Notifications/NotifyToast'
+import NotifyToast from "../Notifications/NotifyToast";
 
 function UserNotification() {
   const authState = useSelector((state) => state.auth.authState);
+
   const [open, setOpen] = useState(false);
   const [userRequests, setUserRequests] = useState([]);
-
-  useEffect(() => {
-    setOpen(true);
-    getUserRequests();
-  }, []);
+  const [showToast, setShowToast] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -48,18 +43,30 @@ function UserNotification() {
       console.log(endpoint);
       const response = await axiosInstance.post(endpoint, { userId });
       console.log(response.data);
-      if(response.status === 200){
-        <NotifyToast/>
+      if (response.status === 200) {
+        setOpen(false);
+        setShowToast(true);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleDecline = (userId) => {
-    // Handle decline logic here
+  const handleDecline = async (userId) => {
     console.log("Decline user:", userId);
+    let endpoint = `/friendRequestDeny/${authState._id}`;
+    const response = await axiosInstance.delete(endpoint, { data: { userId } });
+    console.log(response.data);
+    if (response.status === 200) {
+      setOpen(false);
+      setShowToast(true);
+    }
   };
+
+  useEffect(() => {
+    setOpen(true);
+    getUserRequests();
+  }, []);
 
   return (
     <div>
@@ -83,13 +90,22 @@ function UserNotification() {
             paddingLeft: "2.5rem",
           }}
         >
-          <Typography sx={{ paddingBottom: "10px", color: "#ff6e14", fontSize: '1rem' }}>
+          <Typography
+            sx={{ paddingBottom: "10px", color: "#ff6e14", fontSize: "1rem" }}
+          >
             Friend Requests
           </Typography>
           {userRequests.length === 0 ? (
-            <Typography sx={{justifyContent:"center"}}>No notifications</Typography>
+            <Typography sx={{ justifyContent: "center" }}>
+              No notifications
+            </Typography>
           ) : (
-            <Grid container spacing={2} alignItems="center" sx={{ height: "1px" }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ height: "1px" }}
+            >
               {userRequests.map((user) => (
                 <Grid item key={user._id} sx={{ display: "flex", gap: "2rem" }}>
                   <Avatar sx={{ mr: -3 }}>
@@ -143,6 +159,7 @@ function UserNotification() {
           )}
         </Card>
       </Modal>
+        {showToast && <NotifyToast  />}
     </div>
   );
 }

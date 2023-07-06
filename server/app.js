@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const authRoutes = require('./routes/auth/userAuth');
+const adminRoutes = require('./routes/admin_router')
 
 const corsOptions = {
   origin: "*",
@@ -45,6 +46,7 @@ passport.use(
 app.use('/', user_router);
 app.use('/organisation', organisation_router);
 app.use('/auth', authRoutes);
+app.use('/admin',adminRoutes)
 
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {

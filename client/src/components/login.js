@@ -12,9 +12,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/features/auth/authSlice";
 import { setorganisationAuth } from "../app/features/auth/organisationauthSlice";
+import {setadminAuth} from "../app/features/auth/adminauthSlice"
 import Appbar from '../components/Appbar/Appbar'
 
 const Login = ({ loginType }) => {
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -79,6 +81,12 @@ const Login = ({ loginType }) => {
           loginEndpoint = "/login"; 
           redirectRoute = "/posts"; 
         }
+        if(loginType === "admin"){
+          loginEndpoint = "/admin/login";
+          redirectRoute = "/admin/dashboard"
+        }
+
+        console.log(formData)
   
         const response = await axiosInstance.post(loginEndpoint, formData);
   
@@ -95,6 +103,10 @@ const Login = ({ loginType }) => {
             console.log(response.data.organisation)
             localStorage.setItem("organisation", JSON.stringify(response.data.organisation));
             dispatch(setorganisationAuth());
+            navigate(redirectRoute) 
+          }else if(loginType === 'admin'){
+            localStorage.setItem("admin", JSON.stringify(response.data.admin));
+            dispatch(setadminAuth());
             navigate(redirectRoute) 
           }
           
@@ -407,6 +419,140 @@ const Login = ({ loginType }) => {
             >
               
             </Grid>
+          </Grid>
+        </>
+      )}
+
+      {loginType === "admin" && (
+        <>
+         <Grid container component="main" sx={{ height: "100vh" }}>
+            <CssBaseline />
+
+            <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Box
+                  sx={{
+                    m: 4,
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <img
+                    src={process.env.PUBLIC_URL + "/admin login.webp"}
+                    alt=""
+                    style={{
+                      width: "700px",
+                      height: "500px",
+                      maxWidth: "100vw",
+                      margin: "4px",
+                    }}
+                  />
+                </Box>
+              </Grid>
+
+
+            <Grid
+              item
+              xs={12}
+              md={6}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Box
+                sx={{
+                  my: 8,
+                  mx: 6,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  border: "0.1px solid #ff6e14",
+                  borderRadius: "8px",
+                  padding: "16px",
+                }}
+              >
+                <Typography component="h1" variant="h5">
+                  Admin Login
+                </Typography>
+                <Box
+                  component="form"
+                  noValidate
+                  onSubmit={handleSubmit}
+                  sx={{ mt: 1 }}
+                >
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                  />
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                  />
+                  {respons && !respons?.data?.success && (
+                    <Typography
+                      sx={{
+                        my: 1,
+                        textAlign: "center",
+                        color: "red",
+                        fontFamily: "Courier New, monospace",
+                      }}
+                    >
+                      {respons}
+                    </Typography>
+                  )}
+
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2, bgcolor: "#ff6e14" }}
+                    disabled={!isFormValid}
+                  >
+                    Login
+                  </Button>
+                  <Grid container>
+                    <Grid item xs>
+                      <Link href="/forgot-password" variant="body2">
+                        Forgot password?
+                      </Link>
+                    </Grid>
+                    
+                  </Grid>
+                </Box>
+              </Box>
+            </Grid>
+
+          
           </Grid>
         </>
       )}

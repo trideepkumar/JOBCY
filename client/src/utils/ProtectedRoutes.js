@@ -9,6 +9,8 @@ function ProtectedRoutes() {
 
         return state.auth?.authState;
     })
+    
+
     return (authState ? <Outlet /> : <Navigate to='/login' />)
 }
 

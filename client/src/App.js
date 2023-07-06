@@ -4,6 +4,8 @@ import PublicRoutes from './utils/PublicRoutes';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import OrgProtectedRoutes from './utils/orgPrivateRoutes';
 import OrgPublicRoutes from './utils/orgPublicRoutes';
+import AdminPublicRoutes from './utils/adminPublic';
+import AdminProtectedRoutes from './utils/adminProtected';
 import Signup from './components/signup';
 import Login from './components/login';
 import Posts from './components/userPages/Posts/Posts';
@@ -14,6 +16,8 @@ import Jobs from './components/organisationPages/Jobs';
 import Userjob from './components/userPages/Userjob/Userjob';
 import AddFriends from './components/userPages/Addfriends/AddFriends';
 import OrgProfile from './components/organisationPages/Profile/OrgProfile';
+import AdminLogin from './components/Admin/Auth/AdminLogin'
+import Dashboard from './components/Admin/AdminPages/Dashboard';
 
 
 function App() {
@@ -43,6 +47,14 @@ function App() {
           <Route path="/organisation/jobposts"  element={<Jobposts/>} />
           <Route path='/organisation/jobs' element={<Jobs/>}/>
           <Route path='/organisation/profile' element={<OrgProfile/>}/>
+          </Route>
+
+          <Route element={<AdminPublicRoutes></AdminPublicRoutes>}>
+           <Route path='/admin/login' element={<AdminLogin/>}/>
+          </Route>
+
+          <Route element={<AdminProtectedRoutes></AdminProtectedRoutes>}>
+          <Route path='/admin/dashboard' element={<Dashboard/>}/>
           </Route>
 
           </Routes>

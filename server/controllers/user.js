@@ -606,6 +606,40 @@ const acceptFriendRequest = async (req, res) => {
 };
 
 
+const friendRequestDeny = async (req, res) => {
+  try {
+
+
+    const userId = req.params;
+    console.log(userId)
+    const oppositeUserId = req.body.userId;
+    console.log(oppositeUserId)
+
+    const user = await User.findById(userId);
+    console.log(user)
+    const userIndex = user.friendRequestrecieved.indexOf(oppositeUserId);
+    console.log(userIndex)
+    if (userIndex > -1) {
+      user.friendRequestrecieved.splice(userIndex, 1);
+    }
+    await user.save();
+
+    const oppositeUser = await User.findById(oppositeUserId);
+    console.log(oppositeUser)
+    const oppositeUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
+    console.log(oppositeUserIndex)
+    if (oppositeUserIndex > -1) {
+      oppositeUser.friendRequestsent.splice(oppositeUserIndex, 1);
+    }
+    await oppositeUser.save();
+
+    res.status(200).send("successfully updated!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error occurred while updating friend requests");
+  }
+};
+
 
 
 exports.signup = signup;
@@ -629,3 +663,4 @@ exports.getAllorganisations = getAllorganisations;
 exports.orgFollow = orgFollow;
 exports.getFriendRequests = getFriendRequests;
 exports.acceptFriendRequest = acceptFriendRequest;
+exports.friendRequestDeny = friendRequestDeny;

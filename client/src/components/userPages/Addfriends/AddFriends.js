@@ -252,7 +252,7 @@ function AddFriends() {
                       display: "flex",
                       justifyContent: "center",
                       paddingTop: "20px",
-                      backgroundImage: "",
+                      backgroundImage: `url(${user.backgroundPic})`,
                       backgroundSize: "cover",
                       background: "grey",
                     }}

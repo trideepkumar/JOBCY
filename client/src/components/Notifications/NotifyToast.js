@@ -1,15 +1,23 @@
-import React, { useEffect } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const NotifyToast = () => {
+const NotifyToast = ({ onClose }) => {
   useEffect(() => {
-    toast.success('Successful!', {
-      autoClose: 3000,
+    const toastId = toast.success("Successfully updated !!!", {
+      progressClassName: "custom-progress",
+      progressStyle: {
+        background: "#ff6e14",
+      },
+      onClose: onClose,
     });
-  }, []);
 
-  return <div>NotifyToast</div>;
+    return () => {
+      toast.dismiss(toastId);
+    };
+  }, [onClose]);
+
+  return <ToastContainer />;
 };
 
 export default NotifyToast;
