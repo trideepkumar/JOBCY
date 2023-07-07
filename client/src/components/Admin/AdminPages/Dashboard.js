@@ -3,11 +3,13 @@ import { Chart } from "chart.js";
 import "chart.js/auto";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import JobPostchart from "./JobPostchart";
+import Navbar from "../../Appbar/Navbar";
+import Sidebar from "../Sidebar/Sidebar";
 
 function Dashboard() {
   const [usersData, setUsersData] = useState({});
-  const [organizationsData, setOrganizationsData] = useState({})
-  const [chartData, setChartData] = useState(null);;
+  const [organizationsData, setOrganizationsData] = useState({});
+  const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:3000/admin/total-users-by-month")
@@ -112,21 +114,20 @@ function Dashboard() {
     });
   };
 
-
   const handleDownloadOrganisationPdf = () => {
-    fetch('http://localhost:3000/admin/generate-organisation-pdf')
+    fetch("http://localhost:3000/admin/generate-organisation-pdf")
       .then((response) => {
         if (response.ok) {
           return response.blob();
         } else {
-          throw new Error('Failed to generate PDF report');
+          throw new Error("Failed to generate PDF report");
         }
       })
       .then((blob) => {
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.download = 'organizations_report.pdf';
+        link.download = "organizations_report.pdf";
         link.click();
       })
       .catch((error) => {
@@ -134,64 +135,127 @@ function Dashboard() {
       });
   };
 
+  const handleDownloadJobPdf = () => {
+    fetch("http://localhost:3000/admin/get-job-pdf")
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        } else {
+          throw new Error("Failed to generate PDF report");
+        }
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "job_report.pdf";
+        link.click();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-
-//useEffect for job & posts data fetching
+  //useEffect for job & posts data fetching
   useEffect(() => {
-    fetch('http://localhost:3000/admin/total-posts-jobs')
-      .then(response => response.json())
-      .then(data => {
-        console.log("here")
-        console.log(data.jobs)
-        console.log(data.posts)
+    fetch("http://localhost:3000/admin/total-posts-jobs")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("here");
+        console.log(data.jobs);
+        console.log(data.posts);
         const formattedData = {
           jobs: data.jobs,
-          posts: data.posts
+          posts: data.posts,
         };
         setChartData(formattedData);
-        console.log("formatted data")
-        console.log(formattedData)
+        console.log("formatted data");
+        console.log(formattedData);
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   }, []);
-  
 
-  useEffect(()=>{
-    console.log("Hello"+chartData)
-  })
+  useEffect(() => {
+    console.log("Hello" + chartData);
+  });
 
   return (
     <div>
-      <Grid sx={{ display: "flex", gap: "10rem", margin: "4rem" }}>
-        <Grid sx={{ width: "40vw", height: "50vh" }}>
-          <h2 style={{ textAlign: "center" }}>
-            Total Users Chart (Monthly wise)
-          </h2>
-          <canvas ref={usersChartContainer}></canvas>
+      <Navbar />
+
+      <Grid sx={{display:'flex',width:'10rem'}}>
+      <Sidebar />
+
+      <Grid  sx={{marginTop:'5rem',width:'75vw',marginLeft:'20rem',height:'70vh',position:'fixed'}}>
+        <Grid sx={{ display: "flex", gap: "10rem" }}>
+          <Grid sx={{ width: "40vw", height: "50vh" }}>
+            <h2 style={{ textAlign: "center" }}>
+              Total Users Chart (Monthly wise)
+            </h2>
+            <canvas ref={usersChartContainer}></canvas>
+          </Grid>
+
+
+          <Grid sx={{ width: "30vw", height:"0vh" }}>
+            <h2 style={{ textAlign: "center" }}>
+              Total Organizations Chart (Monthly wise)
+            </h2>
+            <canvas ref={organizationsChartContainer}></canvas>
+          </Grid>
         </Grid>
-        <Grid sx={{ width: "40vw", height: "50vh" }}>
+
+
+        <Grid sx={{ display: "flex", gap: "10rem" }}>
+          <Grid sx={{ width: "40vw", height: "50vh" }}>
           <h2 style={{ textAlign: "center" }}>
-            Total Organizations Chart (Monthly wise)
-          </h2>
-          <canvas ref={organizationsChartContainer}></canvas>
+              Total Jobs & Posts Chart 
+            </h2>
+            {chartData && <JobPostchart data={chartData} />}
+          </Grid>
+          <Grid
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              alignContent: "center",
+              height: "17rem",
+              width: "33rem",
+              padding:'20px',
+              gap: "5rem",
+            }}
+          >
+            <Box sx={{ display: "grid" }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ marginBottom: "2rem" }}
+                gutterBottom
+              >
+                Jobposts & Appliedcandidates
+              </Typography>
+              <Button
+                sx={{ border: "0.5px solid #ff6e14" }}
+                onClick={handleDownloadJobPdf}
+              >
+                Download pdf 
+              </Button>
+            </Box>
+            <Box sx={{ display: "grid" }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ marginBottom: "2rem" }}
+                gutterBottom
+              >
+                Total organisation Details
+              </Typography>
+              <Button
+                sx={{ border: "0.5px solid #ff6e14" }}
+                onClick={handleDownloadOrganisationPdf}
+              >
+                Download pdf 
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-
-
-
-      <Grid sx={{ display: "flex", gap: "10rem", margin: "4rem" }}>
-      <Grid sx={{ width: "40vw", height: "50vh" }}>
-      {chartData && <JobPostchart data={chartData} />}
-      </Grid>
-      <Grid sx={{display:'flex',justifyContent:'center',alignItems:'center',alignContent:'center',height:'17rem',width:'38rem',gap: "5rem",border:'0.5px solid grey'}}>
-        <Box sx={{display:'grid'}}>
-        <Typography variant="subtitle1" sx={{marginBottom:'2rem'}} gutterBottom>Jobposts & Appliedcandidates</Typography>
-        <Button sx={{border:'0.5px solid #ff6e14'}}>Download pdf Here</Button>
-        </Box>
-        <Box sx={{display:'grid'}}>
-        <Typography variant="subtitle1" sx={{marginBottom:'2rem'}} gutterBottom>Total organisation Details</Typography>
-        <Button sx={{border:'0.5px solid #ff6e14'}} onClick={handleDownloadOrganisationPdf}>Download pdf Here</Button>
-        </Box>
       </Grid>
       </Grid>
     </div>

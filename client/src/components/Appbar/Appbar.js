@@ -28,7 +28,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import UserNotification from "../Notifications/UserNotification";
 
-
 const Navbar = () => {
   const authState = useSelector((state) => {
     return state.auth.authState;
@@ -40,8 +39,8 @@ const Navbar = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [openNotify ,setopenNotify] = useState(false)
- 
+  const [openNotify, setopenNotify] = useState(false);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -56,8 +55,11 @@ const Navbar = () => {
     }
   }, [authState]);
 
-  const loggedIn = !!localStorage.getItem("user");
+  const loggedIn = localStorage.getItem("user");
   console.log(loggedIn);
+
+  const adminLoggedIn = localStorage.getItem("admin");
+  console.log("hello"+adminLoggedIn)
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -69,10 +71,10 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
-  const handleNotify = ()=>{
-    setopenNotify(true)
-  }
-  
+  const handleNotify = () => {
+    setopenNotify(true);
+  };
+
   const handleCloseNotify = () => {
     setopenNotify(false);
   };
@@ -111,133 +113,141 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
     );
-  }
+  } 
+  else if (loggedIn) {
+    return (
+      <AppBar
+        position="fixed"
+        sx={{
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: "#f3f2ee",
+          boxShadow: "none",
+          width: "100%",
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          {/* Image on the left side */}
+          {/* <img src="/JOBCYMAIN.png" alt="Logo" style={{ width: '7%', height: '10%', marginLeft: '10px' }} /> */}
 
-  return (
-    <AppBar
-      position="fixed"
-      sx={{
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: "#f3f2ee",
-        boxShadow: "none",
-        width: "100%",
-      }}
-    >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        {/* Image on the left side */}
-        {/* <img src="/JOBCYMAIN.png" alt="Logo" style={{ width: '7%', height: '10%', marginLeft: '10px' }} /> */}
-
-        <Typography
-          sx={{ color: "black", fontFamily: "fantasy", fontSize: "2rem" }}
-        >
-          JOBCY
-        </Typography>
-        <Box
-          sx={{
-            display: { xs: "block", md: "none" },
-          }}
-        >
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleMenuOpen}
-            style={{ color: "#ff6e14" }}
+          <Typography
+            sx={{ color: "black", fontFamily: "fantasy", fontSize: "2rem" }}
           >
-            <MenuIcon />
-          </IconButton>
-
-          <Menu
-            anchorEl={anchorEl}
-            open={menuOpen}
-            onClose={handleMenuClose}
-            PaperProps={{
-              style: {
-                background: "transparent",
-                color: "#ff6e4",
-              },
+            JOBCY
+          </Typography>
+          <Box
+            sx={{
+              display: { xs: "block", md: "none" },
             }}
           >
-            <MenuItem onClick={() => navigate("/posts")}>
-              <Home />
-              <Typography variant="inherit" sx={{ ml: 1 }}>
-                Home
-              </Typography>
-            </MenuItem>
-            <MenuItem >
-              <Group/>
-              <Typography variant="inherit" sx={{ ml: 1 }}>
-                Groups
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={() => navigate("/jobs")}>
-              <Work />
-              <Typography variant="inherit" sx={{ ml: 1 }}>
-                Jobs
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
-              <Chat />
-              <Typography variant="inherit" sx={{ ml: 1 }}>
-                Chat
-              </Typography>
-            </MenuItem>
-            <MenuItem onClick={handleMenuClose}>
-              <Notifications />
-              <Typography variant="inherit" sx={{ ml: 1 }}>
-                Notifications
-              </Typography>
-            </MenuItem>
-          </Menu>
-        </Box>
-        <Box
-          sx={{
-            display: { xs: "none", md: "flex" },
-          }}
-        >
-          <TextField
-            id="search-bar"
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            sx={{ width: "20rem", marginRight: "35rem" }}
-            InputProps={{
-              endAdornment: (
-                <IconButton color="inherit" edge="end">
-                  <Search />
-                </IconButton>
-              ),
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleMenuOpen}
+              style={{ color: "#ff6e14" }}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              PaperProps={{
+                style: {
+                  background: "transparent",
+                  color: "#ff6e4",
+                },
+              }}
+            >
+              <MenuItem onClick={() => navigate("/posts")}>
+                <Home />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Home
+                </Typography>
+              </MenuItem>
+              <MenuItem>
+                <Group />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Groups
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={() => navigate("/jobs")}>
+                <Work />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Jobs
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <Chat />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Chat
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <Notifications />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Notifications
+                </Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
             }}
-          />
-          {/* Icons and Avatar on the right side */}
-          <Stack direction="row" spacing={3}>
-            <IconButton
-              color="inherit"
-              style={{ color: "#ff6e14" }}
-              onClick={() => navigate("/posts")}
-            >
-              <Home />
-            </IconButton>
-            <IconButton color="inherit" style={{ color: "#ff6e14" }}  onClick={() => navigate("/friends")}>
-              <Group />
-            </IconButton>
-            <IconButton
-              color="inherit"
-              style={{ color: "#ff6e14" }}
-              onClick={() => navigate("/jobs")}
-            >
-              <Work />
-            </IconButton>
-            <IconButton color="inherit" style={{ color: "#ff6e14" }}>
-              <Chat />
-            </IconButton>
-            <IconButton color="inherit" style={{ color: "#ff6e14" }} onClick={handleNotify}>
-              <Notifications />
-            </IconButton>
-            {openNotify && <UserNotification  onClose={handleCloseNotify} />}
-            {/* Avatar */}
-            {/* {profilePicture ? (
+          >
+            <TextField
+              id="search-bar"
+              variant="outlined"
+              size="small"
+              placeholder="Search"
+              sx={{ width: "20rem", marginRight: "35rem" }}
+              InputProps={{
+                endAdornment: (
+                  <IconButton color="inherit" edge="end">
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+            {/* Icons and Avatar on the right side */}
+            <Stack direction="row" spacing={3}>
+              <IconButton
+                color="inherit"
+                style={{ color: "#ff6e14" }}
+                onClick={() => navigate("/posts")}
+              >
+                <Home />
+              </IconButton>
+              <IconButton
+                color="inherit"
+                style={{ color: "#ff6e14" }}
+                onClick={() => navigate("/friends")}
+              >
+                <Group />
+              </IconButton>
+              <IconButton
+                color="inherit"
+                style={{ color: "#ff6e14" }}
+                onClick={() => navigate("/jobs")}
+              >
+                <Work />
+              </IconButton>
+              <IconButton color="inherit" style={{ color: "#ff6e14" }}>
+                <Chat />
+              </IconButton>
+              <IconButton
+                color="inherit"
+                style={{ color: "#ff6e14" }}
+                onClick={handleNotify}
+              >
+                <Notifications />
+              </IconButton>
+              {openNotify && <UserNotification onClose={handleCloseNotify} />}
+              {/* Avatar */}
+              {/* {profilePicture ? (
               <Avatar src={profilePicture} alt="Profile Picture" />
             ) : (
               <IconButton color="inherit">
@@ -246,35 +256,40 @@ const Navbar = () => {
                 </Avatar>
               </IconButton>
             )} */}
-            {/* // Avatar and IconButton */}
-            {profilePicture ? (
-              <Avatar
-                src={profilePicture}
-                alt="Profile Picture"
-                onClick={handleMenuOpen}
-              />
-            ) : (
-              <IconButton color="inherit" onClick={handleMenuOpen}>
-                <Avatar>
-                  <AccountCircle />
-                </Avatar>
-              </IconButton>
-            )}
+              {/* // Avatar and IconButton */}
+              {profilePicture ? (
+                <Avatar
+                  src={profilePicture}
+                  alt="Profile Picture"
+                  onClick={handleMenuOpen}
+                />
+              ) : (
+                <IconButton color="inherit" onClick={handleMenuOpen}>
+                  <Avatar>
+                    <AccountCircle />
+                  </Avatar>
+                </IconButton>
+              )}
 
-            {/* // Dropdown Menu */}
-            <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
-              <MenuItem onClick={handleLogout} style={{ color: "red" }}>
-                <Logout />
-                <Typography variant="inherit" sx={{ ml: 1 }}>
-                  Logout
-                </Typography>
-              </MenuItem>
-            </Menu>
-          </Stack>
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
+              {/* // Dropdown Menu */}
+              <Menu
+                anchorEl={anchorEl}
+                open={menuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleLogout} style={{ color: "red" }}>
+                  <Logout />
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Logout
+                  </Typography>
+                </MenuItem>
+              </Menu>
+            </Stack>
+          </Box>
+        </Toolbar>
+      </AppBar>
+    );
+  }
 };
 
 export default Navbar;

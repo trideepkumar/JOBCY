@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Chart } from "chart.js";
 
+
 function JobPostchart({ data }) {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);

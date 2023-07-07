@@ -1,5 +1,6 @@
 const User = require("../model/user");
 const Organization = require("../model/organisation");
+const Job = require("../model/jobs");
 const bcrypt = require("bcrypt");
 const Token = require("../model/Token");
 const jwt = require("jsonwebtoken");
@@ -214,7 +215,7 @@ const organisationPdf = async (req,res)=>{
     const doc = new PDFDocument();
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="organizations_report.pdf"');
+    res.setHeader('Content-Disposition', 'attachment; filename="JOBCY_organizations_report.pdf"');
 
     doc.pipe(res);
 
@@ -238,6 +239,184 @@ const organisationPdf = async (req,res)=>{
 }
 
 
+const jobReportPdf = async (req, res) => {
+  try {
+    const jobs = await Job.find({}, 'jobTitle appliedCandidates').populate({
+      path: 'appliedCandidates',
+      select: 'name',
+    });
+
+    console.log(jobs);
+
+    const doc = new PDFDocument();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="JOBCY_job_report.pdf"');
+
+    doc.pipe(res);
+
+    doc.fontSize(18).text('Job Report', { align: 'center' });
+
+    jobs.forEach((job, index) => {
+      doc.moveDown(1).fontSize(14).text(`Job Title: ${job.jobTitle}`, { underline: true });
+
+      if (job.appliedCandidates && job.appliedCandidates.length > 0) {
+        doc.moveDown(0.5).fontSize(12).text('Applied Candidates:', { underline: true });
+
+        job.appliedCandidates.forEach((candidate, candidateIndex) => {
+          doc.moveDown(0.5).text(`${candidateIndex + 1}. ${candidate.fullName} - ${candidate.email}`);
+        });
+      } else {
+        doc.moveDown(0.5).fontSize(12).text('No applied candidates found');
+      }
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error generating PDF report');
+  }
+};
+
+
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({})
+      .populate("friends")
+      .populate("orgFollowing")
+      .lean();// Convert the mongoose documents to plain JavaScript objects
+
+    const usersWithFriendCount = users.map((user) => ({
+      ...user,
+      friendCount: user.friends ? user.friends.length : 0,
+      orgFollowingCount: user.orgFollowing ? user.orgFollowing.length : 0,
+    }));
+
+    console.log(usersWithFriendCount);
+    res.status(200).json(usersWithFriendCount);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const blockUser = async (req, res) => {
+    try {
+      const userId = req.body.userId;
+
+      const user = await User.findOneAndUpdate(
+        { _id: userId },
+        { isVerified: false },
+        { new: true }
+      );
+
+      console.log(user);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({user});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  };
+
+const unBlockuser = async(req,res)=>{
+try {
+  const userId = req.body.userId;
+
+  const user = await User.findOneAndUpdate(
+    { _id: userId },
+    { isVerified: true },
+    { new: true }
+  );
+
+  console.log(user);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  res.status(200).json({user});
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Server error' });
+}
+}
+
+const getOrganisations = async (req, res) => {
+  try {
+    const organizations = await Organization.find({})
+      .populate("followers") 
+      .lean(); 
+
+    const organizationsWithUserAndCounts = organizations.map((org) => {
+      const followerCount = org.followers ? org.followers.length : 0;
+      const jobPostCount = org.jobposts ? org.jobposts.length : 0;
+      return {
+        ...org,
+        user: req.user, 
+        followerCount,
+        jobPostCount,
+      };
+    });
+
+    console.log(organizationsWithUserAndCounts);
+    res.status(200).json(organizationsWithUserAndCounts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const blockOrganization = async (req, res) => {
+  try {
+    const organizationId = req.body.orgId;
+
+    console.log(organizationId)
+    const organization = await Organization.findOneAndUpdate(
+      { _id: organizationId },
+      { isVerified: false },
+      { new: true }
+    );
+
+    console.log(organization);
+
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    res.status(200).json({ organization });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const unblockOrganisation = async (req, res) => {
+  try {
+    const organisationId = req.body.orgId;
+
+    const organisation = await Organization.findOneAndUpdate(
+      { _id: organisationId },
+      { isVerified: true },
+      { new: true }
+    );
+
+    console.log(organisation);
+
+    if (!organisation) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    res.status(200).json({ organisation });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 
 
@@ -250,5 +429,12 @@ module.exports = {
   totalusersbyMonth,
   totalOrganizationsByMonth,
   totalPostsJobs,
-  organisationPdf
+  organisationPdf,
+  jobReportPdf,
+  getUsers,
+  blockUser,
+  unBlockuser,
+  getOrganisations,
+  blockOrganization,
+  unblockOrganisation
 };

@@ -18,8 +18,10 @@ import AddFriends from './components/userPages/Addfriends/AddFriends';
 import OrgProfile from './components/organisationPages/Profile/OrgProfile';
 import AdminLogin from './components/Admin/Auth/AdminLogin'
 import Dashboard from './components/Admin/AdminPages/Dashboard';
-
-
+import UserManagement from './components/Admin/AdminPages/UserManagement';
+import OrganisationManagement from './components/Admin/OrganisationManagement/OrganisationManagement';
+import JobManagement from './components/Admin/JobManagement/JobManagement';
+import PostManagement from './components/Admin/AdminPages/PostManagement'
 function App() {
   return (
     
@@ -55,6 +57,10 @@ function App() {
 
           <Route element={<AdminProtectedRoutes></AdminProtectedRoutes>}>
           <Route path='/admin/dashboard' element={<Dashboard/>}/>
+          <Route path='/admin/user' element={<UserManagement/>}/>
+          <Route path='/admin/organisation' element={<OrganisationManagement/>}/>
+          <Route path='/admin/jobs' element={<JobManagement/>}/>
+          <Route path='/admin/posts' element={<PostManagement/>}/>
           </Route>
 
           </Routes>
