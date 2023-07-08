@@ -82,6 +82,7 @@ function ResumeModal() {
               style={{ display: "none" }}
               onChange={handleResume}
               name="image"
+              accept="application/pdf"
             />
           </label>
         )}

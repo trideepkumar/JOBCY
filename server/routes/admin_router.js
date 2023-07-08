@@ -1,9 +1,11 @@
 const express = require('express')
 const router =  express.Router();
-const {adminLogin, adminSignup,getTotalUsers,totalusersbyMonth,totalOrganizationsByMonth,totalPostsJobs,organisationPdf,jobReportPdf,getUsers,blockUser,unBlockuser,getOrganisations,blockOrganization,unblockOrganisation} = require("../controllers/admin")
+const {adminLogin, adminSignup,getTotalUsers,totalusersbyMonth,totalOrganizationsByMonth,totalPostsJobs,organisationPdf,jobReportPdf,getUsers,blockUser,unBlockuser,getOrganisations,blockOrganization,unblockOrganisation,getPosts,blockpost,unblockpost,getJobs,blockJob,unblockJob} = require("../controllers/admin")
 
 router.get('/users',getUsers)
 router.get('/organisations',getOrganisations)
+router.get('/getJobs',getJobs)
+router.get('/getPosts',getPosts)
 router.get('/getTotalUsers',getTotalUsers)
 router.get('/total-users-by-month',totalusersbyMonth)
 router.get('/total-organisation-by-month',totalOrganizationsByMonth)
@@ -21,6 +23,10 @@ router.patch('/blockuser',blockUser)
 router.patch('/unblockuser',unBlockuser)
 router.patch('/blockorganisation',blockOrganization)
 router.patch('/unblockorganisation',unblockOrganisation)
+router.patch('/blockpost',blockpost)
+router.patch('/unblockpost',unblockpost)
+router.patch('/blockJob',blockJob)
+router.patch('/unblockJob',unblockJob)
 
 
 

@@ -46,6 +46,10 @@ const jobSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organization",
     },
+    isDeleted:{
+      type:Boolean,
+      default:false
+    }
   },
   { timestamps: true }
 );

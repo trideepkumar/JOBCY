@@ -20,7 +20,7 @@ import AdminLogin from './components/Admin/Auth/AdminLogin'
 import Dashboard from './components/Admin/AdminPages/Dashboard';
 import UserManagement from './components/Admin/AdminPages/UserManagement';
 import OrganisationManagement from './components/Admin/OrganisationManagement/OrganisationManagement';
-import JobManagement from './components/Admin/JobManagement/JobManagement';
+import JobManagement from './components/Admin/AdminPages/JobManagement';
 import PostManagement from './components/Admin/AdminPages/PostManagement'
 function App() {
   return (

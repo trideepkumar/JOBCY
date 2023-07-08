@@ -2,13 +2,14 @@ const User = require("../model/user");
 const Organization = require("../model/organisation");
 const Job = require("../model/jobs");
 const bcrypt = require("bcrypt");
-const Token = require("../model/Token");
+// const Token = require("../model/Token");
 const jwt = require("jsonwebtoken");
 const Admin = require("../model/admin");
 const Jobs = require("../model/jobs");
-const Post = require("../model/post");
+const Posts = require("../model/post");
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
+const moment = require('moment');
+// const fs = require('fs');
 
 
 
@@ -418,6 +419,132 @@ const unblockOrganisation = async (req, res) => {
   }
 };
 
+const getPosts = async (req, res) => {
+  try {
+    const posts = await Posts.find({});
+    
+    const postsWithFormattedDate = posts.map((post) => ({
+      ...post.toObject(),
+      createdAt: moment(post.createdAt).fromNow()
+    }));
+
+    console.log(postsWithFormattedDate);
+    res.status(200).json(postsWithFormattedDate);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+const blockpost = async (req, res) => {
+  try {
+    const postId = req.body.postId;
+
+    const post = await Posts.findOneAndUpdate(
+      { _id: postId },
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.status(200).json({ post });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+const unblockpost =  async (req,res)=>{
+  try {
+    const postId = req.body.postId;
+
+    const post = await Posts.findOneAndUpdate(
+      { _id: postId },
+      { isDeleted: false },
+      { new: true }
+    );
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.status(200).json({ post });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+
+const getJobs = async (req, res) => {
+  try {
+    const jobs = await Jobs.find({});
+
+    const jobsWithFormattedData = jobs.map((job) => {
+      return {
+        ...job.toObject(),
+        createdAt: moment(job.createdAt).fromNow(),
+        totalApplicants: job.applicants ? job.applicants.length : 0,
+        totalReports: job.reports ? job.reports.length : 0,
+      };
+    });
+
+    res.status(200).json(jobsWithFormattedData);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const blockJob = async(req,res)=>{
+  try {
+    const jobId = req.body.jobId
+
+    const job = await Jobs.findOneAndUpdate(
+      { _id: jobId },
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!job) {
+      return res.status(404).json({ error: 'job not found' });
+    }
+
+    res.status(200).json({ job });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+const unblockJob = async(req,res)=>{
+  try {
+    const jobId = req.body.jobId
+
+    const job = await Jobs.findOneAndUpdate(
+      { _id: jobId },
+      { isDeleted: false },
+      { new: true }
+    );
+
+    if (!job) {
+      return res.status(404).json({ error: 'job not found' });
+    }
+
+    res.status(200).json({ job });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+
+
 
 
 
@@ -436,5 +563,11 @@ module.exports = {
   unBlockuser,
   getOrganisations,
   blockOrganization,
-  unblockOrganisation
+  unblockOrganisation,
+  getPosts,
+  blockpost,
+  unblockpost,
+  getJobs,
+  blockJob,
+  unblockJob
 };

@@ -1,15 +1,16 @@
 import { Button, Modal } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../api/axiosinstance";
+import { Document } from "react-pdf";
 
 function Preview() {
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
 
-  const [open, setOpen] = useState(false); // State to control the modal
-  const [resumeData, setResumeData] = useState(null); // State to store the resume data
+  const [open, setOpen] = useState(false);
+  const [resumeData, setResumeData] = useState(null);
 
   const handleOpen = async () => {
     try {
@@ -24,8 +25,12 @@ function Preview() {
   };
 
   const handleClose = () => {
-    setOpen(false); // Close the modal
+    setOpen(false);
   };
+
+  useEffect(()=>{
+    console.log(resumeData)
+  })
 
   return (
     <>
@@ -50,31 +55,31 @@ function Preview() {
           justifyContent: "center",
           maxWidth: "50vw",
           maxHeight: "90vh",
-        //   border:'1px solid black',
-          marginLeft:'21rem',
-          marginTop:'3rem'
+          //   border:'1px solid black',
+          marginLeft: "21rem",
+          marginTop: "3rem",
         }}
         open={open}
         onClose={handleClose}
       >
         <div
           style={{
-           
             maxWidth: "100%",
             maxHeight: "90%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            width:'36rem',
-            
+            width: "36rem",
           }}
         >
           {resumeData && (
-            <img
-              src={resumeData}
-              alt="Resume"
-              style={{ width: "100%", height: "100%" }}
-            />
+            // <Document
+            //   file={resumeData}
+            //   onLoadSuccess={console.log("PDF loaded successfully")}
+            // >
+            // </Document>
+            <object width="100%" height="400" data="http://www.africau.edu/images/default/sample.pdf" type="application/pdf">   </object>
+
           )}
         </div>
       </Modal>

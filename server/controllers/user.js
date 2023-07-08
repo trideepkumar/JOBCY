@@ -324,28 +324,56 @@ const getJobs = async (req, res) => {
   }
 };
 
+// const updateResume = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.json({ error: "Resume file is required" });
+//     }
+
+//     const result = await cloudinary.uploader.upload(req.file.path);
+
+//     const filepath = result.secure_url;
+
+//     await User.findOneAndUpdate(
+//       { _id: req.params._id },
+//       { $set: { resume: filepath } }
+//     );
+
+//     console.log("Resume updated");
+//     res.json({ success: true, url: filepath });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ error: "An error occurred", success: false });
+//   }
+// };
+
 const updateResume = async (req, res) => {
   try {
     if (!req.file) {
       return res.json({ error: "Resume file is required" });
     }
 
+    // const result = await cloudinary.uploader.upload(req.file.path, {
+    //   resource_type: "raw", // Specify the resource type as 'raw' for PDF files
+    // });
+
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    const filepath = result.secure_url;
-
+    
+    const filepath = result.url;
+     console.log(filepath)
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { resume: filepath } }
     );
-
+ 
     console.log("Resume updated");
     res.json({ success: true, url: filepath });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred", success: false });
   }
-};
+}
 
 const fetchResume = async (req, res) => {
   try {
