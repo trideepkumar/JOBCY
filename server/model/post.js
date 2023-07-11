@@ -13,8 +13,11 @@ const postSchema = new mongoose.Schema(
     location: {
       type: String,
     },
-    media: {
+    image: {
       type: String,
+    },
+    video:{
+      type:String,
     },
     shared: {
       type: Boolean,

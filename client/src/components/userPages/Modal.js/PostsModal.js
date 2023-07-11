@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,21 +11,23 @@ import {
 } from "@mui/material";
 import { Photo, VideoLibrary, LocationOn } from "@mui/icons-material";
 import { useSelector } from "react-redux";
-import axiosInstance from '../../../api/axiosinstance'
+import axiosInstance from "../../../api/axiosinstance";
 
 function Posts() {
-
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
 
   const [open, setOpen] = useState(false);
-  const [openImagePreview, setOpenImagePreview] = useState(false);
   const [openVideoPreview, setOpenVideoPreview] = useState(false);
   const [postText, setPostText] = useState("");
+  const [openImagePreview, setOpenImagePreview] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [sendImage,setSendImage] = useState(null)
+  const [sendVideo , setSendVideo] = useState(null)
   const [location, setLocation] = useState("");
+  const imageInputRef = useRef(null);
 
   useEffect(() => {
     setOpen(true);
@@ -35,17 +37,19 @@ function Posts() {
     setOpen(false);
   };
 
-
-
   const handleImageChange = (event) => {
     const file = event.target.files[0];
+    setSendImage(file);
+    console.log("sendingimage", file);
     setSelectedImage(URL.createObjectURL(file));
     setOpenImagePreview(true);
     setSelectedVideo(null); // Clear the selected video
   };
+  
 
   const handleVideoChange = (event) => {
     const file = event.target.files[0];
+    setSendVideo(file)
     setSelectedVideo(URL.createObjectURL(file));
     setOpenVideoPreview(true);
     setSelectedImage(null); // Clear the selected image
@@ -59,38 +63,64 @@ function Posts() {
     setOpenVideoPreview(false);
   };
 
-
   const handlePost = async () => {
     console.log("Post text:", postText);
-    console.log("Selected image:", selectedImage);
-    console.log("Selected video:", selectedVideo);
+    console.log("Selected image:", sendImage);
+    console.log("Selected video:", sendVideo);
     console.log("Location:", location);
-  
+
     const formData = new FormData();
-    formData.append('media', selectedImage || selectedVideo);
-    formData.append('createdBy', authState._id);
-    formData.append('description', postText);
-    formData.append('location', location);
-    formData.append('shared', false);
-    formData.append('isDeleted', false);
-    formData.append('likes', []);
-    formData.append('reported', []);
+    if(sendImage!== null){
+      formData.append("image", sendImage);
+      formData.append("createdBy", authState._id);
+      formData.append("description", postText);
+      formData.append("location", location);
+      formData.append("shared", false);
+      formData.append("isDeleted", false);
+      formData.append("likes", []);
+      formData.append("reported", []);
   
+      try {
+        const endpoint = "/post";
+        console.log(formData);
+  
+        const response = await axiosInstance.post(endpoint, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log(response);
+        handleClose();
+      } catch (error) {
+        console.error("Error creating post:", error);
+      }
+    }else if(sendVideo!==null){
+    formData.append("video", sendVideo);
+    formData.append("createdBy", authState._id);
+    formData.append("description", postText);
+    formData.append("location", location);
+    formData.append("shared", false);
+    formData.append("isDeleted", false);
+    formData.append("likes", []);
+    formData.append("reported", []);
+
     try {
-      const endpoint = '/post';
-      console.log(formData)
+      const endpoint = "/postVideo";
+      console.log(formData);
+
       const response = await axiosInstance.post(endpoint, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
       console.log(response);
       handleClose();
     } catch (error) {
       console.error("Error creating post:", error);
     }
+    }
+    
   };
-  
 
   return (
     <>
@@ -117,7 +147,11 @@ function Posts() {
           />
         </DialogContent>
         <DialogActions
-          style={{ display: "flex", justifyContent: "space-around", color: "#ff6e14" }}
+          style={{
+            display: "flex",
+            justifyContent: "space-around",
+            color: "#ff6e14",
+          }}
         >
           <IconButton
             style={{ color: "#ff6e14" }}
@@ -125,18 +159,36 @@ function Posts() {
             disabled={selectedVideo !== null}
           >
             <Photo />
-            <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              ref={imageInputRef}
+              name="video"
+              onChange={handleImageChange}
+            />{" "}
           </IconButton>
           {selectedImage && (
-            <img src={selectedImage} alt="Selected" style={{ height: 50, width: 50 }} />
+            <img
+              src={selectedImage}
+              alt="Selected"
+              style={{ height: 50, width: 50 }}
+            />
           )}
+
           <IconButton
             style={{ color: "#ff6e14" }}
             component="label"
             disabled={selectedImage !== null}
           >
             <VideoLibrary />
-            <input type="file" hidden accept="video/*" onChange={handleVideoChange} />
+            <input
+              type="file"
+              hidden
+              name="video"
+              accept="video/*"
+              onChange={handleVideoChange}
+            />
           </IconButton>
           {selectedVideo && (
             <video
@@ -146,7 +198,11 @@ function Posts() {
               style={{ height: 50, width: 50 }}
             />
           )}
-          <Button variant="contained" onClick={handlePost} style={{ background: "#ff6e14" }}>
+          <Button
+            variant="contained"
+            onClick={handlePost}
+            style={{ background: "#ff6e14" }}
+          >
             Post
           </Button>
         </DialogActions>
@@ -155,17 +211,29 @@ function Posts() {
       <Modal
         open={openImagePreview}
         onClose={handleCloseImagePreview}
-        style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         <div style={{ maxWidth: "90%", maxHeight: "90%" }}>
-          <img src={selectedImage} alt="Preview" style={{ height: "auto", width: "100%" }} />
+          <img
+            src={selectedImage}
+            alt="Preview"
+            style={{ height: "auto", width: "100%" }}
+          />
         </div>
       </Modal>
 
       <Modal
         open={openVideoPreview}
         onClose={handleCloseVideoPreview}
-        style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
         <div style={{ maxWidth: "80%", maxHeight: "80%" }}>
           <video

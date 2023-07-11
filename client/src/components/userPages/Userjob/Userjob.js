@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import {
   Grid,
   Card,
@@ -22,7 +22,7 @@ import { Send } from "@mui/icons-material";
 import axiosInstance from "../../../api/axiosinstance";
 import "./Userjob.css";
 import { useSelector } from "react-redux";
-// import Toast from "../Toasts/Toasts";
+import { toast, ToastContainer } from "react-toastify";
 import Appbar from "../../Appbar/Appbar";
 
 function Userjob() {
@@ -33,8 +33,26 @@ function Userjob() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [jobPosts, setJobPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [Toasts, setToasts] = useState(false);
   const [appliedJobs, setAppliedJobs] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axiosInstance.get("/jobs");
+      const jobs = response.data.jobs || [];
+      console.log(jobs);
+
+      const hasApplied = jobs
+        .flatMap((job) => job.appliedCandidates)
+        .some((candidate) => candidate[0] === authState._id);
+
+      console.log(hasApplied);
+      console.log("again");
+      setJobPosts(jobs);
+      setAppliedJobs({ id: authState._id, isApplied: hasApplied });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleApply = async (jobId) => {
     console.log("job applied", jobId);
@@ -49,9 +67,14 @@ function Userjob() {
         jobId: jobId,
       });
       console.log(response);
-      if (response.data.success) {
+      if (response.status === 200) {
         console.log("done");
-        setToasts(true);
+        toast.success("Job Applied successfully", {
+          className: "  ",
+          bodyClassName: "toast-body",
+          progressClassName: "toast-progress",
+        });
+        fetchData();
       }
     } catch (error) {
       console.error(error);
@@ -59,38 +82,21 @@ function Userjob() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get("/jobs");
-        const jobs = response.data.jobs || [];
-        console.log(jobs);
-
-        const hasApplied = jobs
-          .flatMap((job) => job.appliedCandidates)
-          .some((candidate) => candidate[0] === authState._id);
-
-        console.log(hasApplied);
-
-        setJobPosts(jobs);
-        setAppliedJobs({ [authState._id]: hasApplied });
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     fetchData();
   }, []);
 
   useEffect(() => {
     console.log("jobposts");
-    console.log(jobPosts);
+    console.log(appliedJobs);
   });
 
   return (
     <>
       <Appbar />
+      <ToastContainer />
       <Grid container spacing={5}>
         {/* left */}
+
         <Grid item lg={3}>
           <Card
             style={{
@@ -230,182 +236,184 @@ function Userjob() {
 
           {/* posts card */}
 
-          <Box
-            sx={{
-              justifyContent: "space-between",
-              // alignItems: "center",
-              width: "48.5%",
-              height: "570px",
-              marginTop: "8rem",
-              overflowY: "auto",
-              border: "0.1px solid grey",
-              position: "fixed",
-            }}
-            className="posts"
-          >
-            {jobPosts.length === 0 ||
-            jobPosts.filter((jobpost) =>
-              jobpost.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())
-            ).length === 0 ? (
-              <Card
-                className="main"
-                style={{
+          <Suspense fallback={<div>Loading...</div>}>
+            <Grid item xs={12} sm={12} md={6}>
+              <Box
+                sx={{
+                  justifyContent: "space-between",
+                  // alignItems: "center",
+
+                  height: "570px",
+                  marginTop: "8rem",
+                  overflowY: "auto",
                   border: "0.1px solid grey",
+                  position: "fixed",
                 }}
+                className="posts"
               >
-                <CardContent>
-                  <Typography sx={{ color: "grey" }}>
-                    No job posts available.
-                  </Typography>
-                </CardContent>
-              </Card>
-            ) : (
-              jobPosts
-                .filter((jobpost) =>
+                {jobPosts.length === 0 ||
+                jobPosts.filter((jobpost) =>
                   jobpost.jobTitle
                     .toLowerCase()
                     .includes(searchQuery.toLowerCase())
-                )
-                .map((jobpost) => (
+                ).length === 0 ? (
                   <Card
                     className="main"
                     style={{
-                      width: "84.5%",
-                      border: "0.01px solid smokegrey",
-                      height: "12%",
-                      paddingTop: "20px",
-                      paddingLeft: "35px",
+                      border: "0.1px solid grey",
                     }}
-                    key={jobpost._id}
                   >
-                    <Box display="flex" alignItems="center">
-                      <div
-                        style={{
-                          display: "flex",
-                          textAlign: "left",
-                          marginRight: "10px",
-                        }}
-                      >
-                        <Avatar
-                          src="/public/signupmain.jpeg"
-                          style={{
-                            width: 40,
-                            height: 40,
-                            marginBottom: "6rem",
-                          }}
-                        />
-                      </div>
-                      <Box flexGrow={1} sx={{}}>
-                        <Typography
-                          variant="h5"
-                          textAlign="left"
-                          color="#0d65c2"
-                        >
-                          {jobpost.jobTitle}
-                        </Typography>
-                        <Typography textAlign="left" variant="body1">
-                          {jobpost.orgName}
-                        </Typography>
-                        <Typography
-                          textAlign="left"
-                          variant="body2"
-                          color="grey"
-                        >
-                          {`${jobpost.location}, ${jobpost.hiringProcess}, ${jobpost.jobType}`}
-                        </Typography>
-                        <Typography
-                          textAlign="left"
-                          variant="body2"
-                          color="grey"
-                        >
-                          Qualifications: {jobpost.qualification}
-                        </Typography>
-                        <Typography
-                          textAlign="left"
-                          variant="body2"
-                          color="grey"
-                        >
-                          Salary: {jobpost.salaryMin} - {jobpost.salaryMax}
-                        </Typography>
-                        <Typography
-                          textAlign="left"
-                          variant="body2"
-                          color="grey"
-                        >
-                          {new Date(jobpost.createdAt).toLocaleString()}
-                        </Typography>
-                      </Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: "10px",
-                          // paddingLeft: "100px",
-                        }}
-                      >
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: "10px",
-                            // paddingLeft: "100px",
-                          }}
-                        >
-                          <Button
-                            sx={{
-                              textTransform: "none",
-                              border: "0.1px solid grey",
-                            }}
-                            className="details"
-                          >
-                            Details
-                          </Button>
-                          {appliedJobs[jobpost._id] ? (
-                            <Button
-                              sx={{
-                                background: "#ff6e14",
-                                color: "white",
-                                textTransform: "none",
-                                border: "0.1px solid grey",
-                              }}
-                              className="apply"
-                              disabled
-                            >
-                              Applied
-                              <Send
-                                sx={{
-                                  transform: "rotate(310deg)",
-                                  fontSize: "small",
-                                  marginLeft: "4px",
-                                }}
-                              />
-                            </Button>
-                          ) : (
-                            <Button
-                              sx={{
-                                background: "#ff6e14",
-                                color: "white",
-                                textTransform: "none",
-                                border: "0.1px solid grey",
-                              }}
-                              className="apply"
-                              onClick={() => handleApply(jobpost._id)}
-                            >
-                              Apply
-                              <Send
-                                sx={{
-                                  transform: "rotate(310deg)",
-                                  fontSize: "small",
-                                  marginLeft: "4px",
-                                }}
-                              />
-                            </Button>
-                          )}
-                        </Box>
-                      </Box>
-                    </Box>
+                    <CardContent>
+                      <Typography sx={{ color: "grey" }}>
+                        No job posts available.
+                      </Typography>
+                    </CardContent>
                   </Card>
-                ))
-            )}
-          </Box>
+                ) : (
+                  jobPosts
+                    .filter((jobpost) =>
+                      jobpost.jobTitle
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+                    )
+                    .map((jobpost) => (
+                      <Grid>
+                        <Card
+                          className="main"
+                          style={{
+                            width: "85%",
+                            border: "0.01px solid smokegrey",
+                            height: "12%",
+                            paddingTop: "20px",
+                            paddingLeft: "35px",
+                          }}
+                          key={jobpost._id}
+                        >
+                          <Box display="flex" alignItems="center">
+                            <div
+                              style={{
+                                display: "flex",
+                                textAlign: "left",
+                                // marginRight: "10px",
+                              }}
+                            >
+                              <Avatar
+                                src="/public/signupmain.jpeg"
+                                style={{
+                                  width: 40,
+                                  height: 40,
+                                  marginBottom: "6rem",
+                                }}
+                              />
+                            </div>
+                            <Box flexGrow={1} sx={{}}>
+                              <Typography
+                                variant="h5"
+                                textAlign="left"
+                                color="#0d65c2"
+                              >
+                                {jobpost.jobTitle}
+                              </Typography>
+                              <Typography textAlign="left" variant="body1">
+                                {jobpost.orgName}
+                              </Typography>
+                              <Typography
+                                textAlign="left"
+                                variant="body2"
+                                color="grey"
+                              >
+                                {`${jobpost.location}, ${jobpost.hiringProcess}, ${jobpost.jobType}`}
+                              </Typography>
+                              <Typography
+                                textAlign="left"
+                                variant="body2"
+                                color="grey"
+                              >
+                                Qualifications: {jobpost.qualification}
+                              </Typography>
+                              <Typography
+                                textAlign="left"
+                                variant="body2"
+                                color="grey"
+                              >
+                                Salary: {jobpost.salaryMin} -{" "}
+                                {jobpost.salaryMax}
+                              </Typography>
+                              <Typography
+                                textAlign="left"
+                                variant="body2"
+                                color="grey"
+                              >
+                                {new Date(jobpost.createdAt).toLocaleString()}
+                              </Typography>
+                            </Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                gap: "10px",
+                                // paddingLeft: "100px",
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: "10px",
+                                  // paddingLeft: "100px",
+                                }}
+                              >
+                                <Button
+                                  sx={{
+                                    textTransform: "none",
+                                    border: "0.1px solid grey",
+                                  }}
+                                  className="details"
+                                >
+                                  Details
+                                </Button>
+                                {jobpost.appliedCandidates.includes(
+                                  authState._id
+                                ) ? (
+                                  <Typography sx={{ paddingLeft: "10px" }}>
+                                    Applied
+                                    <Send
+                                      sx={{
+                                        transform: "rotate(310deg)",
+                                        fontSize: "small",
+                                        marginLeft: "4px",
+                                      }}
+                                    />
+                                  </Typography>
+                                ) : (
+                                  <Button
+                                    sx={{
+                                      background: "#ff6e14",
+                                      color: "white",
+                                      textTransform: "none",
+                                      border: "0.1px solid grey",
+                                    }}
+                                    className="apply"
+                                    onClick={() => handleApply(jobpost._id)}
+                                  >
+                                    Apply
+                                    <Send
+                                      sx={{
+                                        transform: "rotate(310deg)",
+                                        fontSize: "small",
+                                        marginLeft: "4px",
+                                      }}
+                                    />
+                                  </Button>
+                                )}
+                              </Box>
+                            </Box>
+                          </Box>
+                        </Card>
+                      </Grid>
+                    ))
+                )}
+              </Box>
+            </Grid>
+          </Suspense>
         </Grid>
 
         {/* right */}

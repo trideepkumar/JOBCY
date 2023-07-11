@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { clearAuth } from "../../../app/features/auth/authSlice";
@@ -20,17 +20,19 @@ import ImageIcon from "@mui/icons-material/Image";
 import MovieIcon from "@mui/icons-material/Movie";
 import ArticleIcon from "@mui/icons-material/Article";
 import { IconButton } from "@mui/material";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import SendIcon from "@mui/icons-material/Share";
 import ReportIcon from "@mui/icons-material/Report";
 import Post from "../Modal.js/PostsModal";
 import "./Posts.css";
 import axiosInstance from "../../../api/axiosinstance";
+import PostLikeButton from "../Button/PostLikeButton";
 // import placeholder from "client/public/post placeholder.jpeg"
 
 function Posts() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const videoRef = useRef(null);
+
 
   const [showModal, setShowModal] = useState(false);
   const [postData, setpostData] = useState("");
@@ -71,7 +73,26 @@ function Posts() {
     fetchUserData();
   }, []);
 
- 
+  useEffect(() => {
+    const videoElement = videoRef.current;
+  
+    if (videoElement) {
+      videoElement.play();
+  
+      const handleTouchStart = () => {
+        videoElement.pause();
+      };
+  
+      videoElement.addEventListener("touchstart", handleTouchStart);
+  
+      return () => {
+        videoElement.removeEventListener("touchstart", handleTouchStart);
+      };
+    }
+  }, []);
+
+
+  
   return (
     <>
       <Appbar />
@@ -183,7 +204,7 @@ function Posts() {
               >
                 Post your thoughts...
               </Button>
-              {showModal && <Post onClose={handleCloseModal} />}{" "}
+              {showModal && <Post onClose={handleCloseModal} />}
             </CardContent>
             <CardActions
               sx={{ display: "flex", justifyContent: "space-around" }}
@@ -265,12 +286,13 @@ function Posts() {
                       align="left"
                       style={{ paddingBottom: "10px" }}
                     ></Typography>
-                   
+
                     <CardMedia
                       component="img"
                       height="400"
                       src="/nopost.png"
                       alt="Posts image"
+                      style={{ objectFit: "cover" }}
                     />
                   </CardActionArea>
                 </Card>
@@ -355,12 +377,24 @@ function Posts() {
                       >
                         {post.description}
                       </Typography>
-                      <CardMedia
-                        component="img"
-                        height="400"
-                        src={post.media}
-                        alt="Posts image"
-                      />
+                      {post.image ? (
+                        <CardMedia
+                          component="img"
+                          height="400"
+                          src={post.image}
+                          alt="Posts image"
+                        />
+                      ) : (
+                        <CardMedia
+                          component="video"
+                          controls
+                          height="400"
+                          src={post.video}
+                          alt="Posts video"
+                          ref={videoRef}
+
+                        />
+                      )}
                     </CardActionArea>
                   </Card>
                 </Box>
@@ -376,20 +410,21 @@ function Posts() {
                       paddingRight: "15px",
                     }}
                   >
-                    <Typography style={{ color: "grey" }}>
+                    {/* <Typography style={{ color: "grey" }}>
                       <IconButton size="small">
                         <ThumbUpIcon />
                       </IconButton>{" "}
                       Like
-                    </Typography>
-                    <Typography style={{ color: "grey" }}>
-                      <IconButton size="small">
+                    </Typography> */}
+                    <PostLikeButton />
+                    <Typography style={{ color: "#1976D2" }}>
+                      <IconButton size="small" sx={{ color: "#1976D2" }}>
                         <SendIcon />
                       </IconButton>{" "}
                       Sent
                     </Typography>
-                    <Typography style={{ color: "grey" }}>
-                      <IconButton size="small">
+                    <Typography style={{ color: "red" }}>
+                      <IconButton size="small" sx={{ color: "red" }}>
                         <ReportIcon />
                       </IconButton>{" "}
                       Report

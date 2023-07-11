@@ -392,7 +392,7 @@ const fetchResume = async (req, res) => {
   }
 };
 
-const applyJob = async (req, res) => {
+const   applyJob = async (req, res) => {
   try {
     console.log("applyjob");
     console.log(req.body);
@@ -424,28 +424,68 @@ const applyJob = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  try {
+  try { 
     console.log("post create starts..");
-    const { description, location, createdBy, media } = req.body;
-    console.log(media);
+    const { description, location, createdBy } = req.body;
 
-    console.log(req.body);
-    // const mediaUpload = await cloudinary.uploader.upload(req.media);
-    // const mediaUrl = mediaUpload.secure_url;
-    // console.log(mediaUrl)
-    const post = new Post({
-      createdBy: createdBy,
-      description: description,
-      location: location,
-      media: media,
-    });
-    const savedPost = await post.save();
-    res.status(201).json(savedPost);
+    if (req.file) {
+      const file = req.file;
+      if (
+        file.originalname.endsWith(".jpg") ||
+        file.originalname.endsWith(".jpeg") ||
+        file.originalname.endsWith(".png") ||
+        file.originalname.endsWith(".gif") ||
+        file.originalname.endsWith(".bmp") ||
+        file.originalname.endsWith(".avif")||
+        file.originalname.endsWith(".webp") 
+      ) 
+       {
+        const image = file.path;
+        const cloudinaryResult = await cloudinary.uploader.upload(image);
+        const imageResult = cloudinaryResult.secure_url;
+
+        const post = new Post({
+          createdBy: createdBy,
+          description: description,
+          location: location,
+          image: imageResult,
+        });
+
+        const savedPost = await post.save();
+        return res.status(201).json(savedPost);
+
+      } 
+      else if (/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
+   
+        
+        const video = file.path;
+        console.log("video suppprot")
+        console.log(video)
+        const cloudinaryResult = await cloudinary.uploader.upload(video,{resource_type: "video"});
+        const videoResult = cloudinaryResult.secure_url;
+        console.log(videoResult)
+        console.log(video)
+        const post = new Post({
+          createdBy: createdBy,
+          description: description,
+          location: location,
+          video: videoResult,
+        });
+
+        const savedPost = await post.save();
+        return res.status(201).json(savedPost);
+      }
+    }
+    
+    // Handle the case when neither image nor video is uploaded
+    return res.status(400).json({ error: "No image or video uploaded" });
+
   } catch (error) {
     console.error("Error creating post:", error);
     res.status(500).json({ error: "Failed to create post" });
   }
 };
+
 
 const getPosts = async (req, res) => {
   try {
