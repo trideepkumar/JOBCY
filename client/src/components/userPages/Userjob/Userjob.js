@@ -97,35 +97,37 @@ function Userjob() {
       <Grid container spacing={5}>
         {/* left */}
 
-        <Grid item lg={3}>
-          <Card
-            style={{
-              background: "white",
-              margin: "5.4rem 0rem 0rem 2rem",
-              borderRadius: "5px",
-              boxShadow: "1px 1px 2px white",
-              marginTop: "3.4rem",
-              width: "20rem",
-              border: "0.01px solid lightgrey",
-              top: "2rem",
-              position: "fixed",
-            }}
-            className="card"
-          >
-            <Box sx={{ p: 2 }}>
-              <Typography variant="body2" component="div" textAlign="left">
-                Search
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <TextField
-                label="Search your jobs here..."
-                variant="outlined"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                fullWidth
-              />
-            </Box>
-          </Card>
+        <Grid item lg={3} sm={12} xs={12}>
+          <Box className="new-search">
+            <Card
+              style={{
+                background: "white",
+                margin: "5.4rem 0rem 0rem 2rem",
+                borderRadius: "5px",
+                boxShadow: "1px 1px 2px white",
+                marginTop: "3.4rem",
+                width: "20rem",
+                border: "0.01px solid lightgrey",
+                top: "2rem",
+                position: "fixed",
+              }}
+              className="car search-card"
+            >
+              <Box sx={{ p: 2 }} className="searc">
+                <Typography variant="body2" component="div" textAlign="left">
+                  Search
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+                <TextField
+                  label="Search your jobs here..."
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  fullWidth
+                />
+              </Box>
+            </Card>
+          </Box>
 
           {/* categories */}
           <Card
@@ -208,15 +210,23 @@ function Userjob() {
         </Grid>
 
         {/* center */}
-        <Grid item lg={6} spacing={4} sx={{ marginTop: "5.5rem" }}>
+        <Grid
+          item
+          lg={6}
+          sm={12}
+          xs={12}
+          spacing={4}
+          sx={{ marginTop: "5.5rem" }}
+          className="suggestions"
+        >
           <Card
             className="center-card"
-            style={{ position: "fixed", width: "43.8rem" }}
+            style={{ position: "fixed", width: "45.4rem" }}
           >
             <CardContent sx={{ display: "grid", textAlign: "left" }}>
               <Typography> Suggested job searches</Typography>
               <br></br>
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} className="suggestion-icon">
                 <Chip label="Technology" variant="outlined" className="chip" />
                 <Chip
                   label="Fullstack Developer"
@@ -237,12 +247,12 @@ function Userjob() {
           {/* posts card */}
 
           <Suspense fallback={<div>Loading...</div>}>
+
             <Grid item xs={12} sm={12} md={6}>
               <Box
                 sx={{
                   justifyContent: "space-between",
                   // alignItems: "center",
-
                   height: "570px",
                   marginTop: "8rem",
                   overflowY: "auto",

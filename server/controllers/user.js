@@ -9,7 +9,6 @@ const Jobs = require("../model/jobs");
 const Post = require("../model/post");
 const cloudinary = require("cloudinary").v2;
 
-// const {cloudinary} = require('../middlewares/cloudinary')
 
 cloudinary.config({
   cloud_name: "dbnrosh3i",
@@ -298,6 +297,7 @@ const updateProfilepic = async (req, res) => {
     console.log("2");
     const path = req.file.path.slice(7);
     console.log(path);
+
     const filepath = `http://localhost:${process.env.PORT}/${path}`;
     console.log(filepath);
 
@@ -353,11 +353,11 @@ const updateResume = async (req, res) => {
       return res.json({ error: "Resume file is required" });
     }
 
-    // const result = await cloudinary.uploader.upload(req.file.path, {
-    //   resource_type: "raw", // Specify the resource type as 'raw' for PDF files
-    // });
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "raw", 
+    });
 
-    const result = await cloudinary.uploader.upload(req.file.path);
+    // const result = await cloudinary.uploader.upload(req.file.path);
 
     
     const filepath = result.url;
@@ -456,7 +456,9 @@ const createPost = async (req, res) => {
 
       } 
       else if (/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
-   
+        // Handle video upload
+      }
+      {
         
         const video = file.path;
         console.log("video suppprot")
@@ -708,6 +710,24 @@ const friendRequestDeny = async (req, res) => {
   }
 };
 
+const getFriends = async (req, res) => {
+  try {
+    const userId = req.query._id;
+    console.log(userId)
+
+    const user = await User.findById(userId).populate('friends'); 
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ friends: user.friends });
+  } catch (err) {
+    console.error('Error fetching friends', err);
+    res.status(500).json({ error: 'Error fetching friends' });
+  }
+}
+
 
 
 exports.signup = signup;
@@ -732,3 +752,4 @@ exports.orgFollow = orgFollow;
 exports.getFriendRequests = getFriendRequests;
 exports.acceptFriendRequest = acceptFriendRequest;
 exports.friendRequestDeny = friendRequestDeny;
+exports.getFriends =getFriends

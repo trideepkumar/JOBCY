@@ -24,7 +24,7 @@ import {
   Menu as MenuIcon,
   Logout,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import UserNotification from "../Notifications/UserNotification";
 
@@ -34,7 +34,7 @@ const Navbar = () => {
   });
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [profilePicture, setProfilePicture] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -59,7 +59,7 @@ const Navbar = () => {
   console.log(loggedIn);
 
   const adminLoggedIn = localStorage.getItem("admin");
-  console.log("hello"+adminLoggedIn)
+  console.log("hello" + adminLoggedIn);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -113,8 +113,7 @@ const Navbar = () => {
         </Toolbar>
       </AppBar>
     );
-  } 
-  else if (loggedIn) {
+  } else if (loggedIn) {
     return (
       <AppBar
         position="fixed"
@@ -179,7 +178,7 @@ const Navbar = () => {
                   Jobs
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={handleMenuClose}>
+              <MenuItem  onClick={() => navigate("/chats")}>
                 <Chat />
                 <Typography variant="inherit" sx={{ ml: 1 }}>
                   Chat
@@ -235,7 +234,11 @@ const Navbar = () => {
               >
                 <Work />
               </IconButton>
-              <IconButton color="inherit" style={{ color: "#ff6e14" }}>
+              <IconButton
+               color="inherit" 
+               style={{ color: "#ff6e14" }}
+               onClick={() => navigate("/chats")}
+               >
                 <Chat />
               </IconButton>
               <IconButton
@@ -246,17 +249,6 @@ const Navbar = () => {
                 <Notifications />
               </IconButton>
               {openNotify && <UserNotification onClose={handleCloseNotify} />}
-              {/* Avatar */}
-              {/* {profilePicture ? (
-              <Avatar src={profilePicture} alt="Profile Picture" />
-            ) : (
-              <IconButton color="inherit">
-                <Avatar>
-                  <AccountCircle />
-                </Avatar>
-              </IconButton>
-            )} */}
-              {/* // Avatar and IconButton */}
               {profilePicture ? (
                 <Avatar
                   src={profilePicture}

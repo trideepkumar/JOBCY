@@ -1,23 +1,22 @@
-import { Grid } from '@mui/material'
-import React from 'react'
-import Navbar from '../../Appbar/Navbar'
-import Sidebar from '../Sidebar/Sidebar'
-import PostCard from '../PostManagement/PostCard'
+import { Grid } from "@mui/material";
+import React from "react";
+import Navbar from "../../Appbar/Navbar";
+import Sidebar from "../Sidebar/Sidebar";
+import PostCard from "../PostManagement/PostCard";
 function PostManagement() {
   return (
     <div>
-        <Navbar/>
+      <Navbar />
+      <Grid>
         <Grid>
-        <Grid>
-         <Sidebar/>
+          <Sidebar />
         </Grid>
         <Grid>
-            <PostCard/>
+          <PostCard />
         </Grid>
-        </Grid>
-
+      </Grid>
     </div>
-  )
+  );
 }
 
-export default PostManagement
+export default PostManagement;

@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser');
 const passport = require("passport");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const authRoutes = require('./routes/auth/userAuth');
-const adminRoutes = require('./routes/admin_router')
+const adminRoutes = require('./routes/admin_router');
+const chatRoutes = require('./routes/chat_routes');
+const messageRoutes = require('./routes/message_route')
 
 const corsOptions = {
   origin: "*",
@@ -45,6 +47,8 @@ passport.use(
 
 app.use('/', user_router);
 app.use('/organisation', organisation_router);
+app.use('/chats',chatRoutes)
+app.use('/messages',messageRoutes)
 app.use('/auth', authRoutes);
 app.use('/admin',adminRoutes)
 

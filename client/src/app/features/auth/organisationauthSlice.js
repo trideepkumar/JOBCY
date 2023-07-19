@@ -10,7 +10,7 @@ const organisationauthSlice = createSlice({
   reducers: {
      setorganisationAuth : (state) => {
          state.authState = JSON.parse(localStorage.getItem('organisation'))
-     } ,
+     },
      clearorganisationAuth: (state) => {
         state.authState = null
      }

@@ -319,6 +319,8 @@ function Posts() {
                   justifyContent: "space-between",
                   alignItems: "left",
                   width: "100%",
+                  height: "15%", 
+                  marginBottom: "1rem", 
                 }}
                 className="posts"
               >
@@ -444,7 +446,7 @@ function Posts() {
             <CardMedia
               sx={{ height: 140 }}
               image="/JOBCY ICON.png"
-              title="green iguana"
+              title="Jobcy icon"
             />
             <CardContent>
               <Typography variant="body2" textAlign="auto">

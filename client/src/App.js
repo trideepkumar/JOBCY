@@ -22,6 +22,7 @@ import UserManagement from './components/Admin/AdminPages/UserManagement';
 import OrganisationManagement from './components/Admin/OrganisationManagement/OrganisationManagement';
 import JobManagement from './components/Admin/AdminPages/JobManagement';
 import PostManagement from './components/Admin/AdminPages/PostManagement'
+import Chat from './components/userPages/Chat/UserChat'
 function App() {
   return (
     
@@ -30,6 +31,7 @@ function App() {
           <Route  element={<PublicRoutes></PublicRoutes>}>
             <Route path="/signup" element={<Signup signupType='user' />} />
             <Route path="/login" element={<Login loginType="user" />} />
+            
           </Route>
 
           <Route  element={<ProtectedRoutes></ProtectedRoutes>}>
@@ -37,6 +39,7 @@ function App() {
           <Route path="/profile" element={<Profile/>} />
           <Route path='/jobs' element={<Userjob/>} />
           <Route path='/friends' element={<AddFriends/>}/>
+          <Route path='/chats' element={<Chat/>}/>
           </Route>
 
           <Route element={<OrgPublicRoutes></OrgPublicRoutes>}>

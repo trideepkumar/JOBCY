@@ -1,0 +1,46 @@
+.messages{
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.mainbox{
+  scrollbar-width: none;
+}
+
+
+   
+   .right {
+    margin-top: 0px;
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .left {
+    border-radius: 5px;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+   
+  }
+
+  .contentright{
+    border: 0.5px solid gold;
+    border-radius: 15px;
+    padding: 10px;
+    background:#fbdbc7;
+  }
+
+  .contentleft{
+    border: 0.5px solid gold;
+    border-radius: 15px;
+    padding: 10px;
+    background: rgb(208, 240, 255);
+  }
+  
+  .type{
+    position: sticky;
+  }
