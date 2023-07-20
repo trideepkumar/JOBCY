@@ -88,7 +88,6 @@ function FriendsList({handleClickEvent}) {
               <Typography textAlign={"left"} fontWeight={"10px"}>
                 {friend.name}
               </Typography>
-              <Typography variant="subtitle2">{friend.designation}</Typography>
             </Box>
           </Box>
         </div>

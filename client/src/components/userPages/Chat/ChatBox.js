@@ -13,6 +13,13 @@ import { useSelector } from "react-redux";
 import axiosInstance from "../../../api/axiosinstance";
 import SendIcon from "@mui/icons-material/Send";
 import "./chatStyles.css";
+import io from "socket.io-client";
+import Lottie from "react-lottie";
+import animationData from "../../../animations/typing.json";
+import { grey } from "@mui/material/colors";
+
+const ENDPOINT = "http://localhost:3000";
+let socket, selectedChatCompare;
 
 function ChatBox({ oppstId }) {
   const { authState } = useSelector((state) => {
@@ -25,8 +32,28 @@ function ChatBox({ oppstId }) {
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [chatId, setChatId] = useState("");
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const userId = authState._id;
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    renderSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", authState);
+    socket.on("connecting", () => setSocketConnected(true));
+    socket.on("typing", () => setIsTyping(true));
+    socket.on("stop typing", () => setIsTyping(false));
+  }, []);
 
   const fetchChats = async (oppstId, userId) => {
     try {
@@ -48,18 +75,41 @@ function ChatBox({ oppstId }) {
   const typingHandler = (e) => {
     const value = e.target.value;
     setNewMessage(value);
+
+    if (!socketConnected) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit("typing", chatId);
+    }
+
+    let lastTypingTime = new Date().getTime();
+    let timerLength = 1000;
+
+    setTimeout(() => {
+      let timeNow = new Date().getTime();
+      let timeDiff = timeNow - lastTypingTime;
+
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", chatId);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   const handleSendMessage = async () => {
     try {
-      const response = await axiosInstance.post("/messages", {
+      socket.emit("stop typing", chatId);
+      const { data } = await axiosInstance.post("/messages", {
         data: {
           content: newMessage,
           userId: authState._id,
           chatId: chatId,
         },
       });
-      console.log(response);
+      console.log(data);
+      socket.emit("new message", data);
+      setMessages([...messages, data]);
       setNewMessage("");
     } catch (err) {
       console.log(err);
@@ -74,6 +124,7 @@ function ChatBox({ oppstId }) {
       // Set the messages state with the response data
       if (response.status === 200) {
         setMessages(response.data);
+        socket.emit("join room", chatId);
       }
     } catch (err) {
       console.log(err);
@@ -86,8 +137,21 @@ function ChatBox({ oppstId }) {
 
   useEffect(() => {
     fetchMessages();
-    console.log("selectedChatCompare  " + chatId);
+    selectedChatCompare = chatId;
   }, [chatId]);
+
+  useEffect(() => {
+    socket.on("message recieved", (newMessageRecieved) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare !== newMessageRecieved.chat._id
+      ) {
+        //give notification
+      } else {
+        setMessages([...messages, newMessageRecieved]);
+      }
+    });
+  });
 
   useEffect(() => {
     chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
@@ -109,6 +173,11 @@ function ChatBox({ oppstId }) {
               sx={{ display: "grid", paddingLeft: "10px", paddingTop: "5px" }}
             >
               <Typography textAlign={"left"}>{oppositeUser.name}</Typography>
+              {isTyping ? (
+                <div style={{ color: "#ff6e14" }}>Typing...</div>
+              ) : (
+                <></>
+              )}
             </Box>
           </Box>
 
@@ -147,6 +216,18 @@ function ChatBox({ oppstId }) {
                 </Typography>
               </div>
             ))}
+            
+            {isTyping ? (
+              <div style={{ color: "#ff6e14" }}>
+                <Lottie
+                  options={defaultOptions}
+                  width={100}
+                  style={{ marginBottom: 15, marginLeft: 0 }}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
           </Box>
 
           <Box
@@ -157,6 +238,7 @@ function ChatBox({ oppstId }) {
               alignItems: "center",
             }}
           >
+            
             <FormControl
               // onKeyDown={handleSendMessage}
               isRequired
