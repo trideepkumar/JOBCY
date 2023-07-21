@@ -17,8 +17,7 @@ import Lottie from "react-lottie";
 import animationData from "../../../animations/typing.json";
 import { VideoCall as VideoCallIcon } from "@mui/icons-material";
 import VideoCall from "./VideoCall";
-
-
+import Modal from "react-modal";
 
 
 const ENDPOINT = "http://localhost:3000";
@@ -28,6 +27,14 @@ function ChatBox({ oppstId }) {
   const { authState } = useSelector((state) => {
     return state.auth;
   });
+
+  const modalStyles = {
+    content: {
+      width: "70%",
+      height: "70%",
+      margin: "auto",
+    },
+  };
 
   const chatMessagesRef = useRef(null);
 
@@ -39,6 +46,8 @@ function ChatBox({ oppstId }) {
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
 
   const userId = authState._id;
 
@@ -137,15 +146,14 @@ function ChatBox({ oppstId }) {
 
   const handleVideocall = async () => {
     console.log("video call started");
-    console.log(chatId)
-    setShowVideoCall((prevState) => !prevState); 
-   
+    setModalIsOpen(true);
+    console.log(chatId);
+    setShowVideoCall((prevState) => !prevState);
   };
-  
 
   useEffect(() => {
     fetchChats(oppstId, userId);
-  }, [oppstId]); 
+  }, [oppstId]);
 
   useEffect(() => {
     fetchMessages();
@@ -163,39 +171,61 @@ function ChatBox({ oppstId }) {
         setMessages([...messages, newMessageRecieved]);
       }
     });
+
   });
 
   useEffect(() => {
     chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
   }, [messages]);
 
+  
+  const handleCloseModal = () => {
+    setModalIsOpen(false);
+  };
+  
+
   return (
     <div>
-      
+       <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={handleCloseModal}
+        style={modalStyles}
+      >
+        {showVideoCall && <VideoCall chatId={chatId} />}
+      </Modal>
       <Grid>
-      {showVideoCall && <VideoCall chatId={chatId} />}
         <Box position="relative">
-        <Box
-      sx={{
-        display: "flex",
-        padding: "8px",
-        borderBottom: "0.5px solid grey",
-      }}
-    >
-      <Avatar src={oppositeUser.profPic} alt={oppositeUser.name} />
-      <Box sx={{ display: "grid", paddingLeft: "10px", paddingTop: "5px" }}>
-        <Typography textAlign={"left"}>{oppositeUser.name}</Typography>
-        {isTyping ? (
-          <div style={{ color: "#ff6e14" }}>Typing...</div>
-        ) : (
-          <></>
-        )}
-      </Box>
-      {/* Add the VideoCallIcon to the right side */}
-      <Box sx={{ marginLeft: "auto", marginRight: "10px", paddingTop: "5px" ,color:'#ff6e14',cursor:'pointer'}}>
-        <VideoCallIcon onClick={handleVideocall} />
-      </Box>
-    </Box>
+          <Box
+            sx={{
+              display: "flex" ,
+              padding: "8px",
+              borderBottom: "0.5px solid grey",
+            }}
+          >
+            <Avatar src={oppositeUser.profPic} alt={oppositeUser.name} />
+            <Box
+              sx={{ display: "grid", paddingLeft: "10px", paddingTop: "5px" }}
+            >
+              <Typography textAlign={"left"}>{oppositeUser.name}</Typography>
+              {isTyping ? (
+                <div style={{ color: "#ff6e14" }}>Typing...</div>
+              ) : (
+                <></>
+              )}
+            </Box>
+            {/* Add the VideoCallIcon to the right side */}
+            <Box
+              sx={{
+                marginLeft: "auto",
+                marginRight: "10px",
+                paddingTop: "5px",
+                color: "#ff6e14",
+                cursor: "pointer",
+              }}
+            >
+              <VideoCallIcon onClick={handleVideocall} />
+            </Box>
+          </Box>
 
           <Box
             sx={{
@@ -237,7 +267,7 @@ function ChatBox({ oppstId }) {
                 <Lottie
                   options={defaultOptions}
                   width={100}
-                  style={{ marginBottom: 15, marginLeft: 0 }}
+                  style={{ marginBottom:15, marginLeft: 0 }}
                 />
               </div>
             ) : (

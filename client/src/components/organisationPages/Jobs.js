@@ -19,6 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Placeholder from "./placeholders/Placeholder";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../api/axiosinstance";
+// import OrgBar from "../Appbar/OrgBars";
 
 function Jobs() {
   const authState = useSelector((state) => {
@@ -53,6 +54,7 @@ function Jobs() {
 
   return (
     <>
+    {/* <OrgBar/> */}
       <Grid container spacing={0.5}>
         {/* left */}
         <Grid item lg={3} style={{ display: "grid" }}>
@@ -269,6 +271,9 @@ function Jobs() {
                     <Box
                       sx={{ display: "flex", gap: "10px", paddingLeft: "50px" }}
                     >
+                      <Button sx={{border:'0.5px solid #ff6e14',color:'#ff6e14'}}>
+                        Applied candidates
+                      </Button>
                       <IconButton style={{ color: "#ff6e14" }}>
                         <EditIcon />
                       </IconButton>

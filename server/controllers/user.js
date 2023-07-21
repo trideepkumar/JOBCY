@@ -355,12 +355,13 @@ const updateResume = async (req, res) => {
     if (!req.file) {
       return res.json({ error: "Resume file is required" });
     }
+    
+    console.log(req.file)
 
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "raw", 
     });
 
-    // const result = await cloudinary.uploader.upload(req.file.path);
 
     
     const filepath = result.url;
@@ -371,7 +372,7 @@ const updateResume = async (req, res) => {
     );
  
     console.log("Resume updated");
-    res.json({ success: true, url: filepath });
+    res.json({ success: true});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred", success: false });

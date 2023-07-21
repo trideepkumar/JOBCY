@@ -92,8 +92,8 @@ function FriendsList({ handleClickEvent }) {
               <Typography textAlign={"left"} fontWeight={"10px"}>
                 {friend.name}
               </Typography>
-              <Typography textAlign={"left"} variant="subtitle2">
-                {friend.lastMessage ? friend.lastMessage.content : "No messages"}
+              <Typography textAlign={"left"} variant="subtitle2" color={"#C2C2C2"}>
+                {friend.lastMessage ? friend.lastMessage.content :  "Tap to see message"}
               </Typography>
             </Box>
           </Box>

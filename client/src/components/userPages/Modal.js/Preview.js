@@ -64,12 +64,11 @@ function Preview() {
       >
         <div
           style={{
-            maxWidth: "100%",
-            maxHeight: "90%",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            width: "36rem",
+            width: "100rem",
+            height:"50rem"
           }}
         >
           {resumeData && (
@@ -78,7 +77,7 @@ function Preview() {
             //   onLoadSuccess={console.log("PDF loaded successfully")}
             // >
             // </Document>
-            <object width="100%" height="400" data="http://www.africau.edu/images/default/sample.pdf" type="application/pdf">   </object>
+            <object width="100%" height="80%" data={resumeData} type="application/pdf">   </object>
 
           )}
         </div>

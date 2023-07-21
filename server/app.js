@@ -77,6 +77,7 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("connected to socket.io");
   //for getting the userid
+  
   socket.on("setup", (userData) => {
     socket.join(userData._id);
     socket.emit("connecting");
@@ -117,10 +118,11 @@ io.on("connection", (socket) => {
   //for video call 
   
   socket.on("video call", (room) => {
-    console.log("room" + room);
-    console.log("video call started in room: " + room);
-    // const url = generateVideoCallUrl(room, window.location.protocol, window.location.host, window.location.pathname);
-    // socket.emit("video call link", url);
+    console.log("room" + room)
+    console.log("video call started in room: " + room)
+    // Broadcast the room ID to all users in the chat room
+    socket.to(room).emit("video call", room);
+
   })
 
 
