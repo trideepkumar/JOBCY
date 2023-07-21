@@ -7,7 +7,10 @@ const crypto = require("crypto");
 const Organization = require("../model/organisation");
 const Jobs = require("../model/jobs");
 const Post = require("../model/post");
+const mongoose = require('mongoose');
 const cloudinary = require("cloudinary").v2;
+const Chat = require("../model/chat")
+const Message = require('../model/message')
 
 
 cloudinary.config({
@@ -726,6 +729,58 @@ const getFriends = async (req, res) => {
     console.error('Error fetching friends', err);
     res.status(500).json({ error: 'Error fetching friends' });
   }
+
+  // const userId = req.query._id;
+  
+  // try {
+  //   const friends = await Chat.aggregate([
+  //     {
+  //       $match: {
+  //         users: mongoose.Types.ObjectId(userId),
+  //       },
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: 'messages', // Name of the Message model collection
+  //         localField: 'latestMessage', // Field in the Chat collection
+  //         foreignField: '_id', // Field in the Message collection
+  //         as: 'latestMessage', // Alias for the joined result
+  //       },
+  //     },
+  //     {
+  //       $unwind: {
+  //         path: '$latestMessage',
+  //         preserveNullAndEmptyArrays: true,
+  //       },
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: 'users', // Name of the User model collection
+  //         localField: 'users', // Field in the Chat collection
+  //         foreignField: '_id', // Field in the User collection
+  //         as: 'usersData', // Alias for the joined result
+  //       },
+  //     },
+  //     {
+  //       $project: {
+  //         chatName: 1,
+  //         users: 1,
+  //         latestMessage: {
+  //           _id: '$latestMessage._id',
+  //           content: '$latestMessage.content',
+  //           sender: '$latestMessage.sender',
+  //           // Add other fields from the Message schema as needed
+  //         },
+  //         // Add other fields from the Chat schema as needed
+  //       },
+  //     },
+  //   ]);
+
+  //   res.json({ friends });
+  // } catch (error) {
+  //   console.error('Error fetching friends list', error);
+  //   res.status(500).json({ error: 'Internal server error' });
+  // }
 }
 
 

@@ -24,9 +24,10 @@ import {
   Menu as MenuIcon,
   Logout,
 } from "@mui/icons-material";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import UserNotification from "../Notifications/UserNotification";
+import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
   const authState = useSelector((state) => {
@@ -178,7 +179,7 @@ const Navbar = () => {
                   Jobs
                 </Typography>
               </MenuItem>
-              <MenuItem  onClick={() => navigate("/chats")}>
+              <MenuItem onClick={() => navigate("/chats")}>
                 <Chat />
                 <Typography variant="inherit" sx={{ ml: 1 }}>
                   Chat
@@ -235,12 +236,15 @@ const Navbar = () => {
                 <Work />
               </IconButton>
               <IconButton
-               color="inherit" 
-               style={{ color: "#ff6e14" }}
-               onClick={() => navigate("/chats")}
-               >
-                <Chat />
+                color="inherit"
+                style={{ color: "#ff6e14" }}
+                onClick={() => navigate("/chats")}
+              >
+                <Badge  badgeContent={'1+'}  color="warning">
+                  <Chat />
+                </Badge>
               </IconButton>
+
               <IconButton
                 color="inherit"
                 style={{ color: "#ff6e14" }}

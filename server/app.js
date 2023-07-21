@@ -79,7 +79,6 @@ io.on("connection", (socket) => {
   //for getting the userid
   socket.on("setup", (userData) => {
     socket.join(userData._id);
-    console.log(userData._id);
     socket.emit("connecting");
   });
 
@@ -114,4 +113,15 @@ io.on("connection", (socket) => {
     console.log("USER DISCONNECTED")
     socket.leave(userData._id)
   })
+
+  //for video call 
+  
+  socket.on("video call", (room) => {
+    console.log("room" + room);
+    console.log("video call started in room: " + room);
+    // const url = generateVideoCallUrl(room, window.location.protocol, window.location.host, window.location.pathname);
+    // socket.emit("video call link", url);
+  })
+
+
 });

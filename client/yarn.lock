@@ -2853,6 +2853,16 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
+"@zegocloud/zego-uikit-prebuilt-live-streaming-rn@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@zegocloud/zego-uikit-prebuilt-live-streaming-rn/-/zego-uikit-prebuilt-live-streaming-rn-2.1.0.tgz#a8bb6d4974f91147d04e1e8c69fb37717de3c8d1"
+  integrity sha512-zElB2LfiXx4TOwU7aY5z3azC4cCh25/ssGFS4ph2kmORinS7eIShPOiM02mGzosLCJWKfDXtc6x/7W4SvMFKtw==
+
+"@zegocloud/zego-uikit-prebuilt@^1.8.9":
+  version "1.8.9"
+  resolved "https://registry.yarnpkg.com/@zegocloud/zego-uikit-prebuilt/-/zego-uikit-prebuilt-1.8.9.tgz#1641689f3b323636315a3ba6c13a648ed03fe28c"
+  integrity sha512-DzclxFFP6NalJFN3ah75iT6z1WeFQjINn0pjnzYxGkEhoA+BtGXnblcAEpq+EJXh/BxMOnvw3nLb9UrJV86/qQ==
+
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/abab/-/abab-2.0.6.tgz#41b80f2c871d19686216b82309231cfd3cb3d291"

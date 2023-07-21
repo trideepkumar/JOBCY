@@ -1,10 +1,11 @@
+// Frontend - FriendsList.js
+
 import React, { useEffect, useState } from "react";
 import { Avatar, Box, Typography } from "@mui/material";
 import axiosInstance from "../../../api/axiosinstance";
 import { useSelector } from "react-redux";
-import ChatBox from "./ChatBox";
 
-function FriendsList({handleClickEvent}) {
+function FriendsList({ handleClickEvent }) {
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
@@ -12,6 +13,8 @@ function FriendsList({handleClickEvent}) {
   const [friends, setFriends] = useState([]);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [lastMessages, setLastMessages] = useState({});
+
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -21,7 +24,6 @@ function FriendsList({handleClickEvent}) {
             _id: authState._id,
           },
         });
-        console.log(response.data.friends);
         setFriends(response.data.friends);
       } catch (error) {
         console.error("Error fetching friends list", error);
@@ -29,11 +31,10 @@ function FriendsList({handleClickEvent}) {
     };
 
     fetchFriends();
-  }, []);
+  }, [authState._id]);
 
   const handleChat = async (id) => {
     try {
-      console.log(id);
       const response = await axiosInstance.post("/chats", {
         data: {
           userId: authState._id,
@@ -41,15 +42,13 @@ function FriendsList({handleClickEvent}) {
         },
       });
 
-      console.log(response);
+      console.log(response,"chats here..")
 
-      // Set the selected user
       const selected = friends.find((friend) => friend._id === id);
       setSelectedUser(selected);
-      handleClickEvent(id)
+      handleClickEvent(id);
     } catch (err) {
       console.log(err);
-      // res.status(400)
     }
   };
 
@@ -84,15 +83,22 @@ function FriendsList({handleClickEvent}) {
             }}
           >
             <Avatar src={friend.profPic} alt={friend.name} />
-            <Box sx={{ paddingLeft: "8px", color: selectedFriendId === friend._id ? "grey" : "black" }}>
+            <Box
+              sx={{
+                paddingLeft: "8px",
+                color: selectedFriendId === friend._id ? "grey" : "black",
+              }}
+            >
               <Typography textAlign={"left"} fontWeight={"10px"}>
                 {friend.name}
+              </Typography>
+              <Typography textAlign={"left"} variant="subtitle2">
+                {friend.lastMessage ? friend.lastMessage.content : "No messages"}
               </Typography>
             </Box>
           </Box>
         </div>
       ))}
-
     </div>
   );
 }

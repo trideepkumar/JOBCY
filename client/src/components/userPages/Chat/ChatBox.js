@@ -5,7 +5,6 @@ import {
   Box,
   Typography,
   TextField,
-  Button,
   FormControl,
   IconButton,
 } from "@mui/material";
@@ -16,7 +15,11 @@ import "./chatStyles.css";
 import io from "socket.io-client";
 import Lottie from "react-lottie";
 import animationData from "../../../animations/typing.json";
-import { grey } from "@mui/material/colors";
+import { VideoCall as VideoCallIcon } from "@mui/icons-material";
+import VideoCall from "./VideoCall";
+
+
+
 
 const ENDPOINT = "http://localhost:3000";
 let socket, selectedChatCompare;
@@ -35,6 +38,7 @@ function ChatBox({ oppstId }) {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [showVideoCall, setShowVideoCall] = useState(false);
 
   const userId = authState._id;
 
@@ -131,9 +135,17 @@ function ChatBox({ oppstId }) {
     }
   };
 
+  const handleVideocall = async () => {
+    console.log("video call started");
+    console.log(chatId)
+    setShowVideoCall((prevState) => !prevState); 
+   
+  };
+  
+
   useEffect(() => {
     fetchChats(oppstId, userId);
-  }, [oppstId]);
+  }, [oppstId]); 
 
   useEffect(() => {
     fetchMessages();
@@ -159,27 +171,31 @@ function ChatBox({ oppstId }) {
 
   return (
     <div>
+      
       <Grid>
+      {showVideoCall && <VideoCall chatId={chatId} />}
         <Box position="relative">
-          <Box
-            sx={{
-              display: "flex",
-              padding: "8px",
-              borderBottom: "0.5px solid grey",
-            }}
-          >
-            <Avatar src={oppositeUser.profPic} alt={oppositeUser.name} />
-            <Box
-              sx={{ display: "grid", paddingLeft: "10px", paddingTop: "5px" }}
-            >
-              <Typography textAlign={"left"}>{oppositeUser.name}</Typography>
-              {isTyping ? (
-                <div style={{ color: "#ff6e14" }}>Typing...</div>
-              ) : (
-                <></>
-              )}
-            </Box>
-          </Box>
+        <Box
+      sx={{
+        display: "flex",
+        padding: "8px",
+        borderBottom: "0.5px solid grey",
+      }}
+    >
+      <Avatar src={oppositeUser.profPic} alt={oppositeUser.name} />
+      <Box sx={{ display: "grid", paddingLeft: "10px", paddingTop: "5px" }}>
+        <Typography textAlign={"left"}>{oppositeUser.name}</Typography>
+        {isTyping ? (
+          <div style={{ color: "#ff6e14" }}>Typing...</div>
+        ) : (
+          <></>
+        )}
+      </Box>
+      {/* Add the VideoCallIcon to the right side */}
+      <Box sx={{ marginLeft: "auto", marginRight: "10px", paddingTop: "5px" ,color:'#ff6e14',cursor:'pointer'}}>
+        <VideoCallIcon onClick={handleVideocall} />
+      </Box>
+    </Box>
 
           <Box
             sx={{
@@ -216,7 +232,6 @@ function ChatBox({ oppstId }) {
                 </Typography>
               </div>
             ))}
-            
             {isTyping ? (
               <div style={{ color: "#ff6e14" }}>
                 <Lottie
@@ -238,15 +253,10 @@ function ChatBox({ oppstId }) {
               alignItems: "center",
             }}
           >
-            
-            <FormControl
-              // onKeyDown={handleSendMessage}
-              isRequired
-              sx={{ position: "sticky", bottom: 0 }}
-            >
+            <FormControl isRequired sx={{ position: "sticky", bottom: 0 }}>
               <TextField
                 sx={{
-                  width: "48vw",
+                  width: "49vw",
                   border: "1px solid #ff6e14",
                   margin: "10px",
                   borderRadius: "10px",
@@ -258,13 +268,17 @@ function ChatBox({ oppstId }) {
                     handleSendMessage();
                   }
                 }}
+                InputProps={{
+                  endAdornment: (
+                    <Box sx={{ background: "#ff6e14", borderRadius: "5px" }}>
+                      <IconButton onClick={handleSendMessage}>
+                        <SendIcon sx={{ color: "white" }} />
+                      </IconButton>
+                    </Box>
+                  ),
+                }}
               />
             </FormControl>
-            <Box sx={{ background: "#ff6e14", borderRadius: "5px" }}>
-              <IconButton onClick={handleSendMessage}>
-                <SendIcon sx={{ color: "white" }} />
-              </IconButton>
-            </Box>
           </Box>
         </Box>
       </Grid>
