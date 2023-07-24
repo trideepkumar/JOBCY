@@ -5,6 +5,8 @@ const Token = require("../model/Token");
 const sendVerificationEmail = require("../utils/mailVerify");
 const jwt = require("jsonwebtoken");
 const Jobs = require("../model/jobs");
+const sendJobMail = require("../utils/jobMail")
+const User = require('../model/user')
 
 const signup = async (req, res) => {
   try {
@@ -312,6 +314,55 @@ const updatePic = async (req, res) => {
   }
 };
 
+const getAppliedCandidates = async (req, res) => {
+   console.log("getAppliedCandidates")
+   console.log(req.query.jobId)
+  const jobId = req.query.jobId;
+  try {
+    const job = await Jobs.findById(jobId).populate('appliedCandidates');
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    console.log(job.appliedCandidates)
+    const Applied = job.appliedCandidates
+    return res.status(200).json(Applied);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+
+};
+
+const sentEmail = async(req,res)=>{
+  const { subject, body, email, userId } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userEmail = user.email; 
+
+    try {
+
+      const info = await sendJobMail(email,userEmail,subject,body); 
+
+      console.log('Email sent:', info);
+
+      res.json({ message: 'Email sent successfully' }).status(200);
+    } catch (error) {
+      console.log('Error sending email:', error);
+      res.status(500).json({ message: 'Error sending email' });
+    }
+  } catch (error) {
+    console.log('Error fetching user:', error);
+    res.status(500).json({ message: 'Error fetching user' });
+  }
+  
+}
+
 module.exports = {
   signup,
   login,
@@ -321,5 +372,7 @@ module.exports = {
   getJobsByOrganization,
   updateName,
   updatePic,
-  getOrganisation
+  getOrganisation,
+  getAppliedCandidates,
+  sentEmail
 };

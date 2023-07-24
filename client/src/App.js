@@ -23,6 +23,9 @@ import OrganisationManagement from './components/Admin/OrganisationManagement/Or
 import JobManagement from './components/Admin/AdminPages/JobManagement';
 import PostManagement from './components/Admin/AdminPages/PostManagement'
 import Chat from './components/userPages/Chat/UserChat'
+import UserprofileModal from './components/organisationPages/Modals/UserprofileModal';
+import SentMail from './components/organisationPages/Modals/SentMail';
+
 function App() {
   return (
     
@@ -52,6 +55,8 @@ function App() {
           <Route path="/organisation/jobposts"  element={<Jobposts/>} />
           <Route path='/organisation/jobs' element={<Jobs/>}/>
           <Route path='/organisation/profile' element={<OrgProfile/>}/>
+          <Route path='/organisation/profile/:userId' element={<UserprofileModal/>}/>
+          <Route path='/organisation/sentEmail/:userId' element={<SentMail/>}/>
           </Route>
 
           <Route element={<AdminPublicRoutes></AdminPublicRoutes>}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -20,6 +20,7 @@ import Placeholder from "./placeholders/Placeholder";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../api/axiosinstance";
 // import OrgBar from "../Appbar/OrgBars";
+import Appliedjobs from '../organisationPages/Modals/Appliedjobs'
 
 function Jobs() {
   const authState = useSelector((state) => {
@@ -29,9 +30,25 @@ function Jobs() {
   const [selectedCategory, setSelectedCategory] = React.useState("");
   const [jobs, setJobs] = React.useState([]);
   const [searchInput, setSearchInput] = React.useState("");
+  const [showApplied , setShowApplied] = useState(false)
+  const [selectedJobId, setSelectedJobId] = useState(null); 
+
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
+  };
+
+  const handleApplied = (jobpostID) => {
+    console.log(jobpostID)
+    setSelectedJobId(jobpostID)
+    setShowApplied(true)
+    console.log(showApplied)
+    console.log("setSelectedJobId"+selectedJobId)
+  }
+
+
+  const handleCloseApplied = () => {
+    setShowApplied(false);
   };
 
   useEffect(() => {
@@ -271,7 +288,7 @@ function Jobs() {
                     <Box
                       sx={{ display: "flex", gap: "10px", paddingLeft: "50px" }}
                     >
-                      <Button sx={{border:'0.5px solid #ff6e14',color:'#ff6e14'}}>
+                      <Button sx={{border:'0.5px solid #ff6e14',color:'#ff6e14'}} onClick={()=>handleApplied(jobpost._id)}>
                         Applied candidates
                       </Button>
                       <IconButton style={{ color: "#ff6e14" }}>
@@ -290,6 +307,7 @@ function Jobs() {
           </div>
         </Card>
       </Grid>
+      {showApplied && <Appliedjobs show={showApplied} onClose={handleCloseApplied} jobId={selectedJobId}/>}
     </>
   );
 }
