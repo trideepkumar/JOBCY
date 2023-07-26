@@ -34,6 +34,7 @@ function Userjob() {
   const [jobPosts, setJobPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const [chipFilter,setChipFilter] = useState("")
 
   const fetchData = async () => {
     try {
@@ -47,11 +48,20 @@ function Userjob() {
 
       console.log(hasApplied);
       console.log("again");
-      setJobPosts(jobs);
+      if (selectedCategory) {
+        setJobPosts(jobs.filter((job) => job.category === selectedCategory));
+      } else {
+        setJobPosts(jobs);
+      }
       setAppliedJobs({ id: authState._id, isApplied: hasApplied });
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleChipClick = (category) => {
+    setSearchQuery(category);
+    setChipFilter(category); 
   };
 
   const handleApply = async (jobId) => {
@@ -86,6 +96,10 @@ function Userjob() {
   }, []);
 
   useEffect(() => {
+    fetchData();
+  }, [selectedCategory]);
+
+  useEffect(() => {
     console.log("jobposts");
     console.log(appliedJobs);
   });
@@ -97,7 +111,7 @@ function Userjob() {
       <Grid container spacing={5}>
         {/* left */}
 
-        <Grid item lg={3} sm={12} xs={12}>
+        <Grid item lg={3} sm={12} xs={12} >
           <Box className="new-search">
             <Card
               style={{
@@ -151,17 +165,6 @@ function Userjob() {
               </Typography>
               <Divider sx={{ my: 2 }} />
 
-              <TextField
-                style={{
-                  width: "95%",
-                  borderRadius: "3px",
-                }}
-                variant="outlined"
-                placeholder="Search categories here..."
-              />
-
-              <Divider sx={{ my: 2 }} />
-
               <FormControl component="fieldset">
                 <RadioGroup
                   aria-label="category"
@@ -169,7 +172,12 @@ function Userjob() {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
                   <FormControlLabel
-                    value="construction"
+                    value=""
+                    control={<Radio color="primary" />}
+                    label="All"
+                  />
+                  <FormControlLabel
+                    value="Construction"
                     control={<Radio color="primary" />}
                     label="Construction"
                   />
@@ -227,19 +235,42 @@ function Userjob() {
               <Typography> Suggested job searches</Typography>
               <br></br>
               <Stack direction="row" spacing={1} className="suggestion-icon">
-                <Chip label="Technology" variant="outlined" className="chip" />
-                <Chip
-                  label="Fullstack Developer"
-                  variant="outlined"
-                  className="chip"
-                />
-                <Chip
-                  label="Full time jobs"
-                  variant="outlined"
-                  className="chip"
-                />
-                <Chip label="Student" variant="outlined" className="chip" />
-                <Chip label="Technology" variant="outlined" className="chip" />
+              <Chip
+                label="All"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("")}
+              />
+              <Chip
+                label="React Developer"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("React Developer")}
+              />
+              <Chip
+                label="Fullstack Developer"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("Fullstack Developer")}
+              />
+              <Chip
+                label="Software Engineer"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("Software Engineer")}
+              />
+              <Chip
+                label="Intern"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("Intern")}
+              />
+              <Chip
+                label="HR Recruiter"
+                variant="outlined"
+                className="chip"
+                onClick={() => handleChipClick("HR Recruiter")}
+              />
               </Stack>
             </CardContent>
           </Card>
@@ -247,7 +278,6 @@ function Userjob() {
           {/* posts card */}
 
           <Suspense fallback={<div>Loading...</div>}>
-
             <Grid item xs={12} sm={12} md={6}>
               <Box
                 sx={{
@@ -292,10 +322,12 @@ function Userjob() {
                           className="main"
                           style={{
                             width: "85%",
-                            border: "0.01px solid smokegrey",
-                            height: "12%",
+                            border: "0.01px solid #ECEEF1",
+                            height: "10%",
                             paddingTop: "20px",
                             paddingLeft: "35px",
+                            paddingBottom:"1px",
+                            
                           }}
                           key={jobpost._id}
                         >
@@ -383,16 +415,23 @@ function Userjob() {
                                 {jobpost.appliedCandidates.includes(
                                   authState._id
                                 ) ? (
-                                  <Typography sx={{ paddingLeft: "10px" }}>
+                                  <Button
+                                    sx={{
+                                      textTransform: "none",
+                                      border: "0.1px solid grey",
+                                    }}
+                                    className="applied-button"
+                                    disabled
+                                  >
                                     Applied
-                                    <Send
+                                    {/* <Send
                                       sx={{
                                         transform: "rotate(310deg)",
                                         fontSize: "small",
                                         marginLeft: "4px",
                                       }}
-                                    />
-                                  </Typography>
+                                    /> */}
+                                  </Button>
                                 ) : (
                                   <Button
                                     sx={{
@@ -449,7 +488,7 @@ function Userjob() {
             className="right-card-bottom"
             style={{ position: "fixed", top: "35rem", paddingLeft: "25px" }}
           >
-            <CardContent style={{ color: "#ff6e14" }}>
+            <CardContent style={{ color: "grey" }}>
               <Typography gutterBottom variant="h5" component="div">
                 JOBCY
               </Typography>
@@ -479,6 +518,7 @@ function Userjob() {
             </CardContent>
           </Card>
         </Grid>
+        
       </Grid>
     </>
   );

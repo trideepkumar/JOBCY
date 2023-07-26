@@ -11,6 +11,8 @@ const mongoose = require('mongoose');
 const cloudinary = require("cloudinary").v2;
 const Chat = require("../model/chat")
 const Message = require('../model/message')
+require("dotenv").config();
+const FRONT_URL = process.env.FRONT_URL;
 
 
 cloudinary.config({
@@ -137,6 +139,81 @@ const verifyToken = async (req, res, next) => {
 
   console.log("end");
 };
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({ message: "User not found. Please sign up first.", success: false });
+    }
+
+    const token = new Token({
+      userId: existingUser._id,
+      token: crypto.randomBytes(16).toString("hex"),
+    });
+
+    await token.save();
+
+    const resetPasswordUrl = `${FRONT_URL}/reset-password/${token.token}`; 
+
+
+  
+    await sendVerificationEmail(email, resetPasswordUrl);
+
+    res.status(200).json({
+      message: "Reset password link has been sent to your email.",
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred.", success: false });
+  }
+};
+
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const existingToken = await Token.findOne({ token });
+
+    if (!existingToken) {
+      return res.status(404).json({
+        message: "Invalid or expired password reset token.",
+        success: false,
+      });
+    }
+
+    const existingUser = await User.findById(existingToken.userId);
+
+    if (!existingUser) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    existingUser.password = hashedPassword;
+    await existingUser.save();
+
+    await existingToken.deleteOne();
+
+    res.status(200).json({
+      message: "Password reset successful. You can now login with the new password.",
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred.", success: false });
+  }
+};
+
 
 const getUser = async (req, res) => {
   console.log("get user started!");
@@ -493,21 +570,45 @@ const createPost = async (req, res) => {
 };
 
 
+// const getPosts = async (req, res) => {
+//   try {
+//     console.log("getPosts fetching");
+//     const userId = req.params._id;
+//     console.log(userId);
+//     const posts = await Post.find({ createdBy: userId }).sort({
+//       createdAt: -1,
+//     }).populate("createdBy");
+//     console.log(posts);
+//     res.status(200).json(posts);
+//   } catch (error) {
+//     console.error("Error fetching posts:", error);
+//     res.status(500).json({ error: "Failed to fetch posts" });
+//   }
+// };
 const getPosts = async (req, res) => {
   try {
     console.log("getPosts fetching");
     const userId = req.params._id;
     console.log(userId);
-    const posts = await Post.find({ createdBy: userId }).sort({
-      createdAt: -1,
-    });
+
+    const user = await User.findById(userId).populate("friends");
+    const friendIds = user.friends.map((friend) => friend._id);
+
+    friendIds.push(userId);
+
+    const posts = await Post.find({ createdBy: { $in: friendIds } })
+      .sort({ createdAt: -1 })
+      .populate("createdBy");
     console.log(posts);
+
     res.status(200).json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
+
+
 
 const deleteJobTitle = async (req, res) => {
   try {
@@ -809,3 +910,5 @@ exports.getFriendRequests = getFriendRequests;
 exports.acceptFriendRequest = acceptFriendRequest;
 exports.friendRequestDeny = friendRequestDeny;
 exports.getFriends =getFriends
+exports.forgotPassword = forgotPassword
+exports.resetPassword = resetPassword

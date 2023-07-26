@@ -25,6 +25,8 @@ import PostManagement from './components/Admin/AdminPages/PostManagement'
 import Chat from './components/userPages/Chat/UserChat'
 import UserprofileModal from './components/organisationPages/Modals/UserprofileModal';
 import SentMail from './components/organisationPages/Modals/SentMail';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 
 function App() {
   return (
@@ -34,7 +36,8 @@ function App() {
           <Route  element={<PublicRoutes></PublicRoutes>}>
             <Route path="/signup" element={<Signup signupType='user' />} />
             <Route path="/login" element={<Login loginType="user" />} />
-            
+            <Route path='/forgot-password' element={<ForgotPassword/>}/>
+            <Route path="/reset-password/:token" element={<ResetPassword/>} />
           </Route>
 
           <Route  element={<ProtectedRoutes></ProtectedRoutes>}>

@@ -17,6 +17,10 @@ import {
 import axiosInstance from "../../api/axiosinstance";
 import { setorganisationAuth } from "../../app/features/auth/organisationauthSlice";
 import { useDispatch, useSelector } from "react-redux";
+import OrgBar from "../Appbar/OrgBars";
+import Loading from "../../utils/Loading";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Jobposts = () => {
   const authState = useSelector((state) => {
@@ -31,7 +35,24 @@ const Jobposts = () => {
   const [salaryMax, setSalaryMax] = useState("");
   const [hiringProcess, setHiringProcess] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [category, setCategory] = useState(""); 
+  const [loading,setLoading] = useState(false)
   const dispatch = useDispatch();
+
+  const categoryOptions = [
+    "Construction",
+    "Technology",
+    "Health Sector",
+    "Arts & Crafts",
+    "Mechanical Fields",
+    "Manufacturing",
+    "Industrial",
+    "Others",
+  ];
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
 
   const handleJobTypeChange = (event) => {
     setJobType(event.target.value);
@@ -46,6 +67,7 @@ const Jobposts = () => {
   };
 
   const handleSubmit = async (event) => {
+    setLoading(true)
     console.log("handleSubmit started");
     event.preventDefault();
     const formData = {
@@ -58,6 +80,7 @@ const Jobposts = () => {
       salaryMax: salaryMax,
       jobDescription: jobDescription,
       hiringProcess: hiringProcess,
+      category: category,
     };
     console.log(formData);
     let endpoint = `/organisation/jobposts/${authState._id}`;
@@ -74,7 +97,9 @@ const Jobposts = () => {
       setSalaryMax("");
       setJobDescription("");
       setHiringProcess("");
+      setCategory("")
       console.log(response.data.organization)
+      setLoading(false)
       if (response.data.organization) {
         localStorage.setItem(
           "organisation",
@@ -82,11 +107,36 @@ const Jobposts = () => {
         );
       }
       dispatch(setorganisationAuth());
+      toast.success("Job posted successfully!", {
+        position: "top-center",
+        autoClose: 3000, 
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
+    }
+    else {
+      toast.error("Failed to post job. Please try again later.", {
+        position: "top-center",
+        autoClose: 3000, // Show toast for 3 seconds
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+      });
     }
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
+
   return (
-    <Grid
+    <>   
+    <OrgBar/>
+     <Grid
       container
       justifyContent="center"
       alignItems="center"
@@ -97,6 +147,7 @@ const Jobposts = () => {
           <Typography
             variant="h5"
             sx={{
+              marginTop:"30px",
               color: "#ff6e14",
               marginBottom: "5px",
               borderRadius: "10px",
@@ -266,6 +317,7 @@ const Jobposts = () => {
                     label="Written Test"
                   />
                 </Box>
+               
                 <Box display="flex">
                   <FormControlLabel
                     control={
@@ -287,8 +339,28 @@ const Jobposts = () => {
                     label="Group Discussion"
                   />
                 </Box>
+                <Box sx={{marginBottom:'10px'}}>
+                <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={category}
+                  onChange={handleCategoryChange}
+                  required
+                  style={{ width: "100%" }}
+                >
+                  {categoryOptions.map((categoryOption) => (
+                    <MenuItem key={categoryOption} value={categoryOption}>
+                      {categoryOption}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              </Box>
+
               </FormGroup>
             </FormControl>
+
+          
 
             <TextField
               label="Job Description"
@@ -311,6 +383,9 @@ const Jobposts = () => {
         </Box>
       </Box>
     </Grid>
+    <ToastContainer />
+    </>
+
   );
 };
 

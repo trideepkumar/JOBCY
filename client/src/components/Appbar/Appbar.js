@@ -24,10 +24,11 @@ import {
   Menu as MenuIcon,
   Logout,
 } from "@mui/icons-material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import UserNotification from "../Notifications/UserNotification";
 import Badge from "@mui/material/Badge";
+
 
 const Navbar = () => {
   const authState = useSelector((state) => {
@@ -43,11 +44,10 @@ const Navbar = () => {
   const [openNotify, setopenNotify] = useState(false);
 
   const handleLogout = () => {
+    navigate("/login");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("authorization.user");
-    // dispatch(clearAuth());
-    navigate("/login");
   };
 
   useEffect(() => {
@@ -128,9 +128,7 @@ const Navbar = () => {
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Image on the left side */}
-          {/* <img src="/JOBCYMAIN.png" alt="Logo" style={{ width: '7%', height: '10%', marginLeft: '10px' }} /> */}
-
+         
           <Typography
             sx={{ color: "black", fontFamily: "fantasy", fontSize: "2rem" }}
           >
@@ -167,7 +165,7 @@ const Navbar = () => {
                   Home
                 </Typography>
               </MenuItem>
-              <MenuItem>
+              <MenuItem onClick={()=> navigate("/friends")}>
                 <Group />
                 <Typography variant="inherit" sx={{ ml: 1 }}>
                   Groups
@@ -240,7 +238,7 @@ const Navbar = () => {
                 style={{ color: "#ff6e14" }}
                 onClick={() => navigate("/chats")}
               >
-                <Badge  badgeContent={'1+'}  color="warning">
+                <Badge badgeContent={"1+"} color="warning">
                   <Chat />
                 </Badge>
               </IconButton>
@@ -272,8 +270,46 @@ const Navbar = () => {
                 anchorEl={anchorEl}
                 open={menuOpen}
                 onClose={handleMenuClose}
+                PaperProps={{
+                  style: {
+                    background: "transparent",
+                    color: "#ff6e4",
+                  },
+                }}
               >
-                <MenuItem onClick={handleLogout} style={{ color: "red" }}>
+                <MenuItem onClick={() => navigate("/posts")}>
+                  <Home />
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Home
+                  </Typography>
+                </MenuItem>
+                <MenuItem  onClick={() => navigate("/friends")}>
+                  <Group />
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Groups
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={() => navigate("/jobs")}>
+                  <Work />
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Jobs
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={() => navigate("/chats")}>
+                  <Chat />
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Chat
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={handleNotify}>
+                  <Badge badgeContent={"1+"} color="warning">
+                    <Notifications />
+                  </Badge>
+                  <Typography variant="inherit" sx={{ ml: 1 }}>
+                    Notifications
+                  </Typography>
+                </MenuItem>
+                <MenuItem onClick={()=>{handleLogout()}} style={{ color: "red" }}>
                   <Logout />
                   <Typography variant="inherit" sx={{ ml: 1 }}>
                     Logout

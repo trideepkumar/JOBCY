@@ -190,6 +190,7 @@ const jobposts = async (req, res) => {
       orgName,
       jobTitle,
       jobType,
+      category,
       qualification,
       location,
       salaryMin,
@@ -197,6 +198,7 @@ const jobposts = async (req, res) => {
       hiringProcess,
       jobDescription,
     } = req.body;
+    console.log(req.body)
     console.log(req.params._id);
     const organization = await Organization.findById(req.params._id);
 
@@ -213,6 +215,7 @@ const jobposts = async (req, res) => {
       jobType,
       qualification,
       location,
+      category,
       salaryMin,
       salaryMax,
       hiringProcess,

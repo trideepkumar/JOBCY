@@ -36,6 +36,7 @@ function Posts() {
         image="/static/images/cards/contemplative-reptile.jpg"
         title="green iguana"
       />
+      
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           Lizard

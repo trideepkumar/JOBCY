@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , lazy, Suspense} from "react";
 import axiosInstance from "../api/axiosinstance";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,6 +14,8 @@ import { setAuth } from "../app/features/auth/authSlice";
 import { setorganisationAuth } from "../app/features/auth/organisationauthSlice";
 import {setadminAuth} from "../app/features/auth/adminauthSlice"
 import Appbar from '../components/Appbar/Appbar'
+import Loading from "../utils/Loading";
+
 
 const Login = ({ loginType }) => {
 
@@ -22,10 +24,12 @@ const Login = ({ loginType }) => {
     password: "",
   });
 
+
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [isFormValid, setIsFormValid] = useState(false);
   const [respons, setResponse] = useState("");
+  const [loading,setLoading] = useState(false)
   const dispatch = useDispatch();
 
   const validateFormData = (formData) => {
@@ -65,6 +69,7 @@ const Login = ({ loginType }) => {
 
   
   const handleSubmit = async (event) => {
+    setLoading(true)
     event.preventDefault();
   
     const validationErrors = validateFormData(formData);
@@ -93,27 +98,38 @@ const Login = ({ loginType }) => {
         if (response.data?.success) {
           localStorage.setItem("token", response.data.token);
           console.log(response.data.token)
+
           if(loginType==='user'){
-            console.log(response.data.user)
+            setTimeout(() => {
+              setLoading(false);  
+              console.log(response.data.user)
             localStorage.setItem("user", JSON.stringify(response.data.user));
             dispatch(setAuth());
             navigate(redirectRoute) 
+            },3000);
+          
+            
           }else if ( loginType === 'organisation'){
             console.log("org data")
             console.log(response.data.organisation)
             localStorage.setItem("organisation", JSON.stringify(response.data.organisation));
             dispatch(setorganisationAuth());
             navigate(redirectRoute) 
+            setLoading(false)
+
           }else if(loginType === 'admin'){
             localStorage.setItem("admin", JSON.stringify(response.data.admin));
             dispatch(setadminAuth());
             navigate(redirectRoute) 
+            setLoading(false)
+
           }
           
           
         } else {
           setResponse(response?.data?.message);
           setErrors({ message: response?.data?.message });
+          setLoading(false)
         }
       } catch (error) {
         console.error("Error logging in:", error.response.data.message);
@@ -134,6 +150,7 @@ const Login = ({ loginType }) => {
   return (
     <ThemeProvider theme={theme}>
       <Appbar/>
+       {loading && <Loading/>}
       {loginType === "user" && (
         <>
           <Grid container component="main" sx={{ height: "100vh" }}>
@@ -556,6 +573,7 @@ const Login = ({ loginType }) => {
           </Grid>
         </>
       )}
+
     </ThemeProvider>
   );
 };

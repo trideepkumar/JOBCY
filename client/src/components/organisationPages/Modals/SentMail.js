@@ -3,20 +3,22 @@ import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import axiosInstance from "../../../api/axiosinstance";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 
 function SentMail({ onClose }) {
   const authState = useSelector((state) => state.organisationauth.authState);
   const { userId } = useParams();
   const cleanedUserId = userId.replace(":", "");
 
+  const navigate = useNavigate()
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [open, setOpen] = useState(true);
-  const [loading, setLoading] = useState(false); // Initialize loading state to false
+  const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
     const orgEmail = authState.email;
@@ -42,13 +44,14 @@ function SentMail({ onClose }) {
       }
     } catch (error) {
       console.log("Error sending email:", error);
-      setLoading(false); // Hide loading state on error as well
+      setLoading(false);  
       toast.error("Error sending email!", { autoClose: 3000 });
     }
   };
 
   const handleClose = () => {
     setOpen(false);
+    navigate('/organisation/jobs')
   };
 
   return (

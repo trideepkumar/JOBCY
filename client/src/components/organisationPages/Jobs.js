@@ -19,8 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Placeholder from "./placeholders/Placeholder";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../api/axiosinstance";
-// import OrgBar from "../Appbar/OrgBars";
-import Appliedjobs from '../organisationPages/Modals/Appliedjobs'
+import OrgBar from "../Appbar/OrgBars";
+import Appliedjobs from "../organisationPages/Modals/Appliedjobs";
 
 function Jobs() {
   const authState = useSelector((state) => {
@@ -30,22 +30,20 @@ function Jobs() {
   const [selectedCategory, setSelectedCategory] = React.useState("");
   const [jobs, setJobs] = React.useState([]);
   const [searchInput, setSearchInput] = React.useState("");
-  const [showApplied , setShowApplied] = useState(false)
-  const [selectedJobId, setSelectedJobId] = useState(null); 
-
+  const [showApplied, setShowApplied] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState(null);
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
   };
 
   const handleApplied = (jobpostID) => {
-    console.log(jobpostID)
-    setSelectedJobId(jobpostID)
-    setShowApplied(true)
-    console.log(showApplied)
-    console.log("setSelectedJobId"+selectedJobId)
-  }
-
+    console.log(jobpostID);
+    setSelectedJobId(jobpostID);
+    setShowApplied(true);
+    console.log(showApplied);
+    console.log("setSelectedJobId" + selectedJobId);
+  };
 
   const handleCloseApplied = () => {
     setShowApplied(false);
@@ -71,7 +69,7 @@ function Jobs() {
 
   return (
     <>
-    {/* <OrgBar/> */}
+      <OrgBar />
       <Grid container spacing={0.5}>
         {/* left */}
         <Grid item lg={3} style={{ display: "grid" }}>
@@ -173,20 +171,20 @@ function Jobs() {
                     label="Arts & crafts"
                   />
                   <FormControlLabel
-                    value="Mechanical Fields"
+                    value="Industrial"
                     control={<Radio color="primary" />}
-                    label="Mechanical Fields"
+                    label="Industrial"
                   />
                   <FormControlLabel
                     value="Manufacturing"
                     control={<Radio color="primary" />}
                     label="Manufacturing"
                   />
-                  <FormControlLabel
+                  {/* <FormControlLabel
                     value="Industrial"
                     control={<Radio color="primary" />}
                     label="Industrial"
-                  />
+                  /> */}
                 </RadioGroup>
               </FormControl>
             </Box>
@@ -214,6 +212,7 @@ function Jobs() {
           className="right-card"
         >
           <div className="scroll">
+            <Typography textAlign={"left"} sx={{fontFamily:'fantasy',fontSize:'20px',paddingBottom:'10px',color:'#ff6e14'}}>Posted Job Here...</Typography>
             {filteredJobs.length === 0 ? (
               <Card className="main" style={{ marginBottom: "1rem" }}>
                 <Box sx={{ p: 2 }}>
@@ -228,67 +227,55 @@ function Jobs() {
                 <Card
                   key={index}
                   className="main"
-                  style={{ marginBottom: "1rem" }}
+                  style={{ marginBottom: "1rem", padding: "10px 0px 0px 0px" }}
                 >
-                  <Box display="flex" alignItems="center">
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
                     <div
                       style={{
                         display: "flex",
                         textAlign: "left",
                         paddingTop: "0px",
                         marginRight: "10px",
+                        paddingLeft: "10px",
                       }}
                     >
                       <Avatar
                         src="/public/signupmain.jpeg"
-                        style={{ width: 80, height: 80 }}
+                        style={{ width: 50, height: 50 }}
                       />
                     </div>
-                    <Box flexGrow={1}>
-                      <Typography
-                        variant="h5"
-                        textAlign="left"
-                        color="#0d65c2"
-                      >
+                    <Box flexGrow={1} paddingLeft={"10px"}>
+                      <Typography variant="h5" textAlign="left" color="#0d65c2">
                         {jobpost.jobTitle}
                       </Typography>
                       <Typography textAlign="left" variant="body1">
                         {authState.orgName}
                       </Typography>
-                      <Typography
-                        textAlign="left"
-                        variant="body2"
-                        color="grey"
-                      >
+                      <Typography textAlign="left" variant="body2" color="grey">
                         {jobpost.location}, {jobpost.hiringProcess},{" "}
                         {jobpost.jobType}
                       </Typography>
-                      <Typography
-                        textAlign="left"
-                        variant="body2"
-                        color="grey"
-                      >
+                      <Typography textAlign="left" variant="body2" color="grey">
                         Qualifications: {jobpost.qualification}
                       </Typography>
-                      <Typography
-                        textAlign="left"
-                        variant="body2"
-                        color="grey"
-                      >
+                      <Typography textAlign="left" variant="body2" color="grey">
                         Salary: {jobpost.salaryMin} - {jobpost.salaryMax}
                       </Typography>
-                      <Typography
-                        textAlign="left"
-                        variant="body2"
-                        color="grey"
-                      >
+                      <Typography textAlign="left" variant="body2" color="grey">
                         Created at: {jobpost.createdAt}
                       </Typography>
                     </Box>
                     <Box
-                      sx={{ display: "flex", gap: "10px", paddingLeft: "50px" }}
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
                     >
-                      <Button sx={{border:'0.5px solid #ff6e14',color:'#ff6e14'}} onClick={()=>handleApplied(jobpost._id)}>
+                      <Button
+                        sx={{ border: "0.5px solid #ff6e14", color: "#ff6e14" }}
+                        onClick={() => handleApplied(jobpost._id)}
+                      >
                         Applied candidates
                       </Button>
                       <IconButton style={{ color: "#ff6e14" }}>
@@ -307,7 +294,13 @@ function Jobs() {
           </div>
         </Card>
       </Grid>
-      {showApplied && <Appliedjobs show={showApplied} onClose={handleCloseApplied} jobId={selectedJobId}/>}
+      {showApplied && (
+        <Appliedjobs
+          show={showApplied}
+          onClose={handleCloseApplied}
+          jobId={selectedJobId}
+        />
+      )}
     </>
   );
 }

@@ -19,7 +19,6 @@ import { VideoCall as VideoCallIcon } from "@mui/icons-material";
 import VideoCall from "./VideoCall";
 import Modal from "react-modal";
 
-
 const ENDPOINT = "http://localhost:3000";
 let socket, selectedChatCompare;
 
@@ -47,7 +46,6 @@ function ChatBox({ oppstId }) {
   const [isTyping, setIsTyping] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
 
   const userId = authState._id;
 
@@ -171,33 +169,58 @@ function ChatBox({ oppstId }) {
         setMessages([...messages, newMessageRecieved]);
       }
     });
-
   });
 
   useEffect(() => {
-    chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    // Check if chatMessagesRef is valid before accessing scrollHeight
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  
   const handleCloseModal = () => {
     setModalIsOpen(false);
   };
-  
+
+  if (messages.length === 0) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <Typography
+          variant="h5"
+          align="center"
+          color="black"
+          fontFamily={"fantasy"}
+        >
+          Tap users to chat
+        </Typography>
+      </div>
+    );
+  }
 
   return (
     <div>
-       <Modal
+      <Modal
         isOpen={modalIsOpen}
         onRequestClose={handleCloseModal}
         style={modalStyles}
       >
         {showVideoCall && <VideoCall chatId={chatId} />}
       </Modal>
+
       <Grid>
         <Box position="relative">
           <Box
             sx={{
-              display: "flex" ,
+              display: "flex",
               padding: "8px",
               borderBottom: "0.5px solid grey",
             }}
@@ -267,7 +290,7 @@ function ChatBox({ oppstId }) {
                 <Lottie
                   options={defaultOptions}
                   width={100}
-                  style={{ marginBottom:15, marginLeft: 0 }}
+                  style={{ marginBottom: 15, marginLeft: 0 }}
                 />
               </div>
             ) : (

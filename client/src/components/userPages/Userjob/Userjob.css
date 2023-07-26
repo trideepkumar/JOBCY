@@ -79,6 +79,30 @@
 }
 }
 
+@media (max-width: 767px) {
+  /* CSS for small screens */
+  .new-search{
+    width: 10rem !important;
+    background:red !important;
+  }
+  .searc{
+    width:22rem !important;
+    margin-left: 0px !important;
+    /* background:red !important; */
+  }
+  .search-card{
+    width: 100% !important;
+    margin-left: 1px !important;
+    margin-top: 20px !important;
+  }
+  .center-card{
+    margin-top: 0px !important;
+  }
+  .card{
+    display: none;
+  }
+}
+
 
 @media (min-width: 601px) and (max-width: 960px) {
   /* Styles for screens between 601px and 960px wide */

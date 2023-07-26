@@ -1,42 +1,176 @@
-// import React, { useState } from 'react';
-// import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
-// import { AccountCircle } from '@mui/icons-material';
-// import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Box,
+  ListItemIcon,
+} from "@mui/material";
+import {
+  AccountCircle,
+  Home,
+  Work,
+  Help,
+  ExitToApp,
+} from "@mui/icons-material";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
-// const OrgBar = () => {
+const OrgBar = () => {
+  const authState = useSelector((state) => {
+    return state.organisationauth.authState;
+  });
 
-//     const {authState} = useSelector(state=>state.organisationauth)
+  const navigate = useNavigate();
+  const [orgLog, setOrgLog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
-//       console.log("hello"+authState.orgName)
+  useEffect(() => {
+    if (authState !== null) {
+      setOrgLog(true);
+    }
+  }, [authState]);
 
-//   const [orgLog, setOrgLog] = useState(false);
-//   const organizationName = authState.orgName;
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-//   setOrgLog(authState)
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
-//   // console.log(orgLog)
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/organisation/login')
+    console.log("Logout clicked");
+    handleMenuClose();
+  };
 
-//   return (
-//     <AppBar position="static">
-//       <Toolbar>
-//         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-//           JOBCY
-//         </Typography>
-//         {orgLog ? (
-//           <Typography variant="subtitle1">
-//             Hello {organizationName}
-//           </Typography>
-//         ) : (
-//           <>
-//             <IconButton color="inherit" aria-label="user">
-//               <AccountCircle />
-//             </IconButton>
-//             <Typography variant="subtitle1">User login</Typography>
-//           </>
-//         )}
-//       </Toolbar>
-//     </AppBar>
-//   );
-// };
+  return (
+    <AppBar
+      position="fixed"
+      sx={{
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "#f3f2ee",
+        boxShadow: "none",
+        width: "100%",
+      }}
+    >
+      <Toolbar>
+        <Typography
+          variant="h6"
+          sx={{
+            flexGrow: 1,
+            color: "black",
+            fontFamily: "fantasy",
+            fontSize: "2rem",
+          }}
+          textAlign={"left"}
+        >
+          JOBCY
+        </Typography>
+        {orgLog ? (
+          <>
+            <Box sx={{ marginRight: "16px" }}>
+              <Typography
+                variant="subtitle1"
+                color="black"
+                sx={{ fontFamily: "fantasy" }}
+              >
+                Hello {authState.orgName} !
+              </Typography>
+            </Box>
+            <IconButton
+              color="black"
+              onClick={handleMenuOpen}
+              sx={{ border: "0.5px solid black" }}
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              PaperProps={{
+                style: {
+                  background: "transparent",
+                  border: "0.3px solid grey",
+                  marginTop: "3rem",
+                  width: "10rem",
+                },
+              }}
+            >
+              <MenuItem
+                onClick={() => {
+                  navigate("/organisation/dashboard");
+                  handleMenuClose(); // Close the menu after navigation
+                }}
+              >
+                <ListItemIcon>
+                  <Home />
+                </ListItemIcon>
+                Home
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate("/organisation/jobposts");
+                  handleMenuClose(); // Close the menu after navigation
+                }}
+              >
+                <ListItemIcon>
+                  <Work />
+                </ListItemIcon>
+                Post a Job
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  navigate("/organisation/jobs");
+                  handleMenuClose(); // Close the menu after navigation
+                }}
+              >
+                <ListItemIcon>
+                  <Work />
+                </ListItemIcon>
+                Jobs
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+                <ListItemIcon>
+                  <Help />
+                </ListItemIcon>
+                Help
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>
+                <ListItemIcon>
+                  <ExitToApp sx={{ color: "red" }} />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
+          </>
+        ) : (
+          <>
+            <IconButton color="inherit" aria-label="user">
+              <AccountCircle />
+            </IconButton>
+            <Typography variant="subtitle1">User login</Typography>
+          </>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+};
 
-// export default OrgBar;
+export default OrgBar;
