@@ -24,6 +24,7 @@ import "./Userjob.css";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import Appbar from "../../Appbar/Appbar";
+import JobDetailsModal from "../Modal.js/JobDetailsModal";
 
 function Userjob() {
   const authState = useSelector((state) => {
@@ -35,6 +36,9 @@ function Userjob() {
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [chipFilter,setChipFilter] = useState("")
+  const [detailsModal,setDetailsModal] = useState(false)
+  const [jobId, setJobId] = useState(null);
+
 
   const fetchData = async () => {
     try {
@@ -91,6 +95,13 @@ function Userjob() {
     }
   };
 
+  const handleDetails = (jobId) => {
+    console.log("handleDetails" + jobId);
+    setJobId(jobId); 
+    setDetailsModal(true);
+    console.log(detailsModal);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -108,6 +119,9 @@ function Userjob() {
     <>
       <Appbar />
       <ToastContainer />
+      {jobId && (
+        <JobDetailsModal jobId={jobId} handleClose={() => setJobId(null)} />
+      )}
       <Grid container spacing={5}>
         {/* left */}
 
@@ -409,6 +423,7 @@ function Userjob() {
                                     border: "0.1px solid grey",
                                   }}
                                   className="details"
+                                  onClick={()=>{handleDetails(jobpost._id)}}
                                 >
                                   Details
                                 </Button>

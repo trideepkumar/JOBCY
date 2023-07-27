@@ -21,6 +21,10 @@ import { useSelector } from "react-redux";
 import axiosInstance from "../../api/axiosinstance";
 import OrgBar from "../Appbar/OrgBars";
 import Appliedjobs from "../organisationPages/Modals/Appliedjobs";
+import EditJob from "./Modals/EditJob";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function Jobs() {
   const authState = useSelector((state) => {
@@ -32,6 +36,9 @@ function Jobs() {
   const [searchInput, setSearchInput] = React.useState("");
   const [showApplied, setShowApplied] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEditJobId, setSelectedEditJobId] = useState(null);
+
 
   const handleSearchInputChange = (event) => {
     setSearchInput(event.target.value);
@@ -49,6 +56,29 @@ function Jobs() {
     setShowApplied(false);
   };
 
+   const handleEdit = (jobpostId) => {
+    setSelectedEditJobId(jobpostId);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteJob = async(jobpostId) =>{
+    console.log(jobpostId)
+    try{
+       const endpoint = '/organisation/deleteJob'
+
+       const response = await axiosInstance.patch(endpoint,{
+        jobId:jobpostId
+       })
+
+       console.log(response)
+       if(response.status === 200){
+        toast.success("Job deleted successfully!");
+       }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     const fetchJobs = async () => {
       let endpoint = `/organisation/jobs/${authState.orgName}`;
@@ -57,7 +87,7 @@ function Jobs() {
       setJobs(fetchedJobs);
     };
     fetchJobs();
-  }, [authState.orgName]);
+  }, []);
 
   const filteredJobs = jobs.filter((jobpost) =>
     jobpost.jobTitle.toLowerCase().includes(searchInput.toLowerCase())
@@ -278,11 +308,12 @@ function Jobs() {
                       >
                         Applied candidates
                       </Button>
-                      <IconButton style={{ color: "#ff6e14" }}>
+                      <IconButton style={{ color: "#ff6e14" }} onClick={()=>{handleEdit(jobpost._id)}}>
                         <EditIcon />
                       </IconButton>
                       <IconButton
-                        style={{ backgroundColor: "white", color: "red" }}
+                        style={{ backgroundColor: "white", color: "red"}}
+                        onClick={()=>{handleDeleteJob(jobpost._id)}}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -301,6 +332,15 @@ function Jobs() {
           jobId={selectedJobId}
         />
       )}
+      {showEditModal && (
+        <EditJob
+          show={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          jobId={selectedEditJobId}
+        />
+        
+      )}
+      <ToastContainer position="bottom-right" autoClose={2000} />
     </>
   );
 }

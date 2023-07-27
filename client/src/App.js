@@ -27,6 +27,7 @@ import UserprofileModal from './components/organisationPages/Modals/UserprofileM
 import SentMail from './components/organisationPages/Modals/SentMail';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import ResetPassword from './components/Auth/ResetPassword';
+import Landing from './components/userPages/Landing/Landing';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route  element={<PublicRoutes></PublicRoutes>}>
+            <Route path='/' element={<Landing/>}/>
             <Route path="/signup" element={<Signup signupType='user' />} />
             <Route path="/login" element={<Login loginType="user" />} />
             <Route path='/forgot-password' element={<ForgotPassword/>}/>

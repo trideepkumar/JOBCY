@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { setAuth } from "../app/features/auth/authSlice";
 import { setorganisationAuth } from "../app/features/auth/organisationauthSlice";
 import {setadminAuth} from "../app/features/auth/adminauthSlice"
-import Appbar from '../components/Appbar/Appbar'
+import Appbar from './Appbar/Appbar'
 import Loading from "../utils/Loading";
 
 

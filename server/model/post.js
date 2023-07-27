@@ -28,13 +28,22 @@ const postSchema = new mongoose.Schema(
       default: false,
     },
     likes: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Users",
+      type: Boolean,
+      default: false,
     },
+    likedUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     reported: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Users",
     },
+    reports:{
+      type:Boolean
+    }
    
   },
   { timestamps: true }

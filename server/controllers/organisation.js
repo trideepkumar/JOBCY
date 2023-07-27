@@ -366,6 +366,91 @@ const sentEmail = async(req,res)=>{
   
 }
 
+const getJob = async (req, res) => {
+
+  console.log("getJobs")
+  try {
+    console.log("getJobs1")
+
+    const { jobId } = req.query;
+    console.log(jobId)
+
+    if (!jobId) {
+      return res.status(400).json({ error: 'Invalid jobId' });
+    }
+
+    const job = await Jobs.findById(jobId);
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    return res.status(200).json(job);
+  } catch (error) {
+    console.error('Error fetching job:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+const updateJob = async (req, res) => {
+  try {
+    const jobId = req.body.jobId;
+    const { jobTitle, jobType, qualification, location, salaryMin, salaryMax, hiringProcess, jobDescription } = req.body.job;
+
+    const updatedJobData = {
+      jobTitle,
+      jobType,
+      qualification,
+      location,
+      salaryMin,
+      salaryMax,
+      hiringProcess,
+      jobDescription
+    };
+
+    console.log(updatedJobData);
+
+    const updatedJob = await Jobs.findByIdAndUpdate(jobId, updatedJobData, { new: true });
+
+    if (!updatedJob) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    return res.status(200).json(updatedJob);
+  } catch (error) {
+    console.error('Error updating job:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const deleteJob = async (req, res) => {
+  console.log("deleteJob started");
+  const { jobId } = req.body;
+  console.log(jobId);
+
+  try {
+    const updatingJob = await Jobs.findByIdAndUpdate(
+      jobId,
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!updatingJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    
+
+    return res.status(200).json({ message: "Job deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+
 module.exports = {
   signup,
   login,
@@ -377,5 +462,8 @@ module.exports = {
   updatePic,
   getOrganisation,
   getAppliedCandidates,
-  sentEmail
+  sentEmail,
+  getJob,
+  updateJob,
+  deleteJob
 };

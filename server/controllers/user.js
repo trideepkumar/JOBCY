@@ -7,13 +7,12 @@ const crypto = require("crypto");
 const Organization = require("../model/organisation");
 const Jobs = require("../model/jobs");
 const Post = require("../model/post");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const Chat = require("../model/chat")
-const Message = require('../model/message')
+const Chat = require("../model/chat");
+const Message = require("../model/message");
 require("dotenv").config();
 const FRONT_URL = process.env.FRONT_URL;
-
 
 cloudinary.config({
   cloud_name: "dbnrosh3i",
@@ -148,7 +147,10 @@ const forgotPassword = async (req, res) => {
     if (!existingUser) {
       return res
         .status(404)
-        .json({ message: "User not found. Please sign up first.", success: false });
+        .json({
+          message: "User not found. Please sign up first.",
+          success: false,
+        });
     }
 
     const token = new Token({
@@ -158,10 +160,8 @@ const forgotPassword = async (req, res) => {
 
     await token.save();
 
-    const resetPasswordUrl = `${FRONT_URL}/reset-password/${token.token}`; 
+    const resetPasswordUrl = `${FRONT_URL}/reset-password/${token.token}`;
 
-
-  
     await sendVerificationEmail(email, resetPasswordUrl);
 
     res.status(200).json({
@@ -173,7 +173,6 @@ const forgotPassword = async (req, res) => {
     res.status(500).json({ message: "An error occurred.", success: false });
   }
 };
-
 
 const resetPassword = async (req, res) => {
   try {
@@ -205,7 +204,8 @@ const resetPassword = async (req, res) => {
     await existingToken.deleteOne();
 
     res.status(200).json({
-      message: "Password reset successful. You can now login with the new password.",
+      message:
+        "Password reset successful. You can now login with the new password.",
       success: true,
     });
   } catch (error) {
@@ -213,7 +213,6 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ message: "An error occurred.", success: false });
   }
 };
-
 
 const getUser = async (req, res) => {
   console.log("get user started!");
@@ -432,29 +431,27 @@ const updateResume = async (req, res) => {
     if (!req.file) {
       return res.json({ error: "Resume file is required" });
     }
-    
-    console.log(req.file)
+
+    console.log(req.file);
 
     const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "raw", 
+      resource_type: "raw",
     });
 
-
-    
     const filepath = result.url;
-     console.log(filepath)
+    console.log(filepath);
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { resume: filepath } }
     );
- 
+
     console.log("Resume updated");
-    res.json({ success: true});
+    res.json({ success: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred", success: false });
   }
-}
+};
 
 const fetchResume = async (req, res) => {
   try {
@@ -473,7 +470,7 @@ const fetchResume = async (req, res) => {
   }
 };
 
-const   applyJob = async (req, res) => {
+const applyJob = async (req, res) => {
   try {
     console.log("applyjob");
     console.log(req.body);
@@ -505,7 +502,7 @@ const   applyJob = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  try { 
+  try {
     console.log("post create starts..");
     const { description, location, createdBy } = req.body;
 
@@ -517,10 +514,9 @@ const createPost = async (req, res) => {
         file.originalname.endsWith(".png") ||
         file.originalname.endsWith(".gif") ||
         file.originalname.endsWith(".bmp") ||
-        file.originalname.endsWith(".avif")||
-        file.originalname.endsWith(".webp") 
-      ) 
-       {
+        file.originalname.endsWith(".avif") ||
+        file.originalname.endsWith(".webp")
+      ) {
         const image = file.path;
         const cloudinaryResult = await cloudinary.uploader.upload(image);
         const imageResult = cloudinaryResult.secure_url;
@@ -534,20 +530,19 @@ const createPost = async (req, res) => {
 
         const savedPost = await post.save();
         return res.status(201).json(savedPost);
-
-      } 
-      else if (/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
+      } else if (/\.(mp4|mov|avi|wmv|flv|mkv)$/i.test(file.originalname)) {
         // Handle video upload
       }
       {
-        
         const video = file.path;
-        console.log("video suppprot")
-        console.log(video)
-        const cloudinaryResult = await cloudinary.uploader.upload(video,{resource_type: "video"});
+        console.log("video suppprot");
+        console.log(video);
+        const cloudinaryResult = await cloudinary.uploader.upload(video, {
+          resource_type: "video",
+        });
         const videoResult = cloudinaryResult.secure_url;
-        console.log(videoResult)
-        console.log(video)
+        console.log(videoResult);
+        console.log(video);
         const post = new Post({
           createdBy: createdBy,
           description: description,
@@ -559,16 +554,14 @@ const createPost = async (req, res) => {
         return res.status(201).json(savedPost);
       }
     }
-    
+
     // Handle the case when neither image nor video is uploaded
     return res.status(400).json({ error: "No image or video uploaded" });
-
   } catch (error) {
     console.error("Error creating post:", error);
     res.status(500).json({ error: "Failed to create post" });
   }
 };
-
 
 // const getPosts = async (req, res) => {
 //   try {
@@ -607,8 +600,6 @@ const getPosts = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
-
-
 
 const deleteJobTitle = async (req, res) => {
   try {
@@ -715,7 +706,6 @@ const orgFollow = async (req, res) => {
 
 const getFriendRequests = async (req, res) => {
   try {
-   
     const user = await User.findById(req.query._id).populate(
       "friendRequestrecieved"
     );
@@ -743,12 +733,12 @@ const getFriendRequests = async (req, res) => {
 const acceptFriendRequest = async (req, res) => {
   try {
     const friendUserId = req.body.userId;
-    console.log("friendrequests:-"+friendUserId);
+    console.log("friendrequests:-" + friendUserId);
     const userId = req.params;
-    console.log("userId :-"+userId);
+    console.log("userId :-" + userId);
 
     const user = await User.findOne({ _id: userId });
-    console.log("user"+user)
+    console.log("user" + user);
     if (user) {
       const friendIndex = user.friendRequestrecieved.indexOf(friendUserId);
       if (friendIndex !== -1) {
@@ -763,7 +753,7 @@ const acceptFriendRequest = async (req, res) => {
     console.log("opposite user", oppositeUser);
     if (oppositeUser) {
       const friendUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
-      console.log(friendUserIndex)
+      console.log(friendUserIndex);
       if (friendUserIndex !== -1) {
         oppositeUser.friendRequestsent.splice(friendUserIndex, 1);
         oppositeUser.friends.push(user._id);
@@ -780,29 +770,26 @@ const acceptFriendRequest = async (req, res) => {
   }
 };
 
-
 const friendRequestDeny = async (req, res) => {
   try {
-
-
     const userId = req.params;
-    console.log(userId)
+    console.log(userId);
     const oppositeUserId = req.body.userId;
-    console.log(oppositeUserId)
+    console.log(oppositeUserId);
 
     const user = await User.findById(userId);
-    console.log(user)
+    console.log(user);
     const userIndex = user.friendRequestrecieved.indexOf(oppositeUserId);
-    console.log(userIndex)
+    console.log(userIndex);
     if (userIndex > -1) {
       user.friendRequestrecieved.splice(userIndex, 1);
     }
     await user.save();
 
     const oppositeUser = await User.findById(oppositeUserId);
-    console.log(oppositeUser)
+    console.log(oppositeUser);
     const oppositeUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
-    console.log(oppositeUserIndex)
+    console.log(oppositeUserIndex);
     if (oppositeUserIndex > -1) {
       oppositeUser.friendRequestsent.splice(oppositeUserIndex, 1);
     }
@@ -818,22 +805,22 @@ const friendRequestDeny = async (req, res) => {
 const getFriends = async (req, res) => {
   try {
     const userId = req.query._id;
-    console.log(userId)
+    console.log(userId);
 
-    const user = await User.findById(userId).populate('friends'); 
+    const user = await User.findById(userId).populate("friends");
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     res.status(200).json({ friends: user.friends });
   } catch (err) {
-    console.error('Error fetching friends', err);
-    res.status(500).json({ error: 'Error fetching friends' });
+    console.error("Error fetching friends", err);
+    res.status(500).json({ error: "Error fetching friends" });
   }
 
   // const userId = req.query._id;
-  
+
   // try {
   //   const friends = await Chat.aggregate([
   //     {
@@ -883,8 +870,88 @@ const getFriends = async (req, res) => {
   //   console.error('Error fetching friends list', error);
   //   res.status(500).json({ error: 'Internal server error' });
   // }
-}
+};
 
+const getJobDetails = async (req, res) => {
+  try {
+    console.log("GETTING JOB DETAILS");
+    const { jobId } = req.query;
+    console.log(jobId);
+    console.log("first");
+    const jobs = await Jobs.findById(jobId).populate("organization");
+    console.log(jobs);
+
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500);
+  }
+};
+
+const updatePostLike = async (req, res) => {
+  console.log("post like started");
+  const { postId, userId } = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    post.likes = !post.likes;
+
+    if (post.likes) {
+      post.likedUsers.push(userId);
+    } else {
+      const index = post.likedUsers.indexOf(userId);
+      if (index !== -1) {
+        post.likedUsers.splice(index, 1);
+      }
+    }
+
+    await post.save();
+
+    return res.status(200).json({ post });
+  } catch (error) {
+    console.error("Error updating post like:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const reportPost = async (req, res) => {
+  const { postId ,userId} = req.body;
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    post.reports = !post.reports;
+
+    if(post.reports){
+      post.reported.push(userId)
+    }else{
+      const index = post.reported.indexOf(userId);
+      if (index !== -1) {
+        post.reported.splice(index, 1);
+      }
+    }
+
+    await post.save();
+
+    return res
+      .status(200)
+      .json({
+        success: "Post report updated successfully",
+        report: post.reports,
+      });
+  } catch (error) {
+    console.error("Error reporting post:", error);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 
 exports.signup = signup;
@@ -909,6 +976,9 @@ exports.orgFollow = orgFollow;
 exports.getFriendRequests = getFriendRequests;
 exports.acceptFriendRequest = acceptFriendRequest;
 exports.friendRequestDeny = friendRequestDeny;
-exports.getFriends =getFriends
-exports.forgotPassword = forgotPassword
-exports.resetPassword = resetPassword
+exports.getFriends = getFriends;
+exports.forgotPassword = forgotPassword;
+exports.resetPassword = resetPassword;
+exports.getJobDetails = getJobDetails;
+exports.updatePostLike = updatePostLike;
+exports.reportPost = reportPost;

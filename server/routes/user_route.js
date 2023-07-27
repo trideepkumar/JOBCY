@@ -1,7 +1,7 @@
 const express = require('express')
 const router =  express.Router();
 const {upload} = require('../middlewares/userMiddleware')
-const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts,deleteJobTitle,getAllusers,friendRequest,getAllorganisations,orgFollow,getFriendRequests,acceptFriendRequest,friendRequestDeny,getFriends,forgotPassword,resetPassword} = require('../controllers/user')
+const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts,deleteJobTitle,getAllusers,friendRequest,getAllorganisations,orgFollow,getFriendRequests,acceptFriendRequest,friendRequestDeny,getFriends,forgotPassword,resetPassword,getJobDetails,updatePostLike,reportPost} = require('../controllers/user')
 
 
 
@@ -14,6 +14,7 @@ router.get('/getAllusers/:_id' , getAllusers)
 router.get('/getAllorganisations',getAllorganisations)
 router.get('/getFriendRequests',getFriendRequests)
 router.get('/friends',getFriends)
+router.get('/getJobDetails',getJobDetails)
 
 
 router.post('/signup',signup)
@@ -35,6 +36,8 @@ router.post('/acceptFriendRequest/:_id',acceptFriendRequest)
 router.patch('/updateAbout/:_id',updateAbout)
 router.patch('/updatepic/:_id', upload.single('image'),updateProfilepic)
 router.patch('/updateresume/:_id',upload.single('image'),updateResume)
+router.patch('/postlike',updatePostLike)
+router.patch('/reportPost',reportPost)
 
 
 router.delete('/deletejobtitle/:userId/:jobTitleId', deleteJobTitle);
