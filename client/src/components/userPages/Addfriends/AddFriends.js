@@ -331,6 +331,7 @@ function AddFriends() {
           marginLeft: "22rem",
         }}
       >
+        <Typography variant="h6" textAlign={"left"} fontFamily={"fantasy"}>Organisations....</Typography>
         <Box
           item
           lg={9}
@@ -342,6 +343,7 @@ function AddFriends() {
           }}
         >
           {/* ... */}
+          
           {organizations.map((organization) => (
             <Card
               key={organization._id}

@@ -953,6 +953,21 @@ const reportPost = async (req, res) => {
   }
 };
 
+const connectedOrg = async (req, res) => {
+  try {
+    const { userId } = req.query;
+  console.log(userId)
+    const user = await User.findById(userId).populate('orgFollowing');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
 exports.signup = signup;
 exports.login = login;
@@ -982,3 +997,4 @@ exports.resetPassword = resetPassword;
 exports.getJobDetails = getJobDetails;
 exports.updatePostLike = updatePostLike;
 exports.reportPost = reportPost;
+exports.connectedOrg = connectedOrg;

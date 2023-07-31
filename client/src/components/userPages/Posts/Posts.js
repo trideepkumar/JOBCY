@@ -25,8 +25,6 @@ import FlagIcon from "@mui/icons-material/Flag";
 import Post from "../Modal.js/PostsModal";
 import "./Posts.css";
 import axiosInstance from "../../../api/axiosinstance";
-import PostLikeButton from "../Button/PostLikeButton";
-// import placeholder from "client/public/post placeholder.jpeg"
 import InsideLoading from "../../../utils/InsideLoading";
 function Posts() {
   const navigate = useNavigate();
@@ -38,7 +36,6 @@ function Posts() {
   const [loading, setLoading] = useState(false);
   const [likedPosts, setLikedPosts] = useState([]);
   const [reportedPosts, setReportedPosts] = useState([]);
-
 
   const authState = useSelector((state) => {
     return state.auth.authState;
@@ -117,10 +114,10 @@ function Posts() {
     });
     console.log(response);
     setReportedPosts((prevReportedPosts) =>
-    prevReportedPosts.includes(postId)
-      ? prevReportedPosts.filter((id) => id !== postId)
-      : [...prevReportedPosts, postId]
-  );
+      prevReportedPosts.includes(postId)
+        ? prevReportedPosts.filter((id) => id !== postId)
+        : [...prevReportedPosts, postId]
+    );
   };
 
   useEffect(() => {
@@ -470,10 +467,16 @@ function Posts() {
                           onClick={() => handleLike(post._id)}
                           sx={{
                             color: isPostLiked(post._id) ? "red" : "grey",
+                            animation: `${
+                              isPostLiked(post._id)
+                                ? "rotateLiked"
+                                : "rotateUnliked"
+                            } 1s linear`,
                           }}
                         >
                           <ThumbUpAltIcon />
                         </IconButton>
+
                         {post.createdBy._id !== authState._id && (
                           <Box>
                             <IconButton
