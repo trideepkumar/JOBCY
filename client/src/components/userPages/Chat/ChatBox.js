@@ -146,7 +146,8 @@ function ChatBox({ oppstId }) {
     console.log("video call started");
     setModalIsOpen(true);
     console.log(chatId);
-    setShowVideoCall((prevState) => !prevState);
+    setShowVideoCall(true);
+    
   };
 
   useEffect(() => {

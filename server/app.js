@@ -87,6 +87,7 @@ io.on("connection", (socket) => {
   socket.on("join room", (room) => {
     socket.join(room);
     console.log("user joined room :" + room);
+    
   });
 
   //for typing
@@ -117,13 +118,17 @@ io.on("connection", (socket) => {
 
   //for video call 
   
-  socket.on("video call", (room) => {
+  socket.on("video call", async(room,videolink) => {
     console.log("room" + room)
+    console.log("video call link" + videolink)
     console.log("video call started in room: " + room)
-    // Broadcast the room ID to all users in the chat room
-    socket.to(room).emit("video call", room);
-
+    socket.to(room).emit("video call link", videolink);
   })
+
+  // socket.on("video call link", (link) => {
+  //   console.log("Received video call link: " + link);
+  // });
+  
 
 
 });
