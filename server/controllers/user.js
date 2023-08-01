@@ -969,6 +969,25 @@ const connectedOrg = async (req, res) => {
   }
 };
 
+const getUserjob = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const appliedJobs = await Jobs.find({ appliedCandidates: userId });
+
+    return res.status(200).json(appliedJobs);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
 exports.signup = signup;
 exports.login = login;
 exports.verifyToken = verifyToken;
@@ -998,3 +1017,4 @@ exports.getJobDetails = getJobDetails;
 exports.updatePostLike = updatePostLike;
 exports.reportPost = reportPost;
 exports.connectedOrg = connectedOrg;
+exports.getUserjob = getUserjob

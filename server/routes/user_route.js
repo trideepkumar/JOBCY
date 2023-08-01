@@ -1,7 +1,7 @@
 const express = require('express')
 const router =  express.Router();
 const {upload} = require('../middlewares/userMiddleware')
-const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts,deleteJobTitle,getAllusers,friendRequest,getAllorganisations,orgFollow,getFriendRequests,acceptFriendRequest,friendRequestDeny,getFriends,forgotPassword,resetPassword,getJobDetails,updatePostLike,reportPost,connectedOrg} = require('../controllers/user')
+const {signup,login,verifyToken,getUser,verifyEmail,updateAbout,updateExperience,updateProfilepic,getJobs,updateResume,fetchResume,applyJob,createPost,getPosts,deleteJobTitle,getAllusers,friendRequest,getAllorganisations,orgFollow,getFriendRequests,acceptFriendRequest,friendRequestDeny,getFriends,forgotPassword,resetPassword,getJobDetails,updatePostLike,reportPost,connectedOrg,getUserjob} = require('../controllers/user')
 
 
 
@@ -16,6 +16,7 @@ router.get('/connectedOrg',connectedOrg)
 router.get('/getFriendRequests',getFriendRequests)
 router.get('/friends',getFriends)
 router.get('/getJobDetails',getJobDetails)
+router.get('/getUserjob',getUserjob)
 
 
 router.post('/signup',signup)

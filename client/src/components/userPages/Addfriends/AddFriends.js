@@ -26,6 +26,7 @@ import Connection from "./Connection";
 import Organisations from "./Organisation";
 import Jobapplied from "./Jobapplied";
 import Chats from "./Chats";
+import { useNavigate } from "react-router";
 
 
 function AddFriends() {
@@ -34,6 +35,7 @@ function AddFriends() {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   const [users, setUsers] = useState([]);
   const [activeButton, setActiveButton] = useState("explore");
@@ -120,9 +122,12 @@ function AddFriends() {
         <Grid
           item
           lg={3}
+          sm={12}
           sx={{ width: "22rem", color: "grey", position: "fixed" }}
+          className="menu"
         >
           <CardContent>
+          <Grid >
             <List
               style={{
                 background: "white",
@@ -130,6 +135,7 @@ function AddFriends() {
                 marginLeft: "3rem",
                 color: "grey",
               }}
+              className="list"
             >
               <Typography
                 textAlign="left"
@@ -144,6 +150,7 @@ function AddFriends() {
                 Manage your friends
               </Typography>
               <Divider />
+              
               <ListItem>
                 <Button
                   onClick={() => handleButtonClick("explore")}
@@ -186,7 +193,7 @@ function AddFriends() {
               </ListItem>
               <ListItem>
                 <Button
-                  onClick={() => handleButtonClick("chat")}
+                  onClick={() => navigate('/chats')}
                   startIcon={<Chat />}
                   sx={{ color: "grey" }}
                   fullWidth
@@ -195,9 +202,11 @@ function AddFriends() {
                 </Button>
               </ListItem>
             </List>
+            </Grid>
           </CardContent>
         </Grid>
         {/* right */}
+
         <Grid
           className="exploreGrid"
           sx={{
@@ -318,6 +327,7 @@ function AddFriends() {
           )}
           {renderComponent()}
         </Grid>
+
       </Grid>
 
       {/* organisations */}
@@ -330,6 +340,7 @@ function AddFriends() {
           paddingLeft: "22px",
           marginLeft: "22rem",
         }}
+        className="orgn"
       >
         <Typography variant="h6" textAlign={"left"} fontFamily={"fantasy"}>Organisations....</Typography>
         <Box

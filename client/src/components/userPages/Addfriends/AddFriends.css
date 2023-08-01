@@ -8,3 +8,71 @@
   transform: scale(1.2);
 }
 
+@media (max-width: 600px) {
+  .menu {
+    width: 100%  !important;
+    position: static;
+    margin-top: 0;
+    /* background: red; */
+    margin-left: 15px  !important;
+    padding: 0px !important;
+
+  }
+  .list{
+    /* background: palegreen !important; */
+    width: 100% !important;
+    display: flex;
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-left: 0px !important;
+  }
+  
+  .exploreGrid{
+    /* display: none; */
+    margin: 11rem 0rem 0rem 0rem !important;
+    width: 100rem !important;
+    min-height: 20rem;
+  }
+  .orgn{
+    display: none;
+    /* margin-left:0px  !important ; */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Style the scrollbar specifically for WebKit-based browsers */
+.list::-webkit-scrollbar {
+  width: 6px; /* Set the width of the scrollbar */
+}
+
+/* Track (the area behind the scrollbar) */
+.list::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Set the background color of the scrollbar track */
+}
+
+/* Handle (the draggable part of the scrollbar) */
+.list::-webkit-scrollbar-thumb {
+  background: #ff6e14; /* Set the color of the scrollbar handle */
+  border-radius: 3px; /* Set the border radius of the scrollbar handle */
+  height:1px !important;
+}
+
+/* Handle on hover */
+.list::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Set the color of the scrollbar handle on hover */
+}
