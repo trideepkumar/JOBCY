@@ -69,7 +69,7 @@ const Login = ({ loginType }) => {
 
   
   const handleSubmit = async (event) => {
-    setLoading(true)
+    
     event.preventDefault();
   
     const validationErrors = validateFormData(formData);
@@ -95,6 +95,7 @@ const Login = ({ loginType }) => {
         const response = await axiosInstance.post(loginEndpoint, formData);
   
         if (response.data?.success) {
+          setLoading(true)
           localStorage.setItem("token", response.data.token);
 
           if(loginType==='user'){
