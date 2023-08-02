@@ -21,8 +21,7 @@ import { gapi } from "gapi-script";
 
 const Signup = ({ signupType }) => {
   
-  const clientId =
-    "";
+  const clientId = process.env.REACT_APP_CLIENT_ID
   const onSuccess = (res) => {
     axiosInstance
       .post("/auth/google", { token: res.tokenId })
