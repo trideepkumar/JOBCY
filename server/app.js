@@ -32,7 +32,7 @@ app.use(cookieParser());
 const cors = require("cors");
 const { connect } = require("http2");
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions))
 
 app.use(express.json());
 
@@ -78,7 +78,7 @@ mongoose
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3001",
+    origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app/",
   },
 });
 
