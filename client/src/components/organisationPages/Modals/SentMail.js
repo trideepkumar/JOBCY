@@ -43,7 +43,6 @@ function SentMail({ onClose }) {
         toast.error("Error sending email!", { autoClose: 3000 });
       }
     } catch (error) {
-      console.log("Error sending email:", error);
       setLoading(false);  
       toast.error("Error sending email!", { autoClose: 3000 });
     }

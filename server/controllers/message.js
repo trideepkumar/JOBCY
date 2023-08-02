@@ -3,14 +3,11 @@ const User = require("../model/user");
 const Message = require("../model/message");
 
 const sendMessage = async (req, res) => {
-  console.log("sending message");
 
-  console.log(req.body);
+ 
   const { content, chatId, userId } = req.body.data;
-  console.log(content, chatId);
 
   if (!content || !chatId) {
-    console.log("Invalid data passed in request");
     res.status(400);
     return;
   }
@@ -39,19 +36,16 @@ const sendMessage = async (req, res) => {
 
     res.json(message);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Failed to save message" });
   }
 };
 
 const allMessages = async (req, res) => {
   try {
-    console.log(req.params.chatId);
     const messages = await Message.find({ chat: req.params.chatId })
       .populate("sender", "name email")
       .populate("chat");
 
-    //  console.log(messages)
 
     res.status(200).json(messages);
   } catch (err) {
@@ -61,13 +55,10 @@ const allMessages = async (req, res) => {
 
 const lastMessage = async (req, res) => {
   try {
-    console.log(req.params);
     const friendId = req.params.friendId;
-    console.log("last message" + friendId);
     const lastMessage = await Message.findOne({ chat: friendId })
       .sort({ createdAt: -1 })
       .populate("sender", "name email");
-    console.log(lastMessage);
     if (!lastMessage) {
       return res.status(404).json({ message: "No messages found" });
     }

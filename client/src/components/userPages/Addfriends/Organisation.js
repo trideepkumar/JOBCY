@@ -17,7 +17,6 @@ function Organisations() {
         userId: authState._id,
       },
     });
-    console.log(response.data.orgFollowing);
     setOrganisation(response.data.orgFollowing);
   };
 

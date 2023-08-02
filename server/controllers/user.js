@@ -13,7 +13,6 @@ const Chat = require("../model/chat");
 const Message = require("../model/message");
 require("dotenv").config();
 const FRONT_URL = process.env.FRONT_URL;
-
 cloudinary.config({
   cloud_name: "dbnrosh3i",
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -23,7 +22,6 @@ cloudinary.config({
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    console.log(req.body);
     // Check if user with the same email already exists
     const existingUser = await User.findOne({ email });
 
@@ -53,8 +51,6 @@ const signup = async (req, res) => {
 
     await token.save();
 
-    console.log(token);
-
     const verificationUrl = `${req.protocol}://${req.get("host")}/verify/${
       token.token
     }`;
@@ -76,11 +72,8 @@ const login = async (req, res) => {
   let existingUser;
 
   try {
-    console.log("loginworks");
     existingUser = await User.findOne({ email: email });
-    // console.log(existingUser);
   } catch (err) {
-    console.log(err);
   }
   if (!existingUser) {
     return res
@@ -99,7 +92,6 @@ const login = async (req, res) => {
       .json({ message: "Verify Your Existing account!", success: false });
   }
   if (existingUser && existingUser.isVerified) {
-    // console.log("jwt start")
     const token = jwt.sign(
       { id: existingUser._id },
       process.env.JWT_SECRET_KEY,
@@ -121,9 +113,7 @@ const login = async (req, res) => {
 };
 
 const verifyToken = async (req, res, next) => {
-  console.log("verification started");
   const token = req.headers.authorization;
-  console.log(token);
   if (!token) {
     return res.status(404).json({ message: "No authorization header found" });
   }
@@ -136,7 +126,6 @@ const verifyToken = async (req, res, next) => {
     next();
   });
 
-  console.log("end");
 };
 
 const forgotPassword = async (req, res) => {
@@ -215,14 +204,13 @@ const resetPassword = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  console.log("get user started!");
-  console.log(req.params._id);
+  
   const userId = req.params._id;
-  console.log(userId);
+ 
   let user;
   try {
     user = await User.findById(userId, "-password");
-    // console.log(user);
+    
   } catch (err) {
     return new Error(err);
   }
@@ -235,7 +223,7 @@ const getUser = async (req, res) => {
 const getAllusers = async (req, res) => {
   try {
     const { _id } = req.params;
-    console.log(_id);
+    
     const users = await User.find({ isVerified: true, _id: { $ne: _id } });
     res.json(users);
   } catch (error) {
@@ -248,7 +236,7 @@ const getAllusers = async (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const token = await Token.findOne({ token: req.params.token });
-    console.log(token);
+   
     await User.updateOne({ _id: token.userId }, { $set: { isVerified: true } });
     await Token.findByIdAndRemove(token._id);
     res.redirect("http://localhost:3001/login");
@@ -260,11 +248,9 @@ const verifyEmail = async (req, res) => {
 
 const updateAbout = async (req, res) => {
   try {
-    console.log("about update");
+    
     const { name, designation, place, state, country, about } = req.body;
-    console.log(name, designation, place, state, country, about);
     // Find the user by their ID
-    console.log(req.params);
     const user = await User.findById(req.params._id);
     // Assuming you have authentication middleware to get the user ID from the request
 
@@ -305,7 +291,7 @@ const updateExperience = async (req, res) => {
       "skills[0].skill": skill,
     } = req.body;
 
-    console.log(req.body);
+  
     const user = await User.findById(req.params._id);
 
     if (!user) {
@@ -365,30 +351,23 @@ const updateExperience = async (req, res) => {
 };
 
 const updateProfilepic = async (req, res) => {
-  console.log("prof pic update");
+  
   try {
-    console.log("1");
-    console.log(req.body);
-    console.log(req.file);
+    
     if (!req.file) {
       return res.json({ error: "Image is required" });
     }
-    console.log("2");
     const path = req.file.path.slice(7);
-    console.log(path);
 
     const filepath = `http://localhost:${process.env.PORT}/${path}`;
-    console.log(filepath);
 
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { profPic: filepath } }
     );
 
-    console.log("Profile picture updated");
     res.json({ success: true, url: filepath });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 };
@@ -403,28 +382,6 @@ const getJobs = async (req, res) => {
   }
 };
 
-// const updateResume = async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.json({ error: "Resume file is required" });
-//     }
-
-//     const result = await cloudinary.uploader.upload(req.file.path);
-
-//     const filepath = result.secure_url;
-
-//     await User.findOneAndUpdate(
-//       { _id: req.params._id },
-//       { $set: { resume: filepath } }
-//     );
-
-//     console.log("Resume updated");
-//     res.json({ success: true, url: filepath });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ error: "An error occurred", success: false });
-//   }
-// };
 
 const updateResume = async (req, res) => {
   try {
@@ -432,23 +389,19 @@ const updateResume = async (req, res) => {
       return res.json({ error: "Resume file is required" });
     }
 
-    console.log(req.file);
-
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "raw",
     });
 
     const filepath = result.url;
-    console.log(filepath);
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { resume: filepath } }
     );
 
-    console.log("Resume updated");
+   
     res.json({ success: true });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "An error occurred", success: false });
   }
 };
@@ -472,14 +425,11 @@ const fetchResume = async (req, res) => {
 
 const applyJob = async (req, res) => {
   try {
-    console.log("applyjob");
-    console.log(req.body);
+    
     const { jobId, userId } = req.body;
-    console.log(jobId);
-    console.log(userId);
+  
 
     const job = await Jobs.findById(jobId);
-    // console.log(job);
 
     if (!job) {
       return res.status(404).json({ error: "Job not found", success: false });
@@ -503,7 +453,7 @@ const applyJob = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    console.log("post create starts..");
+    
     const { description, location, createdBy } = req.body;
 
     if (req.file) {
@@ -535,14 +485,11 @@ const createPost = async (req, res) => {
       }
       {
         const video = file.path;
-        console.log("video suppprot");
-        console.log(video);
         const cloudinaryResult = await cloudinary.uploader.upload(video, {
           resource_type: "video",
         });
         const videoResult = cloudinaryResult.secure_url;
-        console.log(videoResult);
-        console.log(video);
+    
         const post = new Post({
           createdBy: createdBy,
           description: description,
@@ -563,26 +510,10 @@ const createPost = async (req, res) => {
   }
 };
 
-// const getPosts = async (req, res) => {
-//   try {
-//     console.log("getPosts fetching");
-//     const userId = req.params._id;
-//     console.log(userId);
-//     const posts = await Post.find({ createdBy: userId }).sort({
-//       createdAt: -1,
-//     }).populate("createdBy");
-//     console.log(posts);
-//     res.status(200).json(posts);
-//   } catch (error) {
-//     console.error("Error fetching posts:", error);
-//     res.status(500).json({ error: "Failed to fetch posts" });
-//   }
-// };
+
 const getPosts = async (req, res) => {
   try {
-    console.log("getPosts fetching");
     const userId = req.params._id;
-    console.log(userId);
 
     const user = await User.findById(userId).populate("friends");
     const friendIds = user.friends.map((friend) => friend._id);
@@ -592,11 +523,10 @@ const getPosts = async (req, res) => {
     const posts = await Post.find({ createdBy: { $in: friendIds } })
       .sort({ createdAt: -1 })
       .populate("createdBy");
-    console.log(posts);
+    
 
     res.status(200).json(posts);
   } catch (error) {
-    console.error("Error fetching posts:", error);
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
@@ -657,13 +587,13 @@ const friendRequest = async (req, res) => {
     receiver.friendRequestrecieved.push(senderId);
     await receiver.save();
 
-    console.log("me" + sender);
+   
 
     res
       .status(200)
       .json({ message: "Friend request sent successfully", sender });
   } catch (error) {
-    console.log(error);
+    
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -699,7 +629,7 @@ const orgFollow = async (req, res) => {
     await organization.save();
     res.status(200).json({ message: "Followed successfully", user });
   } catch (error) {
-    console.log(error);
+    
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -733,12 +663,9 @@ const getFriendRequests = async (req, res) => {
 const acceptFriendRequest = async (req, res) => {
   try {
     const friendUserId = req.body.userId;
-    console.log("friendrequests:-" + friendUserId);
     const userId = req.params;
-    console.log("userId :-" + userId);
 
     const user = await User.findOne({ _id: userId });
-    console.log("user" + user);
     if (user) {
       const friendIndex = user.friendRequestrecieved.indexOf(friendUserId);
       if (friendIndex !== -1) {
@@ -750,10 +677,8 @@ const acceptFriendRequest = async (req, res) => {
 
     const oppositeUser = await User.findOne({ _id: friendUserId });
 
-    console.log("opposite user", oppositeUser);
     if (oppositeUser) {
       const friendUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
-      console.log(friendUserIndex);
       if (friendUserIndex !== -1) {
         oppositeUser.friendRequestsent.splice(friendUserIndex, 1);
         oppositeUser.friends.push(user._id);
@@ -773,23 +698,20 @@ const acceptFriendRequest = async (req, res) => {
 const friendRequestDeny = async (req, res) => {
   try {
     const userId = req.params;
-    console.log(userId);
     const oppositeUserId = req.body.userId;
-    console.log(oppositeUserId);
+    
 
     const user = await User.findById(userId);
-    console.log(user);
     const userIndex = user.friendRequestrecieved.indexOf(oppositeUserId);
-    console.log(userIndex);
     if (userIndex > -1) {
       user.friendRequestrecieved.splice(userIndex, 1);
     }
     await user.save();
 
     const oppositeUser = await User.findById(oppositeUserId);
-    console.log(oppositeUser);
+    
     const oppositeUserIndex = oppositeUser.friendRequestsent.indexOf(user._id);
-    console.log(oppositeUserIndex);
+    
     if (oppositeUserIndex > -1) {
       oppositeUser.friendRequestsent.splice(oppositeUserIndex, 1);
     }
@@ -805,7 +727,7 @@ const friendRequestDeny = async (req, res) => {
 const getFriends = async (req, res) => {
   try {
     const userId = req.query._id;
-    console.log(userId);
+    
 
     const user = await User.findById(userId).populate("friends");
 
@@ -874,12 +796,10 @@ const getFriends = async (req, res) => {
 
 const getJobDetails = async (req, res) => {
   try {
-    console.log("GETTING JOB DETAILS");
     const { jobId } = req.query;
-    console.log(jobId);
-    console.log("first");
+    
     const jobs = await Jobs.findById(jobId).populate("organization");
-    console.log(jobs);
+    
 
     res.status(200).json(jobs);
   } catch (err) {
@@ -888,7 +808,6 @@ const getJobDetails = async (req, res) => {
 };
 
 const updatePostLike = async (req, res) => {
-  console.log("post like started");
   const { postId, userId } = req.body;
 
   try {
@@ -956,7 +875,7 @@ const reportPost = async (req, res) => {
 const connectedOrg = async (req, res) => {
   try {
     const { userId } = req.query;
-  console.log(userId)
+  
     const user = await User.findById(userId).populate('orgFollowing');
 
     if (!user) {

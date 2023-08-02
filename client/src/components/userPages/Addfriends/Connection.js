@@ -24,7 +24,6 @@ function Connection() {
   };
 
   const handleIdClick = async (friendId) => {
-    console.log(friendId)
     navigate(`/profile/${friendId}`)
   }
 

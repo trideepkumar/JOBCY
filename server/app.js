@@ -74,7 +74,8 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  // console.log("connected to socket.io");
+ 
+  
   //for getting the userid
   
   socket.on("setup", (userData) => {
@@ -96,9 +97,6 @@ io.on("connection", (socket) => {
   socket.on("new message", (newMessageRecieved) => {
     let chat = newMessageRecieved.chat;
 
-    console.log("chat" + newMessageRecieved);
-    console.log("sender_id" + newMessageRecieved.sender._id);
-    console.log(newMessageRecieved.chat.users);
 
     if (!chat.users) return console.log("usernot defined");
 
@@ -109,7 +107,6 @@ io.on("connection", (socket) => {
   });
 
   socket.off("setup",()=>{
-    console.log("USER DISCONNECTED")
     socket.leave(userData._id)
   })
 
@@ -119,14 +116,8 @@ io.on("connection", (socket) => {
     socket.to(room).emit("video call link", videolink);
   })
 
-
-  // socket.on("video call link", (link) => {
-  //   console.log("Received video call link: " + link);
-  // });
   
   socket.on("video_call_initiation", (oppositeUserId,room) => {
-    console.log("notification")
-   console.log("opposite userid "+oppositeUserId)
    socket.to(room).emit("video_call_notification",oppositeUserId)
   });
 

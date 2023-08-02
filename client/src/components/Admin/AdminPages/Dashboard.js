@@ -23,7 +23,6 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         setOrganizationsData(data);
-        console.log(organizationsData);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -161,23 +160,18 @@ function Dashboard() {
     fetch("http://localhost:3000/admin/total-posts-jobs")
       .then((response) => response.json())
       .then((data) => {
-        console.log("here");
-        console.log(data.jobs);
-        console.log(data.posts);
+        
         const formattedData = {
           jobs: data.jobs,
           posts: data.posts,
         };
         setChartData(formattedData);
-        console.log("formatted data");
-        console.log(formattedData);
+        
       })
       .catch((error) => console.log(error));
   }, []);
 
-  useEffect(() => {
-    console.log("Hello" + chartData);
-  });
+
 
   return (
     <div>

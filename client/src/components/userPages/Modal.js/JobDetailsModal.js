@@ -14,7 +14,6 @@ function JobDetailsModal({ jobId, handleClose }) {
   const [jobDetails ,setJobDetails] = useState("")
 
   const fetchJob = async(jobId)=>{
-    console.log("fetching jobs")
    try{
      const endpoint = '/getJobDetails'
      const response = await axiosInstance.get(endpoint,{params:{

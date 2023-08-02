@@ -45,11 +45,8 @@ function Jobs() {
   };
 
   const handleApplied = (jobpostID) => {
-    console.log(jobpostID);
     setSelectedJobId(jobpostID);
     setShowApplied(true);
-    console.log(showApplied);
-    console.log("setSelectedJobId" + selectedJobId);
   };
 
   const handleCloseApplied = () => {
@@ -62,7 +59,6 @@ function Jobs() {
   };
 
   const handleDeleteJob = async(jobpostId) =>{
-    console.log(jobpostId)
     try{
        const endpoint = '/organisation/deleteJob'
 
@@ -70,7 +66,6 @@ function Jobs() {
         jobId:jobpostId
        })
 
-       console.log(response)
        if(response.status === 200){
         toast.success("Job deleted successfully!");
        }
@@ -93,9 +88,7 @@ function Jobs() {
     jobpost.jobTitle.toLowerCase().includes(searchInput.toLowerCase())
   );
 
-  useEffect(() => {
-    console.log(filteredJobs);
-  }, [filteredJobs]);
+
 
   return (
     <>

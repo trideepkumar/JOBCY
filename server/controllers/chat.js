@@ -36,9 +36,7 @@ const createChat = async (req, res) => {
 
 const fetchChats = async (req, res) => {
     try {
-      console.log("fetching the chat..")
         const {userId,oppstId} = req.query;
-        console.log(userId,oppstId)
 
         const chat = await Chat.find({
           users: {

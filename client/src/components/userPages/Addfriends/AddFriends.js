@@ -46,7 +46,6 @@ function AddFriends() {
     try {
       const response = await axiosInstance.get(`/getAllusers/${authState._id}`);
       setUsers(response.data);
-      console.log(response.data);
     } catch (error) {
       console.log("Error fetching users:", error);
     }
@@ -54,9 +53,7 @@ function AddFriends() {
 
   const fetchOrganisations = async () => {
     try {
-      console.log("organistaions");
       const response = await axiosInstance.get("/getAllorganisations");
-      console.log(response.data);
       setOrganizations(response.data);
     } catch (error) {
       console.log(error);
@@ -87,7 +84,6 @@ function AddFriends() {
       let endpoint = `friendRequest/${authState._id}`;
       const response = await axiosInstance.post(endpoint, { userId });
       const requested = response.data.sender;
-      console.log(requested)
       localStorage.setItem("user", JSON.stringify(requested));
       dispatch(setAuth());
     } catch (error) {
@@ -96,12 +92,8 @@ function AddFriends() {
   };
 
   const handleFollow = async (orgId) => {
-    console.log(authState._id);
-    console.log(orgId);
     const endpoint = `/orgFollow/${authState._id}`;
-    console.log(endpoint);
     const response = await axiosInstance.post(endpoint, { orgId });
-    console.log(response);
     const newUser = response.data.user;
     localStorage.setItem("user", JSON.stringify(newUser));
     dispatch(setAuth());

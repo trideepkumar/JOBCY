@@ -45,7 +45,6 @@ const OrgBar = () => {
   const handleLogout = () => {
     localStorage.clear();
     navigate('/organisation/login')
-    console.log("Logout clicked");
     handleMenuClose();
   };
 

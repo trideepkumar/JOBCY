@@ -24,16 +24,14 @@ const path = require('path')
       const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
       const mimetype = filetypes.test(file.mimetype);
       if (extname && mimetype) {
-        console.log('File is allowed');
         return cb(null, true);
       } else {
-        console.log('File is not allowed');
         return cb(null, false);
       }
     }
   });
 
-console.log("multer runs")
+
 
   
 module.exports = {upload}

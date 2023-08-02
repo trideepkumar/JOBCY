@@ -18,7 +18,6 @@ function JobCard() {
 
   const handleBlock = async (jobId) => {
     const response = await axiosInstance.patch("/admin/blockJob", { jobId });
-    console.log(response);
     fetchJobs();
     toast.success("Job blocked successfully", {
       className: "toast-success",
@@ -29,7 +28,6 @@ function JobCard() {
 
   const handleUnblock = async (jobId) => {
     const response = await axiosInstance.patch("/admin/unblockJob", { jobId });
-    console.log(response);
     fetchJobs();
     toast.success("Job Recovered successfully");
   };

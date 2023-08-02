@@ -29,7 +29,6 @@ function UserprofileModal() {
     try {
       const response = await axiosInstance.get(`/user/${userId}`);
       setUser(response.data.user);
-      console.log("user:", user);
     } catch (err) {
       console.log(err);
     }
@@ -38,7 +37,6 @@ function UserprofileModal() {
   const handleResume = ()=>{
     setOpen(true)
      setResume(true)
-     console.log(resume)
   }
 
   const handleClose = ()=>{

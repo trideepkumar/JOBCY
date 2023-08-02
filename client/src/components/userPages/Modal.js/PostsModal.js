@@ -40,7 +40,6 @@ function Posts() {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSendImage(file);
-    console.log("sendingimage", file);
     setSelectedImage(URL.createObjectURL(file));
     setOpenImagePreview(true);
     setSelectedVideo(null); // Clear the selected video
@@ -64,10 +63,7 @@ function Posts() {
   };
 
   const handlePost = async () => {
-    console.log("Post text:", postText);
-    console.log("Selected image:", sendImage);
-    console.log("Selected video:", sendVideo);
-    console.log("Location:", location);
+   
 
     const formData = new FormData();
     if(sendImage!== null){
@@ -82,14 +78,12 @@ function Posts() {
   
       try {
         const endpoint = "/post";
-        console.log(formData);
   
         const response = await axiosInstance.post(endpoint, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response);
         handleClose();
       } catch (error) {
         console.error("Error creating post:", error);
@@ -106,14 +100,12 @@ function Posts() {
 
     try {
       const endpoint = "/postVideo";
-      console.log(formData);
 
       const response = await axiosInstance.post(endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
       handleClose();
     } catch (error) {
       console.error("Error creating post:", error);

@@ -38,7 +38,6 @@ const ResetPassword = () => {
     const endpoint = `/reset-password/${token}`;
     try {
       const response = await axiosInstance.post(endpoint, formData);
-      console.log(response);
       if (response.status === 200) {
         toast.success("Password reset successful. You can now log in with your new password.");
         setTimeout(()=>{
@@ -60,9 +59,7 @@ const ResetPassword = () => {
     },
   });
 
-  useEffect(() => {
-    console.log("reset-password");
-  }, []);
+ 
 
   return (
     <ThemeProvider theme={theme}>

@@ -11,7 +11,6 @@ function Chat() {
 
 
   const handleClickEvent = (oppstId)=>{
-    console.log("hi",oppstId)
     setOppstId(oppstId)
   }
 

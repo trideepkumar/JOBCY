@@ -46,7 +46,6 @@
 
       const roomID = chatId;
 
-      console.log("room Id=>"+roomID)
 
       let myMeeting = async (element) => {
         // generate Kit Token
@@ -96,18 +95,13 @@
       };
 
       useEffect(() => {
-        console.log("first");
         socket.emit("setup", authState);
-        console.log("second");
       }, [chatId]);
 
     
       useEffect(() => {
-        console.log("video call link...");
         socket.on("video call link", async(vlink)=>{
-          console.log("other user videocall link",vlink)
           setVideoCallLink(vlink)
-          console.log("hereeee is the linkvideoCallLink",videoCallLink)
         }); 
       }, [socket,videoCallLink]);
 

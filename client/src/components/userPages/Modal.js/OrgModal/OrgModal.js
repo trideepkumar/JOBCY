@@ -76,7 +76,6 @@ function OrgModal({ type, open, onClose }) {
         formDataToSend.append("image", formData.image);
       }
 
-      console.log(formData);
       let endpoint = "";
 
       const config = {
@@ -89,7 +88,6 @@ function OrgModal({ type, open, onClose }) {
         const response = await axiosInstance.patch(endpoint, formDataToSend);
         if (response.status === 200) {
             let orgEndpoint = `/organisation/getOrg/${authState._id}`;
-            console.log(orgEndpoint);
             const organisation = await axiosInstance.get(orgEndpoint);
             localStorage.setItem(
               "organisation",
@@ -105,10 +103,8 @@ function OrgModal({ type, open, onClose }) {
           formDataToSend,
           config
         );
-        console.log(response)
         if (response.status === 200) {
             let orgEndpoint = `/organisation/getOrg/${authState._id}`;
-            console.log(orgEndpoint);
             const organisation = await axiosInstance.get(orgEndpoint);
             localStorage.setItem(
               "organisation",

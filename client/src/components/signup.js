@@ -23,13 +23,10 @@ const Signup = ({ signupType }) => {
   const clientId =
     "525754537141-kgphi4blqb4c6b8t10m6if5hg3ggm3ri.apps.googleusercontent.com";
   const onSuccess = (res) => {
-    console.log("Login success! res:", res);
     axiosInstance
       .post("/auth/google", { token: res.tokenId })
       .then((res) => {
-        console.log(res.data);
         if (res.data?.success) {
-          console.log("great!");
         }
       })
       .catch((error) => {
@@ -38,7 +35,6 @@ const Signup = ({ signupType }) => {
       });
   };
   const onFailure = (res) => {
-    console.log("Loginfailed! res:", res);
   };
 
   const [formData, setFormData] = useState({
@@ -195,15 +191,12 @@ const Signup = ({ signupType }) => {
     let validationErrors = {};
     if (signupType === "organisation") {
       validationErrors = validateFormData(organizationFormData);
-      console.log("org");
     } else if (signupType === "user") {
       validationErrors = validateFormData(formData);
     }
 
-    console.log(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
-      console.log("hello");
       try {
         let endpoint = "";
         let data;
@@ -217,7 +210,6 @@ const Signup = ({ signupType }) => {
         }
 
         const response = await axiosInstance.post(endpoint, data);
-        console.log(response);
         if (response.data?.success) {
           setIsModalOpen(true);
           setIsCheckboxChecked(false);

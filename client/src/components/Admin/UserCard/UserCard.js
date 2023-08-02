@@ -12,7 +12,6 @@ export default function UserCard() {
     try {
       let endpoint = "/admin/users";
       const response = await axiosInstance.get(endpoint);
-      console.log(response.data);
       if (response.status === 200) {
         setUsers(response.data);
       }
@@ -22,9 +21,7 @@ export default function UserCard() {
   };
 
   const handleBlock = async (userId) => {
-    console.log(userId);
     const response = await axiosInstance.patch("/admin/blockuser", { userId });
-    console.log(response.data.user);
     toast.success("User blocked successfully", {
       className: "toast-success",
       bodyClassName: "toast-body",
@@ -34,11 +31,9 @@ export default function UserCard() {
   };
 
   const handleUnblock = async (userId) => {
-    console.log(userId);
     const response = await axiosInstance.patch("/admin/unblockuser", {
       userId,
     });
-    console.log(response.data.user);
     toast.success("User Unblocked successfully");
     fetchData();
   };

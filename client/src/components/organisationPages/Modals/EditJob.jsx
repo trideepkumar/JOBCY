@@ -16,7 +16,6 @@ const EditJobModal = ({ show, onClose, jobId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("new Job", job);
     try {
       const endpoint = `/organisation/updateJob`;
       const response = await axiosInstance.patch(endpoint, {
@@ -24,7 +23,6 @@ const EditJobModal = ({ show, onClose, jobId }) => {
         job: job,
       });
 
-      console.log("Response",response.data)
       if(response.status===200){
         //give toast
       }

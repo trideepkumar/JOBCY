@@ -27,12 +27,10 @@ function Appliedjobs({ show, onClose, jobId }) {
   };
 
   const handleIdClick = async (userId) => {
-    console.log(userId)
     navigate(`/organisation/profile/${userId}`)
   }
 
   const handleSentEmail = async(userId)=>{
-    console.log(userId)
     navigate(`/organisation/sentEmail/:${userId}`)
   }
 

@@ -29,7 +29,6 @@ function UserNotification() {
         },
       });
       const { data } = response;
-      console.log(data);
       setUserRequests(data);
     } catch (error) {
       console.error(error);
@@ -38,11 +37,8 @@ function UserNotification() {
 
   const handleAccept = async (userId) => {
     try {
-      console.log("Accept user:", userId);
       const endpoint = `/acceptFriendRequest/${authState._id}`;
-      console.log(endpoint);
       const response = await axiosInstance.post(endpoint, { userId });
-      console.log(response.data);
       if (response.status === 200) {
         setOpen(false);
         setShowToast(true);
@@ -53,10 +49,8 @@ function UserNotification() {
   };
 
   const handleDecline = async (userId) => {
-    console.log("Decline user:", userId);
     let endpoint = `/friendRequestDeny/${authState._id}`;
     const response = await axiosInstance.delete(endpoint, { data: { userId } });
-    console.log(response.data);
     if (response.status === 200) {
       setOpen(false);
       setShowToast(true);

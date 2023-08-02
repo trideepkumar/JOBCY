@@ -18,9 +18,7 @@ function PostCard() {
   };
 
   const handleBlock = async (postId) => {
-    console.log(postId);
     const response = await axiosInstance.patch("/admin/blockpost", { postId });
-    console.log(response);
     toast.success("Post deleted successfully", {
       className: "toast-success",
       bodyClassName: "toast-body",
@@ -33,7 +31,6 @@ function PostCard() {
     const response = await axiosInstance.patch("/admin/unblockpost", {
       postId,
     });
-    console.log(response);
     toast.success("Post recovered successfully");
     fetchPosts();
   };

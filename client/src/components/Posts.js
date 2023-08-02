@@ -13,7 +13,6 @@ function Posts() {
     return state.auth
   })
 
-  console.log(authState);
 
   const handleLogout = () => {
     localStorage.removeItem("token");

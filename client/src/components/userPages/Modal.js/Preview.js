@@ -16,7 +16,6 @@ function Preview() {
     try {
       const endpoint = `/resume/${authState._id}`;
       const response = await axiosInstance(endpoint);
-      console.log(response.data);
       setResumeData(response.data);
       setOpen(true);
     } catch (error) {
@@ -28,9 +27,7 @@ function Preview() {
     setOpen(false);
   };
 
-  useEffect(()=>{
-    console.log(resumeData)
-  })
+
 
   return (
     <>
@@ -72,11 +69,7 @@ function Preview() {
           }}
         >
           {resumeData && (
-            // <Document
-            //   file={resumeData}
-            //   onLoadSuccess={console.log("PDF loaded successfully")}
-            // >
-            // </Document>
+            
             <object width="100%" height="80%" data={resumeData} type="application/pdf">   </object>
 
           )}

@@ -18,11 +18,9 @@ function OrganisationCard() {
   };
 
   const handleBlock = async (orgId) => {
-    console.log(orgId);
     const response = await axiosInstance.patch("/admin/blockorganisation", {
       orgId,
     });
-    console.log(response);
     toast.success("Organisation blocked successfully", {
       className: "toast-success",
       bodyClassName: "toast-body",
@@ -32,11 +30,9 @@ function OrganisationCard() {
   };
 
   const handleUnblock = async (orgId) => {
-    console.log(orgId);
     const response = await axiosInstance.patch("/admin/unblockorganisation", {
       orgId,
     });
-    console.log(response);
     toast.success("Organisation Unblocked successfully");
     fetchOrganisations();
   };

@@ -157,14 +157,10 @@ export default function UserModal({ type }) {
         type === "skills"
       ) {
         try {
-          console.log("experience");
           const skillsData = { skills: [{ skills: formData.skills }] };
-          console.log(skillsData)
           let endpoint = `updateExperience/${authState._id}`;
-          console.log(endpoint);
-          console.log(formData);
+          
           const response = await axiosInstance.post(endpoint, formData);
-          console.log(response);
             if (response.status === 200) {
               let userEndpoint = `user/${authState._id}`;
               const user = await axiosInstance.get(userEndpoint);
@@ -176,9 +172,7 @@ export default function UserModal({ type }) {
           console.error("Error updating experience:", error);
         }
       } else if (type === "profile") {
-        console.log("profile");
         let endpoint = `updatepic/${authState._id}`;
-        console.log(endpoint);
         const form = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
           form.append(key, value);
@@ -189,7 +183,6 @@ export default function UserModal({ type }) {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response);
         if (response.status === 200) {
           let userEndpoint = `user/${authState._id}`;
           const user = await axiosInstance.get(userEndpoint);
@@ -202,9 +195,6 @@ export default function UserModal({ type }) {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(formData);
-  // }, [handleInputChange]);
 
   return (
     <div>
@@ -221,7 +211,7 @@ export default function UserModal({ type }) {
           onClick={handleOpen}
         />
       ) : (
-        () => console.log("hi")
+        () => console.log("not")
       )}
 
       <Modal

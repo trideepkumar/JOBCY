@@ -32,15 +32,17 @@ function Posts() {
   const videoRef = useRef(null);
 
   const [showModal, setShowModal] = useState(false);
-  const [postData, setpostData] = useState("");
+  const [postData, setpostData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [likedPosts, setLikedPosts] = useState([]);
   const [reportedPosts, setReportedPosts] = useState([]);
+
 
   const authState = useSelector((state) => {
     return state.auth.authState;
   });
 
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -50,12 +52,10 @@ function Posts() {
   };
 
   const handlePosts = () => {
-    console.log("clicked");
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
-    console.log("closed");
     setShowModal(false);
   };
 
@@ -63,12 +63,9 @@ function Posts() {
     setLoading(true);
     try {
       let endpoint = `/post/${authState._id}`;
-      console.log(endpoint);
       const response = await axiosInstance.get(endpoint);
-      console.log("post here...", response.data);
       if (response.status === 200) {
         setTimeout(() => {
-          console.log("daa");
           setpostData(response.data);
           setLoading(false);
         }, 1000);
@@ -83,14 +80,12 @@ function Posts() {
   };
 
   const handleLike = async (postId) => {
-    console.log("postId", postId);
     try {
       const endpoint = "/postlike";
       const response = await axiosInstance.patch(endpoint, {
         postId: postId,
         userId: authState._id,
       });
-      console.log(response);
       setLikedPosts((prevLikedPosts) =>
         prevLikedPosts.includes(postId)
           ? prevLikedPosts.filter((id) => id !== postId)
@@ -106,13 +101,11 @@ function Posts() {
   };
 
   const handleReport = async (postId) => {
-    console.log(postId);
     const endpoint = "/reportPost";
     const response = await axiosInstance.patch(endpoint, {
       postId: postId,
       userId: authState._id,
     });
-    console.log(response);
     setReportedPosts((prevReportedPosts) =>
       prevReportedPosts.includes(postId)
         ? prevReportedPosts.filter((id) => id !== postId)
@@ -170,28 +163,27 @@ function Posts() {
                     backgroundSize: "cover",
                   }}
                 >
-                  {authState.profPic ? (
+                  {authState?.profPic ? (
                     <Avatar
                       src={authState.profPic}
                       style={{ width: 80, height: 80 }}
                     />
                   ) : (
                     <Avatar style={{ width: 80, height: 80 }}>
-                      {authState.username[0]}
                     </Avatar>
-                  )}{" "}
+                  )}
                 </div>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    {authState.name}
+                    {authState?.name}
                   </Typography>
                   <Typography gutterBottom variant="body2" component="div">
-                    {authState.designation}
+                    {authState?.designation}
                   </Typography>
                   <Divider style={{ marginTop: "1rem" }} />
 
                   <Typography variant="body2" style={{ textAlign: "center" }}>
-                    {authState.about}
+                    {authState?.about}
                   </Typography>
                   <Divider style={{ marginTop: "1rem" }} />
                 </CardContent>
@@ -243,8 +235,7 @@ function Posts() {
                       style={{ width: 50, height: 50, marginRight: "4px" }}
                     />
                   ) : (
-                    <Avatar style={{ width: 80, height: 80 }}>
-                      {authState.username[0]}
+                    <Avatar style={{ width: 50, height: 50 }}>
                     </Avatar>
                   )}{" "}
                   <Button
@@ -282,8 +273,8 @@ function Posts() {
                 </CardActions>
               </Card>
 
-              {/* posts card */}
-              {postData.length === 0 ? (
+              
+              {postData.length === 0  ? (
                 <Box
                   sx={{
                     justifyContent: "space-between",
@@ -291,6 +282,7 @@ function Posts() {
                     width: "100%",
                     marginLeft: "0rem",
                     marginTop: "1rem",
+                    height:"auto"
                   }}
                   className="posts"
                 >
@@ -497,6 +489,7 @@ function Posts() {
                   </Box>
                 ))
               )}
+
             </Grid>
 
             <Grid item lg={3}>

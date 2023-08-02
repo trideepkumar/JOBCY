@@ -11,11 +11,10 @@ import { Search ,Menu as MenuIcon} from "@mui/icons-material";
 
 function Navbar() {
   const handleMenuOpen = () => {
-    console.log("handleMenuOpen");
+    console.log("open");
   };
 
   const AdminLoggedIn = localStorage.getItem("admin");
-  console.log("admin is here" + AdminLoggedIn);
 
   return (
     <div>

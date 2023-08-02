@@ -91,18 +91,15 @@ const Login = ({ loginType }) => {
           redirectRoute = "/admin/dashboard"
         }
 
-        console.log(formData)
   
         const response = await axiosInstance.post(loginEndpoint, formData);
   
         if (response.data?.success) {
           localStorage.setItem("token", response.data.token);
-          console.log(response.data.token)
 
           if(loginType==='user'){
             setTimeout(() => {
               setLoading(false);  
-              console.log(response.data.user)
             localStorage.setItem("user", JSON.stringify(response.data.user));
             dispatch(setAuth());
             navigate(redirectRoute) 
@@ -110,8 +107,6 @@ const Login = ({ loginType }) => {
           
             
           }else if ( loginType === 'organisation'){
-            console.log("org data")
-            console.log(response.data.organisation)
             localStorage.setItem("organisation", JSON.stringify(response.data.organisation));
             dispatch(setorganisationAuth());
             navigate(redirectRoute) 

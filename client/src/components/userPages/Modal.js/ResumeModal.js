@@ -42,7 +42,6 @@ function ResumeModal() {
             },
           }
         );
-        console.log("Resume upload successful:", response.data);
         if (response.data.success) {
           notify();
           setUploadConfirmed(true);

@@ -44,14 +44,12 @@ function Userjob() {
     try {
       const response = await axiosInstance.get("/jobs");
       const jobs = response.data.jobs || [];
-      console.log(jobs);
 
       const hasApplied = jobs
         .flatMap((job) => job.appliedCandidates)
         .some((candidate) => candidate[0] === authState._id);
 
-      console.log(hasApplied);
-      console.log("again");
+      
       if (selectedCategory) {
         setJobPosts(jobs.filter((job) => job.category === selectedCategory));
       } else {
@@ -69,20 +67,15 @@ function Userjob() {
   };
 
   const handleApply = async (jobId) => {
-    console.log("job applied", jobId);
     const userId = authState._id;
-    console.log(userId);
     const endpoint = `/applyjob/${jobId}`;
-    console.log(endpoint);
 
     try {
       const response = await axiosInstance.post(endpoint, {
         userId: userId,
         jobId: jobId,
       });
-      console.log(response);
       if (response.status === 200) {
-        console.log("done");
         toast.success("Job Applied successfully", {
           className: "  ",
           bodyClassName: "toast-body",
@@ -96,10 +89,8 @@ function Userjob() {
   };
 
   const handleDetails = (jobId) => {
-    console.log("handleDetails" + jobId);
     setJobId(jobId); 
     setDetailsModal(true);
-    console.log(detailsModal);
   };
 
   useEffect(() => {
@@ -110,10 +101,7 @@ function Userjob() {
     fetchData();
   }, [selectedCategory]);
 
-  useEffect(() => {
-    console.log("jobposts");
-    console.log(appliedJobs);
-  });
+ 
 
   return (
     <>

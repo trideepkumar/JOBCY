@@ -81,7 +81,6 @@ function ChatBox({ oppstId }) {
       });
       const chat = data[0]._id;
       setChatId(chat);
-      console.log(chatId);
       setOppositeUser(data[0].users.find((user) => user._id === oppstId));
     } catch (error) {
       console.error("Error fetching chat", error);
@@ -123,7 +122,6 @@ function ChatBox({ oppstId }) {
           chatId: chatId,
         },
       });
-      console.log(data);
       socket.emit("new message", data);
       setMessages([...messages, data]);
       setNewMessage("");
@@ -136,7 +134,6 @@ function ChatBox({ oppstId }) {
     try {
       const endpoint = `/messages/${chatId}`;
       const response = await axiosInstance.get(endpoint);
-      console.log(response);
       // Set the messages state with the response data
       if (response.status === 200) {
         setMessages(response.data);
@@ -148,12 +145,9 @@ function ChatBox({ oppstId }) {
   };
 
   const handleVideocall = async () => {
-    console.log("video call started");
     setModalIsOpen(true);
-    console.log(chatId);
     setShowVideoCall(true);
-    console.log("oppsiteUserId",oppositeUser._id)
-    console.log(oppositeUser.name)
+   
 
     if (authState._id !== oppositeUser._id) {
       socket.emit("video_call_initiation", oppositeUser._id,chatId);
@@ -192,7 +186,6 @@ function ChatBox({ oppstId }) {
 
   useEffect(() => {
     socket.on("video_call_notification", (oppositeUserId) => {
-      console.log("notified.............")
       setShowIncomingCallNotification(true); 
     });
   

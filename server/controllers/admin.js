@@ -112,7 +112,6 @@ const getTotalUsers = async (req, res) => {
 };
 
 const totalusersbyMonth = async (req, res) => {
-  console.log("totalusersbyMonth");
   try {
     const usersByMonth = await User.aggregate([
       {
@@ -136,7 +135,6 @@ const totalusersbyMonth = async (req, res) => {
 };
 
 const totalOrganizationsByMonth = async (req, res) => {
-  console.log("totalOrganizationsByMonth");
   try {
     const organizationsByMonth = await Organization.aggregate([
       {
@@ -171,7 +169,6 @@ const totalPostsJobs = async (req, res) => {
       },
     ]);
 
-    console.log(jobsByMonth)
 
     const postsByMonth = await Post.aggregate([
       {
@@ -188,7 +185,6 @@ const totalPostsJobs = async (req, res) => {
       posts: formatDataByMonth(postsByMonth),
     };
 
-    console.log(formattedData)
 
     res.json(formattedData);
   } catch (error) {
@@ -203,15 +199,12 @@ const formatDataByMonth = (dataByMonth) => {
     const count = item.count;
     formattedData[month] = count;
   }
-  console.log(formattedData)
   return formattedData;
 };
 
 const organisationPdf = async (req,res)=>{
-  console.log("organisationPdf")
   try {
     const organizations = await Organization.find({}, 'orgName category place registrationNumber');
-    console.log(organizations)
     
     const doc = new PDFDocument();
 
@@ -247,7 +240,6 @@ const jobReportPdf = async (req, res) => {
       select: 'name',
     });
 
-    console.log(jobs);
 
     const doc = new PDFDocument();
 
@@ -293,7 +285,6 @@ const getUsers = async (req, res) => {
       orgFollowingCount: user.orgFollowing ? user.orgFollowing.length : 0,
     }));
 
-    console.log(usersWithFriendCount);
     res.status(200).json(usersWithFriendCount);
   } catch (error) {
     console.error(error);
@@ -311,7 +302,6 @@ const blockUser = async (req, res) => {
         { new: true }
       );
 
-      console.log(user);
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -334,7 +324,6 @@ try {
     { new: true }
   );
 
-  console.log(user);
 
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
@@ -364,7 +353,6 @@ const getOrganisations = async (req, res) => {
       };
     });
 
-    console.log(organizationsWithUserAndCounts);
     res.status(200).json(organizationsWithUserAndCounts);
   } catch (error) {
     console.error(error);
@@ -376,14 +364,12 @@ const blockOrganization = async (req, res) => {
   try {
     const organizationId = req.body.orgId;
 
-    console.log(organizationId)
     const organization = await Organization.findOneAndUpdate(
       { _id: organizationId },
       { isVerified: false },
       { new: true }
     );
 
-    console.log(organization);
 
     if (!organization) {
       return res.status(404).json({ error: 'Organization not found' });
@@ -406,7 +392,6 @@ const unblockOrganisation = async (req, res) => {
       { new: true }
     );
 
-    console.log(organisation);
 
     if (!organisation) {
       return res.status(404).json({ error: 'Organization not found' });
@@ -428,7 +413,6 @@ const getPosts = async (req, res) => {
       createdAt: moment(post.createdAt).fromNow()
     }));
 
-    console.log(postsWithFormattedDate);
     res.status(200).json(postsWithFormattedDate);
   } catch (error) {
     console.error(error);

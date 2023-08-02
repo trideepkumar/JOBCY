@@ -21,7 +21,6 @@ const signup = async (req, res) => {
     } = req.body;
 
     const existingOrganisation = await Organization.findOne({ email });
-    console.log(existingOrganisation);
 
     if (existingOrganisation) {
       return res.json({
@@ -44,8 +43,6 @@ const signup = async (req, res) => {
       isVerified: false,
     });
 
-    console.log(newOrganization);
-    console.log("here");
     // Save the organization to the database
     await newOrganization.save();
 
@@ -86,9 +83,7 @@ const login = async (req, res) => {
   let existingOrganisation;
 
   try {
-    console.log("loginworks");
     existingOrganisation = await Organization.findOne({ email: email });
-    console.log(existingOrganisation);
   } catch (err) {
     console.log(err);
   }
@@ -112,7 +107,6 @@ const login = async (req, res) => {
       .json({ message: "Verify Your Existing account!", success: false });
   }
   if (existingOrganisation && existingOrganisation.isVerified) {
-    // console.log("jwt start")
     const token = jwt.sign(
       { id: existingOrganisation._id },
       process.env.JWT_SECRET_KEY,
@@ -134,29 +128,23 @@ const login = async (req, res) => {
 };
 
 const verifyToken = async (req, res, next) => {
-  console.log("verification started");
   const token = req.headers.authorization.split(" ")[1];
-  console.log(token);
   if (!token) {
     return res.status(404).json({ message: "No authorization header found" });
   }
 
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
-      console.log("error");
       return res.status(400).json({ message: "Invalid token found!" });
     }
     req.id = user.id;
-    console.log(req.id);
     next();
   });
-  console.log("end");
 };
 
 const verifyEmail = async (req, res) => {
   try {
     const token = await Token.findOne({ token: req.params.token });
-    console.log(token);
     await User.updateOne({ _id: token.userId }, { $set: { isVerified: true } });
     await Token.findByIdAndRemove(token._id);
     res.redirect("http://localhost:3001/login");
@@ -168,8 +156,6 @@ const verifyEmail = async (req, res) => {
 
 const getOrganisation = async (req, res) => {
   const orgId = req.params;
-  console.log("heloo")
-  console.log(orgId)
   let organization;
   try {
     organization = await Organization.findById(orgId);
@@ -182,9 +168,7 @@ const getOrganisation = async (req, res) => {
   return res.status(200).json({ organization });
 };
 
-
 const jobposts = async (req, res) => {
-  console.log("hi jobpostsss");
   try {
     const {
       orgName,
@@ -198,15 +182,13 @@ const jobposts = async (req, res) => {
       hiringProcess,
       jobDescription,
     } = req.body;
-    console.log(req.body)
-    console.log(req.params._id);
+   
     const organization = await Organization.findById(req.params._id);
 
     if (!organization) {
       return res.status(404).json({ error: "Organization not found" });
     }
 
-    console.log(organization._id);
 
     // Create a new job document
     const newJob = new Jobs({
@@ -235,12 +217,9 @@ const jobposts = async (req, res) => {
 };
 
 const getJobsByOrganization = async (req, res) => {
-  console.log("hello");
   const orgName = req.params.orgName;
-  console.log(orgName);
   try {
     const jobs = await Jobs.find({ orgName: orgName });
-    console.log(jobs);
     res.json(jobs);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch jobs" });
@@ -250,8 +229,7 @@ const getJobsByOrganization = async (req, res) => {
 const updateName = async (req, res) => {
   try {
     const { name, category, employees, place,about } = req.body;
-    console.log("about")
-    console.log(name, category, employees, place,about);
+    
     const organization = await Organization.findById(req.params._id);
 
     if (!organization) {
@@ -290,36 +268,26 @@ const updateName = async (req, res) => {
 };
 
 const updatePic = async (req, res) => {
-  console.log("org pic update");
   try {
-    console.log("1");
-    console.log(req.body);
-    console.log(req.file);
     if (!req.file) {
       return res.status(500).json({ error: "Image is required" });
     }
-    console.log("2");
     const path = req.file.path.slice(7);
-    console.log(path);
     const filepath = `http://localhost:${process.env.PORT}/${path}`;
-    console.log(filepath);
 
     await Organization.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { profPic: filepath } }
     );
 
-    console.log("Profile picture updated");
     res.json({ success: true, url: filepath });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "An error occurred" });
   }
 };
 
 const getAppliedCandidates = async (req, res) => {
-   console.log("getAppliedCandidates")
-   console.log(req.query.jobId)
+   
   const jobId = req.query.jobId;
   try {
     const job = await Jobs.findById(jobId).populate('appliedCandidates');
@@ -327,7 +295,6 @@ const getAppliedCandidates = async (req, res) => {
       return res.status(404).json({ error: 'Job not found' });
     }
 
-    console.log(job.appliedCandidates)
     const Applied = job.appliedCandidates
     return res.status(200).json(Applied);
   } catch (error) {
@@ -352,15 +319,12 @@ const sentEmail = async(req,res)=>{
 
       const info = await sendJobMail(email,userEmail,subject,body); 
 
-      console.log('Email sent:', info);
 
       res.json({ message: 'Email sent successfully' }).status(200);
     } catch (error) {
-      console.log('Error sending email:', error);
       res.status(500).json({ message: 'Error sending email' });
     }
   } catch (error) {
-    console.log('Error fetching user:', error);
     res.status(500).json({ message: 'Error fetching user' });
   }
   
@@ -368,12 +332,9 @@ const sentEmail = async(req,res)=>{
 
 const getJob = async (req, res) => {
 
-  console.log("getJobs")
   try {
-    console.log("getJobs1")
 
     const { jobId } = req.query;
-    console.log(jobId)
 
     if (!jobId) {
       return res.status(400).json({ error: 'Invalid jobId' });
@@ -408,7 +369,6 @@ const updateJob = async (req, res) => {
       jobDescription
     };
 
-    console.log(updatedJobData);
 
     const updatedJob = await Jobs.findByIdAndUpdate(jobId, updatedJobData, { new: true });
 
@@ -424,9 +384,7 @@ const updateJob = async (req, res) => {
 };
 
 const deleteJob = async (req, res) => {
-  console.log("deleteJob started");
   const { jobId } = req.body;
-  console.log(jobId);
 
   try {
     const updatingJob = await Jobs.findByIdAndUpdate(

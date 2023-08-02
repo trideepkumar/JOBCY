@@ -42,7 +42,6 @@ function FriendsList({ handleClickEvent }) {
         },
       });
 
-      console.log(response,"chats here..")
 
       const selected = friends.find((friend) => friend._id === id);
       setSelectedUser(selected);

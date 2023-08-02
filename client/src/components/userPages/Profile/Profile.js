@@ -34,16 +34,12 @@ function Profile() {
   const [showbackgroundImage, setshowbackgroundImage] = useState(false);
 
   const handlePorfpic = () => {
-    console.log("hi pro");
     setShowModal(true);
-    console.log(showModal);
   };
 
   const handleBackgroundChange = () => {
-    console.log("hi back");
     setshowbackgroundImage(true);
     setShowModal(true);
-    console.log(showbackgroundImage);
   };
 
   const handleDelete = async (jobTitleId) => {
@@ -51,10 +47,8 @@ function Profile() {
       const response = await axiosInstance.delete(
         `/deletejobtitle/${authState._id}/${jobTitleId}`
       );
-      console.log(response.data);
 
       const updatedAuthState = { ...authState };
-      console.log(updatedAuthState);
       updatedAuthState.jobtitles = updatedAuthState.jobtitles.filter(
         (jobTitle) => jobTitle._id !== jobTitleId
       );

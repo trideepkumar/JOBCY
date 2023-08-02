@@ -57,10 +57,8 @@ const Navbar = () => {
   }, [authState]);
 
   const loggedIn = localStorage.getItem("user");
-  console.log(loggedIn);
 
   const adminLoggedIn = localStorage.getItem("admin");
-  console.log("hello" + adminLoggedIn);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);

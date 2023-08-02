@@ -68,7 +68,6 @@ const Jobposts = () => {
 
   const handleSubmit = async (event) => {
     setLoading(true)
-    console.log("handleSubmit started");
     event.preventDefault();
     const formData = {
       orgName:authState.orgName,
@@ -82,12 +81,9 @@ const Jobposts = () => {
       hiringProcess: hiringProcess,
       category: category,
     };
-    console.log(formData);
     let endpoint = `/organisation/jobposts/${authState._id}`;
-    console.log(endpoint);
     let data = formData;
     const response = await axiosInstance.post(endpoint, data);
-    console.log(response.data);
     if (response.data.success) {
       setJobTitle("");
       setJobType("");
@@ -98,7 +94,6 @@ const Jobposts = () => {
       setJobDescription("");
       setHiringProcess("");
       setCategory("")
-      console.log(response.data.organization)
       setLoading(false)
       if (response.data.organization) {
         localStorage.setItem(
