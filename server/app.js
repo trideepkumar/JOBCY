@@ -31,7 +31,8 @@ app.use(cookieParser());
 // Place cors middleware here
 const cors = require("cors");
 const { connect } = require("http2");
-app.use(cors());
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
