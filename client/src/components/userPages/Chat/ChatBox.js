@@ -18,6 +18,9 @@ import animationData from "../../../animations/typing.json";
 import { VideoCall as VideoCallIcon } from "@mui/icons-material";
 import VideoCall from "./VideoCall";
 import Modal from "react-modal";
+// import { showVideoCallNotification } from "../../../Helpers/VideoCallNotification";
+import VideoCallNotification from "../../../Helpers/VideoCallNotification";
+
 
 const ENDPOINT = "http://localhost:3000";
 let socket, selectedChatCompare;
@@ -46,6 +49,8 @@ function ChatBox({ oppstId }) {
   const [isTyping, setIsTyping] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showIncomingCallNotification, setShowIncomingCallNotification] = useState(false);
+
 
   const userId = authState._id;
 
@@ -147,6 +152,12 @@ function ChatBox({ oppstId }) {
     setModalIsOpen(true);
     console.log(chatId);
     setShowVideoCall(true);
+    console.log("oppsiteUserId",oppositeUser._id)
+    console.log(oppositeUser.name)
+
+    if (authState._id !== oppositeUser._id) {
+      socket.emit("video_call_initiation", oppositeUser._id,chatId);
+    }
     
   };
 
@@ -178,6 +189,15 @@ function ChatBox({ oppstId }) {
       chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    socket.on("video_call_notification", (oppositeUserId) => {
+      console.log("notified.............")
+      setShowIncomingCallNotification(true); 
+    });
+  
+    // Rest of the code
+  }, []);
 
   const handleCloseModal = () => {
     setModalIsOpen(false);
@@ -216,6 +236,7 @@ function ChatBox({ oppstId }) {
       >
         {showVideoCall && <VideoCall chatId={chatId} />}
       </Modal>
+     
 
       <Grid>
         <Box position="relative">
@@ -247,6 +268,8 @@ function ChatBox({ oppstId }) {
                 cursor: "pointer",
               }}
             >
+                    {showIncomingCallNotification && <VideoCallNotification callerName={oppositeUser.name}  />}
+
               <VideoCallIcon onClick={handleVideocall} />
             </Box>
           </Box>

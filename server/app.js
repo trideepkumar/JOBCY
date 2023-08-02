@@ -59,7 +59,6 @@ mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
     server.listen(process.env.PORT);
-    console.log("mongoose connected successfully!");
   })
   .catch((err) => {
     console.log(err);
@@ -85,9 +84,7 @@ io.on("connection", (socket) => {
 
   //for creating room
   socket.on("join room", (room) => {
-    socket.join(room);
-    console.log("user joined room :" + room);
-    
+    socket.join(room);    
   });
 
   //for typing
@@ -119,16 +116,18 @@ io.on("connection", (socket) => {
   //for video call 
   
   socket.on("video call", async(room,videolink) => {
-    console.log("room" + room)
-    console.log("video call link" + videolink)
-    console.log("video call started in room: " + room)
     socket.to(room).emit("video call link", videolink);
   })
+
 
   // socket.on("video call link", (link) => {
   //   console.log("Received video call link: " + link);
   // });
   
-
+  socket.on("video_call_initiation", (oppositeUserId,room) => {
+    console.log("notification")
+   console.log("opposite userid "+oppositeUserId)
+   socket.to(room).emit("video_call_notification",oppositeUserId)
+  });
 
 });
