@@ -41,7 +41,7 @@
       const [modalIsOpen, setModalIsOpen] = useState(false);
 
 
-      const ENDPOINT = "http://localhost:3000";
+      const ENDPOINT = "https://jobcybackend.thecowboy.shop";
       const socket = io(ENDPOINT);
 
       const roomID = chatId;

@@ -22,7 +22,7 @@ import Modal from "react-modal";
 import VideoCallNotification from "../../../Helpers/VideoCallNotification";
 
 
-const ENDPOINT = "http://jobcybackend.thecowboy.shop";
+const ENDPOINT = "https://jobcybackend.thecowboy.shop";
 let socket, selectedChatCompare;
 
 function ChatBox({ oppstId }) {
