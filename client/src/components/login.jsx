@@ -91,9 +91,9 @@ const Login = ({ loginType }) => {
           redirectRoute = "/admin/dashboard"
         }
 
-  
+        
         const response = await axiosInstance.post(loginEndpoint, formData);
-  
+        
         if (response.data?.success) {
           setLoading(true)
           localStorage.setItem("token", response.data.token);

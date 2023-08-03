@@ -12,12 +12,12 @@ const adminRoutes = require("./routes/admin_router");
 const chatRoutes = require("./routes/chat_routes");
 const messageRoutes = require("./routes/message_route");
 
-const corsOptions = {
-  origin: "*",
-  credentials: true,
-  optionSuccessStatus: 200,
-  allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-access-token"],
-};
+// const corsOptions = {
+//   origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app",
+//   credentials: true,
+//   optionSuccessStatus: 200,
+//   allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-access-token"],
+// };
 
 require("dotenv").config();
 const app = express();
@@ -32,7 +32,10 @@ app.use(cookieParser());
 const cors = require("cors");
 const { connect } = require("http2");
 
-app.use(cors(corsOptions))
+app.use(cors())
+
+
+
 
 app.use(express.json());
 
@@ -60,7 +63,7 @@ mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
     server.listen(process.env.PORT);
-    console.log("mongoose connected successfully!");
+    console.log(`mongoose connected successfully! @ ${process.env.PORT}`);
   })
   .catch((err) => {
     console.log(err);
@@ -78,7 +81,7 @@ mongoose
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app/",
+    origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app",
   },
 });
 
