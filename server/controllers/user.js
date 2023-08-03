@@ -239,7 +239,7 @@ const verifyEmail = async (req, res) => {
    
     await User.updateOne({ _id: token.userId }, { $set: { isVerified: true } });
     await Token.findByIdAndRemove(token._id);
-    res.redirect("http://localhost:3001/login");
+    res.redirect("https://jobcy-trideepkumar.vercel.app/login");
     // res.json({ message: "email verification successfull", success: true });
   } catch (err) {
     res.status(400).send("error Occured");
