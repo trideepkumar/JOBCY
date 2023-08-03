@@ -12,12 +12,12 @@ const adminRoutes = require("./routes/admin_router");
 const chatRoutes = require("./routes/chat_routes");
 const messageRoutes = require("./routes/message_route");
 
-// const corsOptions = {
-//   origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app",
-//   credentials: true,
-//   optionSuccessStatus: 200,
-//   allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-access-token"],
-// };
+const corsOptions = {
+  origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app",
+  credentials: true,
+  optionSuccessStatus: 200,
+  allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-access-token"],
+};
 
 require("dotenv").config();
 const app = express();
@@ -32,7 +32,7 @@ app.use(cookieParser());
 const cors = require("cors");
 const { connect } = require("http2");
 
-app.use(cors())
+app.use(cors({credentials: true , origin:'*'}))
 
 
 
