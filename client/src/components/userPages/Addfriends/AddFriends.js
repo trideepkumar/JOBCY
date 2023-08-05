@@ -106,10 +106,12 @@ function AddFriends() {
   }, []);
 
   return (
-    <div>
+    <div className="maingrid">
       <Appbar />
 
       <Grid container spacing={2}>
+
+
         {/* left */}
         <Grid
           item
@@ -200,7 +202,6 @@ function AddFriends() {
         {/* right */}
 
         <Grid
-          className="exploreGrid"
           sx={{
             marginTop: "7rem",
             width: "70%",
@@ -210,8 +211,9 @@ function AddFriends() {
             marginLeft: "23rem",
             paddingBottom: "10px",
           }}
+          className="maingridfriends"
         >
-          {activeButton === "explore" && (
+          {activeButton === "explore" && (  
             // Friend list
             <Box
               item
@@ -222,6 +224,8 @@ function AddFriends() {
                 flexWrap: "wrap",
                 position: "relative",
               }}
+              className="exploreGrid"
+
             >
               <Typography
                 variant="subtitle1"
@@ -235,18 +239,20 @@ function AddFriends() {
                   marginRight: "20px",
                   marginTop: "-20px",
                 }}
+                className="seemore"
               >
                 {showAllUsers ? "Go Back." : "See More..."}
               </Typography>
               {users.slice(0, showAllUsers ? users.length : 5).map((user) => (
                 <Card
                   key={user._id}
-                  className="left-card"
+                 
                   style={{
                     width: "18%",
                     height: "18rem",
                     margin: "5px",
                   }}
+                  className="userCard" 
                 >
                   <div
                     style={{

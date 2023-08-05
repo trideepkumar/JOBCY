@@ -93,7 +93,7 @@ const login = async (req, res) => {
   }
   if (existingUser && existingUser.isVerified) {
     const token = jwt.sign(
-      { id: existingUser._id },
+      { id: existingUser._id },  //payload 
       process.env.JWT_SECRET_KEY,
       {
         expiresIn: "1d",
@@ -123,8 +123,10 @@ const verifyToken = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid token found!" });
     }
     req.id = user.id;
+    
     next();
   });
+
 
 };
 
@@ -394,6 +396,7 @@ const updateResume = async (req, res) => {
     });
 
     const filepath = result.url;
+    
     await User.findOneAndUpdate(
       { _id: req.params._id },
       { $set: { resume: filepath } }

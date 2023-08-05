@@ -9,16 +9,18 @@
 }
 
 @media (max-width: 600px) {
+  .maingrid {
+    width: 100vw !important;
+  }
   .menu {
-    width: 100%  !important;
+    width: 100% !important;
     position: static;
     margin-top: 0;
     /* background: red; */
-    margin-left: 15px  !important;
+    margin-left: 15px !important;
     padding: 0px !important;
-
   }
-  .list{
+  .list {
     /* background: palegreen !important; */
     width: 100% !important;
     display: flex;
@@ -27,33 +29,37 @@
     white-space: nowrap;
     margin-left: 0px !important;
   }
-  
-  .exploreGrid{
-    /* display: none; */
-    margin: 11rem 0rem 0rem 0rem !important;
-    width: 100rem !important;
-    min-height: 20rem;
+
+  .maingridfriends {
+    margin-left: 2rem !important;
+    margin-top: 11rem !important;
+    width: 26rem !important;
   }
-  .orgn{
+  .seemore {
+    margin-left: 0px !important;
+    padding-right: 20px !important;
+  }
+
+  .exploreGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 0rem;
+    margin-left: 0px !important;
+    width: 100vw !important;
+    height: auto !important;
+    padding-right: 25px !important;
+    
+  }
+  .userCard {
+    width: 11rem !important;
+  }
+  .orgn {
     display: none;
+
     /* margin-left:0px  !important ; */
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Style the scrollbar specifically for WebKit-based browsers */
 .list::-webkit-scrollbar {
@@ -69,7 +75,7 @@
 .list::-webkit-scrollbar-thumb {
   background: #ff6e14; /* Set the color of the scrollbar handle */
   border-radius: 3px; /* Set the border radius of the scrollbar handle */
-  height:1px !important;
+  height: 1px !important;
 }
 
 /* Handle on hover */
