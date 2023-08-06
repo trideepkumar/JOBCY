@@ -340,7 +340,7 @@ function AddFriends() {
         }}
         className="orgn"
       >
-        <Typography variant="h6" textAlign={"left"} fontFamily={"fantasy"}>Organisations....</Typography>
+        <Typography variant="h6" textAlign={"left"} fontFamily={"fantasy"} color="#ff6e14">Organisations....</Typography>
         <Box
           item
           lg={9}

@@ -1,0 +1,10 @@
+@media (max-width: 600px) {
+    .chat {
+      margin-top: 4rem !important;
+      width: 10rem !important;
+    }
+
+    .box-chat{
+        width: 25rem !important;
+    }
+  }
