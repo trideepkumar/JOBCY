@@ -152,7 +152,7 @@ const Navbar = () => {
               onClose={handleMenuClose}
               PaperProps={{
                 style: {
-                  background: "transparent",
+                  background: "blur",
                   color: "#ff6e4",
                 },
               }}
@@ -185,6 +185,12 @@ const Navbar = () => {
                 <Notifications />
                 <Typography variant="inherit" sx={{ ml: 1 }}>
                   Notifications
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose}>
+              <Logout />
+                <Typography variant="inherit" sx={{ ml: 1 }}>
+                  Logout
                 </Typography>
               </MenuItem>
             </Menu>
