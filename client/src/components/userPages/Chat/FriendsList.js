@@ -35,6 +35,7 @@ function FriendsList({ handleClickEvent }) {
 
   const handleChat = async (id) => {
     try {
+      
       const response = await axiosInstance.post("/chats", {
         data: {
           userId: authState._id,

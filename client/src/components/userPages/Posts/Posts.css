@@ -61,7 +61,7 @@ body{
 
 @media (max-width: 600px) {
     .left-card {
-      display: none;
+      display: none !important;
     }
     .right-card{
         display: none;

@@ -42,7 +42,9 @@ function Userjob() {
 
   const fetchData = async () => {
     try {
+
       const response = await axiosInstance.get("/jobs");
+
       const jobs = response.data.jobs || [];
 
       const hasApplied = jobs
@@ -105,11 +107,15 @@ function Userjob() {
 
   return (
     <>
+    
       <Appbar />
+
       <ToastContainer />
+
       {jobId && (
         <JobDetailsModal jobId={jobId} handleClose={() => setJobId(null)} />
       )}
+
       <Grid container spacing={5}>
         {/* left */}
 
@@ -523,6 +529,7 @@ function Userjob() {
         </Grid>
         
       </Grid>
+
     </>
   );
 }

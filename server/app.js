@@ -81,7 +81,7 @@ mongoose
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app",
+    origin: "https://jobcy-pil9iwbyi-trideepkumar.vercel.app/",
   },
 });
 
