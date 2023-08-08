@@ -223,26 +223,12 @@ function AddFriends() {
                 gap: "0px",
                 flexWrap: "wrap",
                 position: "relative",
+                
               }}
               className="exploreGrid"
 
             >
-              <Typography
-                variant="subtitle1"
-                color="primary"
-                onClick={() => setShowAllUsers(!showAllUsers)}
-                style={{
-                  cursor: "pointer",
-                  position: "absolute",
-                  top: 0,
-                  right: 0,
-                  marginRight: "20px",
-                  marginTop: "-20px",
-                }}
-                className="seemore"
-              >
-                {showAllUsers ? "Go Back." : "See More..."}
-              </Typography>
+             
               {users.slice(0, showAllUsers ? users.length : 5).map((user) => (
                 <Card
                   key={user._id}
@@ -321,6 +307,22 @@ function AddFriends() {
                   </CardActions>
                 </Card>
               ))}
+                 <Typography
+                  variant="subtitle1"
+                  color="primary"
+                  onClick={() => setShowAllUsers(!showAllUsers)}
+                  style={{
+                    cursor: "pointer",
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    marginRight: "20px",
+                    marginTop: "-20px",
+                  }}
+                  className="seemore"
+                >
+                  {showAllUsers ? "Go Back." : "See More..."}
+                </Typography>
             </Box>
           )}
           {renderComponent()}
