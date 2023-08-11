@@ -29,6 +29,7 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Landing from "./components/userPages/Landing/Landing";
 import FriendsProfile from "./components/userPages/Profile/FriendsProfile";
+import PageNotFound from "./components/Pages/PageNotFound";
 
 function App() {
   return (
@@ -40,8 +41,8 @@ function App() {
           <Route path="/login" element={<Login loginType="user" />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route path="/profile/:friendId"  element={<FriendsProfile />}
-          />
+          <Route path="/profile/:friendId"  element={<FriendsProfile />}/>
+          <Route path="*" element={<PageNotFound/>}/>
         </Route>
 
         <Route element={<ProtectedRoutes></ProtectedRoutes>}>
